@@ -500,7 +500,8 @@ instance isConjApart_chosenPlace : IsConjApart D.chosenPlace where
 chosen places. -/
 lemma range_chosenPlace : Set.range D.chosenPlace = {w : FinPlace D.E | D.IsChosen w} := by
   ext w
-  rw [Set.mem_ofPred, isChosen_iff]
+  change w ∈ Set.range D.chosenPlace ↔ D.IsChosen w
+  rw [isChosen_iff]
   refine ⟨?_, fun ⟨i, hw⟩ ↦ ⟨⟨i, w, hw⟩, rfl⟩⟩
   rintro ⟨⟨i, w, hw⟩, rfl⟩
   exact ⟨i, hw⟩
@@ -592,7 +593,7 @@ characters `D.chiMLocal w` at the chosen places, is at most `exp (log b / 9)`, w
 `log b = D.logB`. -/
 instance : D.HasLogUpper (P.q₂ D.towerExp) (D.logB / 9) := by
   -- `q₂` is at most a fixed power of `x`, and `log x ≤ log x₁` is negligible against `log b`.
-  have h_scale : D.logX ≤ D.logX₁ := by grind [D.scale_inequalities]
+  have h_scale : D.logX ≤ D.logX₁ := by grind [D.coarse_scale_inequalities]
   have h_pow : D.x ^ (33 * (P.q₀ * P.d)) ≤ exp (D.logB / 9) := by
     rw [← exp_nat_mul, exp_le_exp]
     calc _ ≤ (33 * (P.q₀ * P.d) : ℕ) * D.logX₁ := by gcongr
