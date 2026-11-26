@@ -36,6 +36,7 @@ See `New.Spanning.Bessel.CutTailBound` for related work.
 
 open Matrix MeasureTheory Complex Subgroup ComplexConjugate
 
+
 /-- Let `W : G₁ → ℂ^I` be a Bessel function: a bounded measurable function on the unitary group G₁
 such that `W (u y) = ψ(u) W y` for `u` in the unipotent subgroup 𝖴, with ψ a fixed character, and
 `W (h y) = rep h (W y)` for `h` in the compact unitary group `U(κ)`, which sits in G₁ by
@@ -98,7 +99,7 @@ lemma New.IsBesselFunction.integral_mul_conj_eq {𝔰 : Shape} {I : Type} [Finty
       simp [R, hW.map_unitary_mul, mulVec, dotProduct, Finset.sum_mul, Finset.mul_sum, mul_assoc,
         mul_comm (conj (W y _))]
     calc (R * M * star R) p q
-        = ∑ l, ∑ k, R p k * M k l * conj (R q l) := by simp [mul_apply, Finset.sum_mul]
+        = ∑ l, ∑ k, R p k * M k l * conj (R q l) := by simp [Matrix.mul_apply, Finset.sum_mul]
       _ = ∫ y, ∑ l, ∑ k, R p k * (W y k * conj (W y l)) * conj (R q l) ∂besselQuotMeasure := by
         simp (disch := fun_prop) only [M, of_apply, integral_finsetSum, integral_mul_const,
           integral_const_mul]
@@ -208,10 +209,15 @@ theorem New.IsCutPair.lintegral_sq_inner_cut_le {𝔰 : Shape} {I : Type} [Finty
     calc ((∫ y, ‖inner ℂ v (W .cut y)‖ ^ 2 ∂besselQuotMeasure : ℝ) : ℂ)
         = ∑ i, ∑ j, conj (v i) * v j *
             ∫ y, W .cut y i * conj (W .cut y j) ∂besselQuotMeasure := by
-          simp (disch := fun_prop) only [← integral_complex_ofReal, h_expand, integral_finsetSum,
+          have h_term (i j : I) := (h_int_prod i j).const_mul (conj (v i) * v j)
+          simp only [← integral_complex_ofReal, h_expand, integral_finsetSum _ (fun i _ ↦
+            integrable_finsetSum _ fun j _ ↦ h_term i j), integral_finsetSum _ (fun j _ ↦ h_term _ j),
             integral_const_mul]
       _ = ∑ i, conj (v i) * v i * c := by simp [h_scalar]
       _ = ((c * ‖v‖ ^ 2 : ℝ) : ℂ) := by
           simp [conj_mul', PiLp.norm_sq_eq_of_L2, Finset.sum_mul, mul_comm (c : ℂ)]
-  grw [lintegral_enorm_sq (h_int.const_inner v) (h_memLp_top.const_inner v), h_integral, hc_le,
-    one_mul, ENNReal.ofReal_pow (norm_nonneg v), ofReal_norm]
+  rw [lintegral_enorm_sq (h_int.const_inner (𝕜 := ℂ) v)
+    (h_memLp_top.const_inner (𝕜 := ℂ) v), h_integral]
+  calc ENNReal.ofReal (c * ‖v‖ ^ 2) ≤ ENNReal.ofReal (‖v‖ ^ 2) :=
+         ENNReal.ofReal_le_ofReal (mul_le_of_le_one_left (sq_nonneg _) hc_le)
+       _ = _ := by rw [ENNReal.ofReal_pow (norm_nonneg v), ofReal_norm]

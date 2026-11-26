@@ -542,7 +542,7 @@ lemma Gauge.lintegral_cutSquare_le (Γ : Gauge F) {k : T.G → T.G → ℂ} {d :
     have h_vol : F.FloorMassLe (l + 1) 1 1 := fun g' ↦ by
       have h_le : F.measureH {h : T.G | ∃ u ∈ besselU, u * (h * g') ∈ F.boxSet} ≤ 1 := h_mass g'
       -- Without `Subtype.exists` both sets keep the same form.
-      simpa [IsNear, hl_top, -Subtype.exists] using h_le
+      simpa [IsNear, hl_top, Set.univ_inter, -Subtype.exists] using h_le
     grw [heisenbergMeasure_eq_dirac_one (by lia),
       ← hK.pivotL1Norm_sq_le_of_floorMassLe_one h_vol, ← hK.enorm_partialCorrelation_le]
     simp
