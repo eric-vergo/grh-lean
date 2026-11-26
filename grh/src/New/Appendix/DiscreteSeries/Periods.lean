@@ -202,7 +202,7 @@ lemma norm_sum_sub_one (g : USign ε × USign η) :
       max ‖(g.1 : Matrix n n ℂ) - 1‖ ‖(g.2 : Matrix m m ℂ) - 1‖ := by
   rw [← norm_fromBlocks_zero_zero, coe_sum_eq_fromBlocks]
   congr 1
-  ext (a | a) (b | b) <;> simp [one_apply]
+  ext (a | a) (b | b) <;> simp [Matrix.one_apply]
 
 end Modulus
 
