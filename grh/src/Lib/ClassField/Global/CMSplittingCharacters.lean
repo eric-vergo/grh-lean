@@ -875,7 +875,7 @@ lemma IsFromU1.eq_one_of_mem_decompGroup (h : IsFromU1 S I χ) (hv : v ∈ S)
   obtain ⟨x, s, hs, hx⟩ : ∃ (x : (LocField v)ˣ) (s : decompGroup Gal(Ω/E) A),
       χ g = χ s ∧ ↑s = localArtin Gal(Ω/E) A v x :=
     hA.denseRange_localArtin.exists_mem_open
-      (QuotientGroup.isOpenMap_coe _ (h.isLocallyConstant _).preimage_val) ⟨_, ⟨g, hg⟩, rfl, rfl⟩
+      (QuotientGroup.isOpenMap_coe _ (h.isLocallyConstant {z | χ g = z}).preimage_val) ⟨_, ⟨g, hg⟩, rfl, rfl⟩
   have h_art : artinMap Gal(Ω/E) (locIdele v x) = (s : Gal(Ω/E)) := by
     simp [hA.artinAt_eq_of_localArtin_eq hx.symm]
   rw [hs, hχ _ _ h_art, star_locIdele]
