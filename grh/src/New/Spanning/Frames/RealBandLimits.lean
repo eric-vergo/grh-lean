@@ -100,9 +100,20 @@ lemma IsCutBessel.continuous_normalizedCellIntegral (hF : IsCutBessel F rep ρ s
       ContinuousOn (fun c ↦ besselOrbitalIntegral volume F
         (weylElem 𝔰.ϱ c * cellChart 𝔰 𝔰.ϱ (c 𝔰.ϱ)))
         {c | Γ.IsHead 𝔰.ϱ c} := by
-    refine (PiLp.continuous_toLp ..).comp_continuousOn (continuousOn_pi.2 fun i ↦
-      continuousOn_integral_of_compact_support (Γ.isCompact_hasMatrixSize (j := 60 * 𝔰.n ^ 2))
-        (by fun_prop) fun c y hc y_large ↦ ?_)
+    unfold besselOrbitalIntegral
+    apply (PiLp.continuous_toLp ..).comp_continuousOn
+    apply continuousOn_pi.2
+    intro i
+    let K : Set 𝔰.G₁ := {y | Γ.HasMatrixSize (60 * 𝔰.n ^ 2) y.val.val}
+    have hK : IsCompact K := Γ.isCompact_hasMatrixSize
+    refine continuousOn_integral_of_compact_support (μ := (volume : Measure 𝔰.G₁))
+      (s := {c : ℕ → ℂˣ | Γ.IsHead 𝔰.ϱ c}) (k := K)
+      (f := fun (c : ℕ → ℂˣ) (y : 𝔰.G₁) ↦
+        F y i.1 * (starRingEnd ℂ) (F ((weylElem 𝔰.ϱ c * cellChart 𝔰 𝔰.ϱ (c 𝔰.ϱ))⁻¹ * y) i.2))
+      hK ?_ fun c y hc y_large ↦ ?_
+    · apply Continuous.continuousOn
+      unfold Function.uncurry
+      fun_prop
     -- Off the compact set one of the two values of `F` in the integrand is zero.
     have h_zero : F y = 0 ∨ F ((weylElem 𝔰.ϱ c * cellChart 𝔰 𝔰.ϱ (c 𝔰.ϱ))⁻¹ * y) = 0 := by
       by_contra! ⟨hy, hy'⟩
@@ -110,7 +121,11 @@ lemma IsCutBessel.continuous_normalizedCellIntegral (hF : IsCutBessel F rep ρ s
         (Γ.hasMatrixSize_of_ne_zero hF.isCut_complexData hc cellChart_mem_floorGroup hy hy')
     rcases h_zero with h | h <;> rw [h] <;> simp
   -- `normalizedCellIntegral` is `besselOrbitalIntegral` times a continuous real factor.
-  exact .smul (M := ℝ) (by fun_prop) (J_cont.continuousAt heads)
+  have h_cont : Continuous fun p : ℕ → ℂˣ ↦
+      √𝔰.openCellConst * √(‖(p 𝔰.ϱ).val‖ ^ 2 - 1) ^ (𝔰.k - 1) / Fintype.card I *
+        ∏ a ∈ range 𝔰.ϱ, ‖(p a).val‖ ^ (𝔰.k + 1 + 2 * (𝔰.ϱ - (a + 1))) := by
+    fun_prop
+  exact h_cont.continuousAt.smul (J_cont.continuousAt heads)
 
 /-- The compact group U(κ), embedded in G₁ by `embedH`, acts on the values of a cut Bessel function
 by unitary maps, so left translation by it keeps the inner products of these values. -/
@@ -446,6 +461,9 @@ lemma IsCutBessel.norm_le_of_mem_positionBall (hF : IsCutBessel F rep ρ s b W f
       -- Exponents: `14 n + 7623 n ^ 3 ≤ 106 n r`, as `10 ^ 9 n ^ 3 ≤ r`.
       have one_le_n : 1 ≤ 𝔰.n := Nat.succ_pos _
       generalize 𝔰.n = n, 𝔰.r = r at *
+      have hnr : 10 ^ 9 * n ^ 3 ≤ n * r :=
+        cube_le.trans (Nat.le_mul_of_pos_left r one_le_n)
+      clear * - hnr one_le_n
       nlinarith [Nat.le_self_pow three_ne_zero n]
 
 /-- For `2 ≤ b`, `n, r ≥ 1` and `f ≥ 4000 n`, the square of the error `2 b ^ (-r ^ 3 f)` times the
