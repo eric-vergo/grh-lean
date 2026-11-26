@@ -145,7 +145,8 @@ lemma exists_circle_thetaIntegral_localDatum_eq_mul (W W₁ : Space E n s) (V V�
   -- A space enters `θ` only through its rational vectors.
   have θ_eq (f : 𝒮 ((W₁.move k).hom (V₁.move k'))) :
       (W.hom V).θ f = ((W₁.move k).hom (V₁.move k')).θ f := by
-    simpa using theta_eq_theta_omega (g := 1)
+    simpa using theta_eq_theta_omega (W := W.hom V)
+      (V := (W₁.move k).hom (V₁.move k')) (g := 1)
       (fun y hy ↦ by simpa using mem_ratVectors_hom_move hk hk' hy) f
   let u : Circle := β.val k.det / α.val k'.det
   refine ⟨u, fun v Φ g ↦ ?_⟩
@@ -168,10 +169,12 @@ lemma exists_circle_thetaIntegral_localDatum_eq_mul (W W₁ : Space E n s) (V V�
     (pairThetaKer W₁ V₁ α β).swap.theta_rat_mul γ γ.property h
   have same_distrib : ProbabilityTheory.IdentDistrib (fun h : G E t ↦ kernel₁ (k' * h)) kernel₁
       V.quotMeasure V₁.quotMeasure :=
-    identDistrib_orbitMeasure_comp (measurePreserving_count ((MulAut.conj k').subtypeEquiv Γ_conj))
+    identDistrib_orbitMeasure_comp (F := kernel₁)
+      (measurePreserving_count ((MulAut.conj k').subtypeEquiv Γ_conj))
       (measurePreserving_mul_left _ k') (by simp [Subgroup.smul_def, mul_assoc]) kernel₁_inv
   calc thetaIntegral W V α β (localDatum W V v Φ hπ) g
-    _ = ∫ h, u * kernel₁ (k' * h) ∂V.quotMeasure := congrArg _ (funext kernel_eq)
+    _ = ∫ h, u * kernel₁ (k' * h) ∂V.quotMeasure :=
+      congrArg (fun f : G E t → ℂ ↦ ∫ h, f h ∂V.quotMeasure) (funext kernel_eq)
     _ = u * thetaIntegral W₁ V₁ α β (localDatum W₁ V₁ v Φ hπ) (k * g) := by
       rw [integral_const_mul, same_distrib.integral_eq]
       rfl
