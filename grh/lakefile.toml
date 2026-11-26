@@ -29,7 +29,7 @@ roots = ["Statements", "Main"]
 
 [[lean_lib]]
 name = "Comparator"
-srcDir = "."
+srcDir = ".."
 globs = ["Comparator.+"]
 
 [[require]]
@@ -49,7 +49,7 @@ rev = "11afe5e30105914a412551f4e0c042710345c459"
 
 [[lean_lib]]
 name = "GrhBlueprint"
-srcDir = "blueprint"
+srcDir = "../blueprint"
 
 [lean_lib.leanOptions]
 experimental.module = true
