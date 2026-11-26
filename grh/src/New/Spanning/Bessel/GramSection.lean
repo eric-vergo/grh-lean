@@ -188,7 +188,7 @@ lemma differentiableAt_sectionMatrix_uncurry {Z W : 𝔰.FrameMatrix} (hZ : Z �
   have h_diag := differentiable_diagLast_apply (𝔰 := 𝔰)
   refine differentiableAt_pi.2 fun i ↦ differentiableAt_pi.2 fun j ↦ ?_
   simp only [uncurry_def, sectionMatrix, sectionFrame, sectionCoeff, invCorner,
-    nonsing_inv_eq_ringInverse, mul_apply, Matrix.add_apply, Matrix.sub_apply] at h_slit hs_ne ⊢
+    nonsing_inv_eq_ringInverse, Matrix.mul_apply, Matrix.add_apply, Matrix.sub_apply] at h_slit hs_ne ⊢
   fun_prop (disch := assumption)
 
 /-- The matrix `sectionMatrix Y Yᴴ` of the section γ_Y (`gramSection`) is a real differentiable
