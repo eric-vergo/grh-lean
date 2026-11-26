@@ -293,7 +293,9 @@ instance : Away (p : OC) ℂ_[p] := by
   have hp_one_lt : 1 < (p : ℝ) := by simp [Fact.out]
   refine .mk _ (by simp [NeZero.ne])
     (fun z ↦ (pow_unbounded_of_one_lt ‖z‖ hp_one_lt).imp fun n hz_lt ↦ ?_) (by simp)
-  have h_norm_le : ‖z‖ * ((p : ℝ) ^ n)⁻¹ ≤ 1 := (div_le_one (by positivity)).mpr hz_lt.le
+  have h_norm_le : ‖z‖ * ((p : ℝ) ^ n)⁻¹ ≤ 1 := by
+    rw [← div_eq_mul_inv]
+    exact (div_le_one (pow_pos (zero_lt_one.trans hp_one_lt) n)).mpr hz_lt.le
   simpa [norm_p_eq_inv] using h_norm_le
 
 /-- `O_C` is `p`-adically complete. -/
@@ -406,8 +408,8 @@ private lemma axRadius_nonneg {ε : ℝ} (hε : 0 < ε) (k : ℕ) : 0 ≤ axRadi
 private lemma inv_le_norm_natCast_padic {n m : ℕ} (hn_pos : 0 < n) (h_le : n ≤ m) :
     (m : ℝ)⁻¹ ≤ ‖(n : ℚ_[p])‖ := by
   -- `‖n‖ = p ^ (-v_p(n))`, and `p ^ v_p(n)` divides `n`
-  have h_pow_le : (p : ℝ) ^ padicValNat p n ≤ m :=
-    mod_cast (le_of_dvd hn_pos pow_padicValNat_dvd).trans h_le
+  have h_pow_le : (p : ℝ) ^ multiplicity p n ≤ m :=
+    mod_cast (le_of_dvd hn_pos (pow_multiplicity_dvd p n)).trans h_le
   simpa [norm_eq_zpow_neg_valuation, hn_pos.ne'] using
     inv_anti₀ (pow_pos (Nat.cast_pos.mpr (NeZero.pos p)) _) h_pow_le
 

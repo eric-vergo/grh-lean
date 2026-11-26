@@ -241,7 +241,7 @@ theorem principalMinor_mul (h_zero : ∀ i j k : n, p i → ¬p j → p k → x 
     principalMinor (x * b) p = principalMinor x p * principalMinor b p := by
   -- the block of `x * b` on `p` is the product of the blocks plus a cross term, zero by `h_zero`
   have h_cross : x.toBlock p (¬p ·) * b.toBlock (¬p ·) p = 0 := by
-    aesop (add simp [mul_apply, Matrix.ext_iff.symm]) (add simp sum_eq_zero)
+    aesop (add simp [Matrix.mul_apply, Matrix.ext_iff.symm]) (add simp sum_eq_zero)
   simp [principalMinor, toBlock_mul_eq_add p p, ← det_mul, h_cross, toSquareBlockProp]
 
 theorem principalMinor_submatrix (e : m ≃ n) :

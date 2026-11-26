@@ -221,7 +221,7 @@ lemma conj_mem_unitriangular {lev : n → α} {u d : GL n R} (hd : d.val.BlockTr
       d⁻¹.val i k * (1 : Matrix n n R) k l * d.val l j := fun k l ↦ by
     grind [@hd_inv i k, @hd l j, hu k l, not_le]
   calc (d⁻¹ * u * d).val i j = (d⁻¹.val * (1 : Matrix n n R) * d.val) i j := by
-        simp only [Units.val_mul, mul_apply, sum_mul, h_term]
+        simp only [Units.val_mul, Matrix.mul_apply, sum_mul, h_term]
     _ = (1 : Matrix n n R) i j := by simp
 
 /-- A matrix has determinant `1` if it is block upper unitriangular for the level function `lev`,
@@ -233,7 +233,7 @@ lemma det_eq_one_of_unitriangular {lev : n → α} {Z : Matrix n n R}
   have h_tri : Z.BlockTriangular lev := fun a b hab ↦ by grind [one_apply_ne]
   have h_blocks : ∀ a : α, Z.toSquareBlock lev a = 1 := fun a ↦ by
     ext x y
-    simp [toSquareBlock_def, hZ x y (by grind), one_apply, Subtype.ext_iff]
+    simp [toSquareBlock_def, hZ x y (by grind), Matrix.one_apply, Subtype.ext_iff]
   simp [h_tri.det, h_blocks]
 
 /-! ### Minors, diagonal scalings, frame matrices and the unitary group -/
