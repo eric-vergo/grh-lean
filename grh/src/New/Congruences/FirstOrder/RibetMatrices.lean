@@ -758,7 +758,7 @@ lemma exists_mem_fittingIdeal_character [DVR O] [Fintype J] [LinearOrder J] [Dec
   have h_gen (g : s) : Φ (z g) - Pi.single g (1 : Λ) ∈ K := by
     have h_unit : F (Pi.single (inr (inr g)) 1) = Pi.single g 1 := by
       ext1
-      simp [Λ, F, A, evalRowAtChar_apply, vecMul_eq_sum, Pi.single_apply, one_apply, ite_apply,
+      simp [Λ, F, A, evalRowAtChar_apply, vecMul_eq_sum, Pi.single_apply, Matrix.one_apply, ite_apply,
         eq_comm]
     have h_row : Φ (z g) - Pi.single g 1 = F (v (z g) - Pi.single (inr (inr g)) 1) := by
       simp [Φ, h_unit]
