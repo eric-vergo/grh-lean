@@ -241,7 +241,7 @@ lemma New.exists_hasPrimeDensity_addChar_uniformizer (f : AddChar (Additive ((�
     -- The kernel of `ψ` contains the open subgroup `W`, and on `Kˣ` the product of `ψ` and the
     -- `sgn w` with `w ∈ T` is `1` (`hT`).
     refine ⟨by simpa [ψ.ker_toHomUnits] using isOpen_mono hW hW_open, ?_⟩
-    simp_all [sgn, piecewise, ext_iff]
+    simp_all [sgn, piecewise, ext_iff, Finset.univ_inter]
   have h_ne : ψ.toHomUnits ≠ 1 := by
     refine fun h_one ↦ hf (AddChar.ext _ _ (Quot.ind fun a ↦ ?_))
     exact congrArg Units.val (DFunLike.congr_fun h_one a)
@@ -709,7 +709,7 @@ lemma albert_brauer_hasse_noether (α : (unitsModule Γ).H2)
       ⟨U.normalCore, isOpen_of_isClosed_of_finiteIndex _ (normalCore_isClosed _ U.isClosed)⟩
     -- Restriction to `W` factors through restriction to `U`.
     have h_factor : (unitsModule Γ).resH2 W α =
-        (pairMapH2 (.mk (inclusion U.normalCore_le)) .id) ((unitsModule Γ).resH2 U α) := by
+        (pairMapH2 (.mk (inclusion U.normalCore_le) (continuous_subtype_val.subtype_mk _)) .id) ((unitsModule Γ).resH2 U α) := by
       induction α using QuotientAddGroup.induction_on
       rfl
     have hW : (unitsModule Γ).resH2 W α = 0 := by rw [h_factor, h_res, map_zero]
