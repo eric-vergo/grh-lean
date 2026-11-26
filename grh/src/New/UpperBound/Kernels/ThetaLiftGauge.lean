@@ -406,6 +406,7 @@ lemma _root_.New.Modulus.card_residueRing_le {k : ℕ} (hk_mem : (k : 𝓞 (P.E 
   -- The left side is the norm of `𝔪.ideal`, which divides the norm of the ideal `(k)`.
   have h_dvd : absNorm 𝔪.ideal ∣ absNorm (span {(k : 𝓞 (E P s))}) :=
     map_dvd absNorm (dvd_span_singleton.2 hk_mem)
+  rw [← Ideal.absNorm_eq_natCard 𝔪.ideal]
   rw [absNorm_span_natCast_eq_pow_numInfPlaces] at h_dvd
   exact Nat.le_of_dvd (by positivity) h_dvd
 
