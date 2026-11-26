@@ -489,7 +489,7 @@ lemma IsFillingData.classes_eq_and_eq_of_inv_mul_mem_congruenceSubgroup (hF : S.
   have same_z : FloorGroups.orbitPoint 𝔰.top γ₁⁻¹ = FloorGroups.orbitPoint 𝔰.top γ₂⁻¹ := by
     simpa [funext_iff, Unique.forall_iff, FloorGroups.orbitPoint,
       apply_eq_one_apply_of_mem_floorGroup hγ₁,
-      apply_eq_one_apply_of_mem_floorGroup hγ₂, h_col, frameGram, splitGram, mul_apply, middleGram,
+      apply_eq_one_apply_of_mem_floorGroup hγ₂, h_col, frameGram, splitGram, Matrix.mul_apply, middleGram,
       Nat.Prime.ne_zero] using h_tail
   have fixes : γ₁⁻¹ * γ₂ ∈ floorGroup 𝔰.n :=
     partialUnitriangularGroup_inf_floorGroup_last.le (inv_mul_mem_of_orbitPoint_eq hγ₁ hγ₂ same_z)
