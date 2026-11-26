@@ -33,7 +33,9 @@ lemma eventually_mem_spanOn_atPlace_mem_localIntGL (a : ℂ[Gf E n]) :
       ∀ g ∈ a.coeff.support, g.atPlace v ∈ localIntGL n v :=
     a.coeff.support.eventually_all.2 fun g _ ↦ g.eventually_atPlace_mem_localIntGL
   filter_upwards [h_support] with v hv
-  exact Submodule.span_mono (Set.image_mono hv) a.mem_span_support_coeff
+  have hsub : (↑a.coeff.support : Set (Gf E n)) ⊆ {g | g.atPlace v ∈ localIntGL n v} :=
+    fun _ hg ↦ hv _ hg
+  exact Submodule.span_mono (Set.image_mono hsub) a.mem_span_support_coeff
 
 variable [HasPrimitiveRoot5040 E]
 
