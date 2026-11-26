@@ -907,7 +907,7 @@ lemma exists_isWeakBaseChange_of_matching {μ : (𝔸f E)ˣ →* ℂˣ} [hμ : I
     let ⟨t, ht⟩ := g_eigen u hu hu_off hu_max
     ⟨_, (hasHeckePolyAt_iff hu).mpr ⟨levelSpace_anti hu_max g_fixed, t, rfl, ht⟩⟩
   obtain ⟨H, g_eigenform⟩ :=
-    exists_isEigenform_of_hasHeckePolyAt (by simpa using g_ne) h_level.isOpen
+    exists_isEigenform_of_hasHeckePolyAt (S := placesAbove E' Z) (by simpa using g_ne) h_level.isOpen
       (tendsto_place_comap_cofinite _ hZ.conjClosure.compl_mem_cofinite) g_poly
   refine ⟨g, H, g_eigenform, isWeakBaseChange_of_forall_heckeSplit_eq_smul hZ ?_ ?_, g_local,
     g_image⟩
