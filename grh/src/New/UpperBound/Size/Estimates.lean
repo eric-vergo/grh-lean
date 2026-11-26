@@ -240,6 +240,7 @@ lemma jetSize_le_add {l r e : ℕ} (hl : l ≤ r + e) :
 
 /-! ### Class counts -/
 
+set_option maxRecDepth 16384 in
 /-- The admissible data `D` give a CM field `E = D.E`, the length `x = D.x` of the prime sum, the
 number `m = D.m` of lifts and the rank `n_m = D.n D.m` of the last lift. Let `G ≥ 1` be an integer,
 `n` an index set of size at most `2 n_m`, and `G_f` the finite adelic unitary group over `E` of the
@@ -293,6 +294,7 @@ lemma card_stdClasses_le_exp_mul_log {n : Type} [Fintype n] [DecidableEq n]
       push_cast
       grw [h_log_c, h_exponent, mul_add, mul_one]
 
+set_option maxRecDepth 16384 in
 /-- The admissible data `D` give a CM field `E = D.E`, the length `x = D.x` of the prime sum, the
 level primes with product `M = D.M`, a further prime level `N = D.N`, and integers `D.piM`, `D.piN`
 of `E` whose products with their conjugates are `M` and `N`. Let `n` be an index set with at most
@@ -379,7 +381,7 @@ lemma sum_allowedLoss_mul_log_le (U : Finset ℕ) :
       calc 2 * D.m * D.f * D.b * Real.log p
         _ ≤ T / (1 : ℕ) := by
           rw [hN]
-          exact D.le_of_hasLogBound (by grind [log_nonneg, scale_inequalities])
+          exact D.le_of_hasLogBound (by grind [log_nonneg, coarse_scale_inequalities])
         _ ≤ _ := h_single (r := 0) le_rfl (le_floor (by simpa)) (by norm_num) hN.symm
     · exact (zero_mul _).trans_le (by positivity)
   have h_harmonic : ∑ c ∈ Icc 1 ⌊D.x₁⌋₊, (c : ℝ)⁻¹ ≤ 1 + D.logX₁ := by

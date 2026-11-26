@@ -251,7 +251,7 @@ lemma boxes_eq_aPlaces_add_low (_hj : j < D.m) :
         D.columnCount σ h := by
     split_ifs <;> simp_all [columnCount]
   simp_rw [boxes, h_split, sum_add_distrib]
-  simp [lowBoxes, h_one]
+  simp [lowBoxes, h_one, Finset.univ_inter]
 
 /-- For `j < m` the boxes removed with the columns of height one at the places of `S` are the `a`
 boxes at each a-place in `S`. -/
@@ -262,7 +262,7 @@ lemma boxes_sub_boxes_eraseHeightOne (hj : j < D.m) (S : Finset D.Φ) :
   have h_card : (#D.aPlaces : ℝ) = #(D.aPlaces \ S) + #(D.aPlaces ∩ S) :=
     mod_cast (card_sdiff_add_card_inter D.aPlaces S).symm
   simp [-Nat.cast_sum, boxes_eq_aPlaces_add_low hj, boxes_eq_sum, heightOneColumns_eraseHeightOne,
-    lowBoxCount_eraseHeightOne, sum_add_distrib, longRow, h_card, add_mul, sum_ite_mem, -mem_sdiff]
+    lowBoxCount_eraseHeightOne, sum_add_distrib, longRow, h_card, add_mul, sum_ite_mem, Finset.univ_inter, -mem_sdiff]
 
 /-- Let `p` be a prime and `j < m`, the number of lifts. The diagram at an infinite place `τ` of `E`
 has `D.columnCount τ h` columns of height `h`. Let `B` be the number of boxes of these diagrams, at
@@ -537,7 +537,7 @@ lemma le_divisibilityBound (hj : j < D.m) (hp : D.IsSmallNonsplit p) (S : Finset
         D.f * (2 * u) := by
     simpa [sum_add_distrib, ← mul_sum, localPrimeSumTotal, collisionSum, mul_assoc, mul_left_comm,
       f,
-      Core.numInfPlaces, -mem_inter] using
+      Core.numInfPlaces, Finset.univ_inter, -mem_inter] using
       sum_le_sum (s := univ) fun τ _ ↦ h_place τ
   have h_count : D.n (j + 1) ^ 3 * (1 + logb p (max (boxes D.columnCount (D.n (j + 1))) 1 : ℕ)) ≤
     u := by
