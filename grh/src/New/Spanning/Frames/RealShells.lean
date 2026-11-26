@@ -368,6 +368,8 @@ lemma hasDeepVector_of_notMem (hF : IsCutBessel F rep ρ s b F₀ f) (hj : j ≤
   refine ⟨a, ha, ?_⟩
   grw [hF.depth_eq, ← h_le, ← ofReal_pow τ_pos.le, ofReal_inv_of_pos (by positivity)]
 
+set_option maxRecDepth 16384
+
 /-- Let `F` be a cut Bessel function of box radius `ρ` and `j ≤ ϱ`. For every `g`, the set of `σ`
 with `σ g` near at `j + 1` (`New.Floors.PlaceData.IsNear`) has measure at most
 `(π ρ ^ 24) ^ k ρ ^ (9999 n)` for the measure `floorMeasure j` of floor `j`. This is `FloorMassLe`
@@ -387,6 +389,7 @@ lemma floorMassLe (hF : IsCutBessel F rep ρ s b F₀ f) (hj : j ≤ 𝔰.ϱ) :
         gcongr
         lia
   grw [(hF.gauge le_rfl).floorMassLe_one ⟨j, by lia⟩ g, volume_ofSize_le]
+  generalize 9999 * 𝔰.n = m at *
   simpa (disch := finiteness) [RealPlaceSizes.gauge, ← toReal_le_toReal, PlaceData.blockRank,
     Nat.sub_sub] using h_real
 
@@ -395,7 +398,8 @@ lemma one_le_massBound (hF : IsCutBessel F rep ρ s b F₀ f) :
     1 ≤ ENNReal.ofReal ((π * ρ ^ 24) ^ 𝔰.k * ρ ^ (9999 * 𝔰.n)) := by
   have one_le_ρ : 1 ≤ ρ := by linarith [hF.four_le]
   have one_le_π : 1 ≤ π := one_le_two.trans two_le_pi
-  exact one_le_ofReal.2 (by bound)
+  exact one_le_ofReal.2 (one_le_mul_of_one_le_of_one_le (one_le_pow₀ (one_le_mul_of_one_le_of_one_le one_le_π (one_le_pow₀ one_le_ρ)))
+    (one_le_pow₀ one_le_ρ))
 
 /-- If `2 ≤ L`, `0 < τ ≤ 1`, `n ≠ 0` and `L ^ (2400 n²) ≤ τ ^ (400 n²) H`, then at the scale
 `T = L ^ (11 n + 1) / τ` the number `T ^ (99 n)` is at most half of `H`. -/
@@ -439,14 +443,20 @@ lemma isShell_dyadicShell [Nonempty I]
     refine ⟨{hF.gauge ρ_le}, ?_, by simpa using h_cover, by simpa using h_scale⟩
     simpa using one_le_mul one_le_two (one_le_pow₀ (one_le_pow₀ one_le_two))
   -- Pass to real numbers: `L ^ (2400 n²) ≤ τ ^ (400 n²) 2 ^ i` with `0 < τ < 1`.
-  lift σ to NNReal using hσ_lt.ne_top with τ
-  have τ_lt : (τ : ℝ) < 1 := by exact_mod_cast hσ_lt
-  have h_real : L ^ (2400 * 𝔰.n ^ 2) ≤ (τ : ℝ) ^ (400 * 𝔰.n ^ 2) * 2 ^ i :=
-    calc L ^ (2400 * 𝔰.n ^ 2) = ((hF.gauge hL).loss ^ (1200 * 𝔰.n ^ 2)).toReal := by
-          simp [RealPlaceSizes.gauge, ← pow_mul, zero_le_one.trans one_le_L, ← mul_assoc]
-      _ ≤ ((τ : ℝ≥0∞) ^ (400 * 𝔰.n ^ 2) * 2 ^ i).toReal := toReal_mono (by finiteness) hσ
-      _ = (τ : ℝ) ^ (400 * 𝔰.n ^ 2) * 2 ^ i := by simp
-  have τ_pos : (0 : ℝ) < τ := τ.coe_nonneg.lt_of_ne fun h_zero ↦ by
+  let τ := σ.toReal
+  have hσ_fin : σ ≠ ∞ := hσ_lt.ne_top
+  have τ_lt : τ < 1 := by
+    simpa only [ENNReal.toReal_one] using
+      (ENNReal.toReal_lt_toReal hσ_fin ENNReal.one_ne_top).2 hσ_lt
+  have h_real : L ^ (2400 * 𝔰.n ^ 2) ≤ τ ^ (400 * 𝔰.n ^ 2) * 2 ^ i := by
+    change (ENNReal.ofReal L ^ 2) ^ (1200 * 𝔰.n ^ 2) ≤ _ at hσ
+    have h := ENNReal.toReal_mono
+      (ENNReal.mul_ne_top (ENNReal.pow_ne_top hσ_fin) (by simp)) hσ
+    simpa only [ENNReal.toReal_pow, ENNReal.toReal_ofReal (zero_le_one.trans one_le_L),
+      ENNReal.toReal_mul, ENNReal.toReal_ofNat, ← pow_mul, ← mul_assoc,
+      show 2 * 1200 = (2400 : ℕ) by decide, τ] using h
+  have τ_nonneg : 0 ≤ τ := ENNReal.toReal_nonneg
+  have τ_pos : (0 : ℝ) < τ := τ_nonneg.lt_of_ne fun h_zero ↦ by
     rw [← h_zero, zero_pow (by positivity), zero_mul] at h_real
     exact h_real.not_gt (by positivity)
   -- The position `x` is not in the position ball at the scale `T = L ^ (11 n + 1) / τ`.
@@ -460,7 +470,7 @@ lemma isShell_dyadicShell [Nonempty I]
     gcongr
     exact two_le_L.trans (le_self_pow₀ one_le_L (by lia))
   have pow_le : L ^ (11 * 𝔰.n) ≤ T := (pow_le_pow_right₀ one_le_L (by lia)).trans h_scale
-  simpa only [ofReal_coe_nnreal] using hF.hasDeepVector_of_notMem hj hp hq pow_le h_radius h_far
+  simpa only [τ, ENNReal.ofReal_toReal hσ_fin] using hF.hasDeepVector_of_notMem hj hp hq pow_le h_radius h_far
 
 /-! ### Summation over the shells -/
 
@@ -494,7 +504,8 @@ lemma formConst_mul_lintegral_le [Nonempty I]
       φ x ^ 2 ≤ (.ofReal V * .ofReal t⁻¹ ^ hF.complexData.volumeExponent) ^ 2 *
         (hF.gauge hL).weightedSquareProduct j p q F x := by
     rw [hF.volumeExponent_eq, ← ofReal_pow (by positivity), ← ofReal_mul (by positivity), inv_pow]
-    exact hφ_gain ((inv_lt_one₀ (by positivity)).1 (ofReal_lt_one.1 h_lt)) x
+    simpa only [V, div_eq_mul_inv] using
+      hφ_gain ((inv_lt_one₀ (by positivity)).1 (ofReal_lt_one.1 h_lt)) x
   have r_le : 9 * 10 ^ 7 * 𝔰.n ^ 4 + r ≤ hF.complexData.volumeExponent := by
     rw [hF.volumeExponent_eq]
     lia
@@ -517,7 +528,13 @@ lemma formConst_mul_lintegral_le [Nonempty I]
         π ^ ((2 * 𝔰.ϱ + 1) * 𝔰.k) * L ^ (1000000000 * 𝔰.n ^ 4) by
     have t_pow : t ^ s = t ^ (10 ^ 8 * 𝔰.n ^ 4) * t ^ r := by rw [← pow_add, ← hr]
     rw [t_pow]
-    simpa (disch := finiteness) [V, ← toReal_le_toReal, toReal_ne_zero, ratio_ne_zero,
+    dsimp only [V] at *
+    generalize 9999 * 𝔰.n = m at *
+    norm_num1 at h_powers ⊢
+    generalize 400000000 * 𝔰.n ^ 4 = a at h_powers ⊢
+    generalize 1000000000 * 𝔰.n ^ 4 = b at h_powers ⊢
+    generalize 100000000 * 𝔰.n ^ 4 = c
+    simpa (disch := finiteness) [← toReal_le_toReal, toReal_ne_zero, ratio_ne_zero,
       ratio_ne_top, formConst, scaledVolumeRatio, volU, field, mul_pow, ← pow_mul, abs_of_nonneg]
       using h_powers
   calc
@@ -621,7 +638,8 @@ lemma shell_bound_le_dampedPower (hF : IsCutBessel F rep ρ s b F₀ f) {r H : �
     simp only [hF.rho_eq, ← pow_mul, ← pow_add]
     exact pow_le_pow_right₀ one_le_b (by lia)
   have div_le : ρ ^ 24 / t ≤ r⁻¹ := by
-    rwa [div_le_iff₀ (by positivity), le_inv_mul_iff₀' r_pos]
+    rw [div_le_iff₀ (zero_lt_one.trans_le one_le_t), le_inv_mul_iff₀' r_pos]
+    exact mul_le_t
   have inv_le : t⁻¹ ≤ min 1 r⁻¹ :=
     le_min (inv_le_one_of_one_le₀ one_le_t) (inv_anti₀ r_pos
       ((le_mul_of_one_le_left r_pos.le (one_le_pow₀ one_le_ρ)).trans mul_le_t))
@@ -719,6 +737,7 @@ lemma norm_floorForm_le [Nonempty I] (hF : IsCutBessel F rep ρ s b F₀ f) (hj 
     grw [h_local (hF.gauge hL) hp, t_eq]
     gcongr 1
     -- At the place ℂ, `kernelBound` is `π ^ 2` and the modulus of `y` is `‖y‖ ^ 2`.
+    generalize 9999 * 𝔰.n = m at *
     simpa (disch := finiteness) [← ofReal_norm, ← toReal_le_toReal, div_pow, field,
       PlaceData.blockRank, Nat.sub_sub] using h_real
   rw [← ofReal_le_ofReal_iff bound_nonneg]
