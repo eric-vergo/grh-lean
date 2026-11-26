@@ -196,11 +196,11 @@ lemma reducedImage_besselH_le_vectorFixer {i : Fin 2} (w : S.chosenPlaces i)
   -- The columns of `k` at the frame are those of `1`, and this passes to the residue field.
   have h_frame (a : 𝔰.BesselIndex) (b : Fin (𝔰.ϱ + 1)) :
       (k : S.GFin).val a (𝔰.besselFrame b) = if a = 𝔰.besselFrame b then 1 else 0 := by
-    simpa [one_apply] using congrFun₂ (frameImage_mul_of_mem_agreeWithOneOn hk 1) a b
+    simpa [Matrix.one_apply] using congrFun₂ (frameImage_mul_of_mem_agreeWithOneOn hk 1) a b
   have h_action : frameImage (S.actionAt (S.reduction k) (⟨i, w⟩, d.1)) = frameImage 1 := by
     rw [actionAt, ← intGL_map_reduceAboveM]
     ext a b
-    by_cases h_eq : a = 𝔰.besselFrame b <;> simp [intGL.map_apply, h_frame, h_eq, one_apply,
+    by_cases h_eq : a = 𝔰.besselFrame b <;> simp [intGL.map_apply, h_frame, h_eq, Matrix.one_apply,
       ← Submonoid.one_def, ← ZeroMemClass.zero_def]
   rw [mem_vectorFixer, mulVec_frameImage_one_mulVec, h_action]
 
@@ -616,8 +616,10 @@ lemma amplitudeSum_eq_zero_of_not_charsAgree [HasPrimitiveRoot5040 E]
             φ (a x • x) (S.ratToInf (u * a x : S.classUnipotent c) * y) :=
           tsum_indicator_smul_eq_tsum_stabilizer ha (fun z u ↦ φ z (S.ratToInf u * y)) x
       _ = 1 := by
-          simpa only [Subgroup.coe_mul, map_mul, mul_assoc]
-            using hφ_sum (a x • x) (S.ratToInf (a x) * y)
+          have h := hφ_sum (QuotientGroup.mk ((a x : S.G E) * γ) : S.G E ⧸ S.classUnipotent c')
+            (S.ratToInf (a x) * y)
+          rw [coe_mul] at h
+          simpa only [Subgroup.coe_mul, map_mul, mul_assoc] using h
   have h_wt_meas (γ : S.G E) : Measurable (wt γ) := (hφ_meas γ).const_smul _
   obtain ⟨h_hasSum, -⟩ :=
     hasSum_amplitudeSum_of_cutoff (side := side) hT c s c' wt (fun γ _ ↦ h_wt γ) h_wt_meas
