@@ -229,9 +229,10 @@ lemma Core.exists_norm_eq_norm_one_add_mul (σ : Matrix Unit Unit (𝔸 E)) :
   obtain ⟨a', b', h_shear, h_norm⟩ := h_fin (σ () ()).2
   refine ⟨of fun _ _ ↦ (fun w ↦ a ((σ () ()).1 w), a'),
     of fun _ _ ↦ (fun w ↦ b ((σ () ()).1 w), b'), ?_, ?_⟩
-  · simp [← ext_iff, mul_apply, Prod.ext_iff, hab, h_shear, funext_iff]
-  · simpa [← ext_iff, mul_apply, Prod.ext_iff, h_norm, funext_iff] using fun w ↦ (hab _).2
+  · simp [← ext_iff, Matrix.mul_apply, Prod.ext_iff, hab, h_shear, funext_iff]
+  · simpa [← ext_iff, Matrix.mul_apply, Prod.ext_iff, h_norm, funext_iff] using fun w ↦ (hab _).2
 
+open scoped Pointwise in
 /-- Let `K` be a matrix over `E` that represents `1` over the adeles, into which `toAdele` embeds
 `E`, and let `S` be finite. Then the value of `K` at some rational vector has positive real part
 under each embedding `Φ w` of the CM type and is a unit at `S.conjClosure`, the places of `S` and
@@ -260,7 +261,9 @@ lemma Core.exists_form_pos_and_unit {K : Matrix n n E} (z : Matrix n Unit (𝔸 
       h_mem.1 w (mem_univ w)
   · -- It is `0` at `w` and at its conjugate as well.
     have hw_conj : star w ∈ S.conjClosure := by simpa [conjClosure, or_comm] using hw
-    simpa [U, hw, hw_conj, idem_apply, -compl_union, -mem_union, ← Matrix.map_mul,
+    have hw_not : w ∉ Sᶜ ∩ (star S)ᶜ := fun h ↦ hw.elim h.1 h.2
+    have hstar_not : star w ∉ Sᶜ ∩ (star S)ᶜ := fun h ↦ hw_conj.elim h.1 h.2
+    simpa [U, hw, hw_conj, hw_not, hstar_not, idem_apply, -compl_union, -mem_union, ← Matrix.map_mul,
       Matrix.mul_assoc, Matrix.mul_add, Matrix.add_mul] using mem_iInter₂.1 h_mem.2 w hw
 
 /-- Hasse principle for representing `1`: let `E` satisfy `New.HasPrimitiveRoot5040` and let `K` be
@@ -576,9 +579,9 @@ lemma U.hasse_principle_coboundary [IsCMField E']
   have h_infinite (w : InfinitePlace E) :
       (g.map (lift E' (Φ w))).1ᴴ * signMatrix (1 : n → ℤˣ) * (g.map (lift E' (Φ w))).1 =
         J.1.map (Φ w) := by
-    simpa [← ext_iff, mul_apply] using congrArg (Matrix.map · (lift E' (Φ w))) hJ_mat
+    simpa [← ext_iff, Matrix.mul_apply] using congrArg (Matrix.map · (lift E' (Φ w))) hJ_mat
   have h_adelic : (g.map a).1ᴴ * 1 * (g.map a).1 = J.1.map (a ∘ algebraMap E E') := by
-    simpa [← ext_iff, mul_apply, a] using congrArg (Matrix.map · a) hJ_mat
+    simpa [← ext_iff, Matrix.mul_apply, a] using congrArg (Matrix.map · a) hJ_mat
   have h_finite : y.1ᴴ * 1 * y.1 = J.1.map (algebraMap E (𝔸f E)) := by
     apply map_injective (adeleMap_injective (algebraMap E E'))
     -- `y` becomes `u⁻¹ g` over `E'`, and `u⁻¹` is unitary.
