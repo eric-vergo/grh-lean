@@ -343,7 +343,7 @@ lemma HasFundDomain.isCovolOneLattice [BorelSpace B]
       exact Set.indicator_of_notMem (fun h_mem ↦ hb (by simp [ha_uniq b h_mem])) _
   -- Unfolding the integral of the indicator of `D`: the quotient has the volume of `D`.
   have h_mass : f.range.quotMeasure volume Set.univ = 1 := by
-    simpa [h_once, hD_meas, hD_vol] using
+    simpa [h_once, hD_meas, Set.univ_inter, hD_vol] using
       lintegral_addOrbitMeasure_lintegral (ν := .count) (H := f.range) (μ := volume)
         (measurable_one.indicator hD_meas)
   exact
