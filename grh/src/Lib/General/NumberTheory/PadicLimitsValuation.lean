@@ -166,7 +166,7 @@ lemma map_I_mul_sqrt_sq : ιₚ (I * √d) ^ 2 = -d := by
 
 /-- The closure in `ℂ_p²` of the set of images under `ιₚ` of the pairs `(α, α ᾱ)`, with `α` an
 integer of `K = ℚ(√-d)`. -/
-def normPairClosure : Set (ℂ_[p] × ℂ_[p]) := closure {(ιₚ a, ιₚ (a * conj a)) | a ∈ quadInt d}
+noncomputable def normPairClosure : Set (ℂ_[p] × ℂ_[p]) := closure {(ιₚ a, ιₚ (a * conj a)) | a ∈ quadInt d}
 
 /-- If `ζ` is an element of `ℂ_p` of norm `1` with `ζ ^ q_p = ζ`, where `q_p = primeNorm d p`
 (`p ^ 2` if `chiK d p = -1`, else `p`), then `(ζ, ζ ^ (p + 1))` lies in `normPairClosure d`: it is a
@@ -279,7 +279,7 @@ lemma ellVal_pow (k : ℕ) : ellVal (x ^ k) = k * ellVal x := by
 /-- The normalised valuation of a nonzero natural number `n` in ℚ̄_ℓ is its ℓ-adic valuation. -/
 lemma ellVal_natCast {n : ℕ} (hn : n ≠ 0) : ellVal (ℓ := ℓ) n = padicValNat ℓ n := by
   have h_norm : ‖(n : PadicAlgCl ℓ)‖ = ‖(n : ℚ_[ℓ])‖ := mod_cast PadicAlgCl.norm_extends ℓ n
-  simp [hn, h_norm, Padic.norm_eq_zpow_neg_valuation, ellVal, logb_pow, Fact.out, NeZero.ne]
+  simp [Nat.padicValNat_def, hn, h_norm, Padic.norm_eq_zpow_neg_valuation, ellVal, logb_pow, Fact.out, NeZero.ne]
 
 @[simp]
 lemma ellVal_ell : ellVal (ℓ : PadicAlgCl ℓ) = 1 := by

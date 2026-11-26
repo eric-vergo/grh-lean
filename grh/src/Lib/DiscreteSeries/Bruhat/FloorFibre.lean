@@ -76,8 +76,9 @@ lemma leFibreMeasure_coords {α β ι : Type} [Fintype α] [Fintype β] [Fintype
     exact (measurePreserving_inclMatrix (.ofBijective _ h_bij)).comp measurePreserving_sumElim
   have h_fibre (t : α → ℂ) (v : β → ℂ) : φ (t, v) ∘ f = t := by
     ext a
-    simp [φ, inclMatrix, mulVec, dotProduct, one_apply, hf.eq_iff, h_ne a]
-  exact .of_measurePreserving h_vol (by fun_prop) h_fibre
+    simp [φ, inclMatrix, mulVec, dotProduct, Matrix.one_apply, hf.eq_iff, h_ne a]
+  exact LeFibreMeasure.of_measurePreserving (φ := φ) (π := fun y : ι → ℂ ↦ y ∘ f)
+    (ρ := volume) (b := c) h_vol (by fun_prop) h_fibre
     fun _ ↦ Continuous.continuousAt (by fun_prop)
 
 lemma involutive_oppositeIndex : (oppositeIndex (𝔰 := 𝔰)).Involutive :=
@@ -310,14 +311,14 @@ lemma leFibreMeasure_dualPoint (a : Fin 𝔰.ϱ) :
       simp [c, I, h_low, Pi.single_apply, Subtype.ext_iff, involutive_oppositeIndex.eq_iff]
     rw [hc, mulVec_single_one]
     ext i
-    simp [inclMatrix, f, one_apply, Pi.single_apply]
+    simp [inclMatrix, f, Matrix.one_apply, Pi.single_apply]
   have h_point : dualPoint a = (fun v ↦ inclMatrix ℂ f *ᵥ c + inclMatrix ℂ g *ᵥ v) ∘
       fun p : ℂ × (S → ℂ) ↦ Sum.elim (fun _ : Unit ↦ p.1) p.2 := by
     funext p
     have h_single : inclMatrix ℂ (fun _ : Unit ↦ (.inl a : 𝔰.BesselIndex)) *ᵥ (fun _ ↦ p.1) =
         p.1 • Pi.single (.inl a) 1 := by
       ext i
-      simp [inclMatrix, mulVec, dotProduct, one_apply, Pi.single_apply]
+      simp [inclMatrix, mulVec, dotProduct, Matrix.one_apply, Pi.single_apply]
     rw [Function.comp_apply, h_base, inclMatrix_sumElim_mulVec, h_single, dualPoint, add_assoc,
       add_comm (p.1 • _)]
   rw [h_point, ← Measure.map_map (by fun_prop) h_param.measurable, h_param.map_eq]
