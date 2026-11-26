@@ -438,7 +438,7 @@ lemma isIntMatrix_siegelBracket {T : Matrix p p E} {s₂ : n₂ → ℤˣ}
     have hk_D : IsIntMatrix O D.kAdelic := fun i j ↦ by
       simpa only [comp_kAdelic, ← hD, fromCols_apply_inr] using hk i (.inr j)
     have hl_D : IsIntMatrix O D.lCoord := fun i j ↦ by
-      simpa only [lCoord, comp_kAdelic, ← hD, mul_apply, conjTranspose_apply,
+      simpa only [lCoord, comp_kAdelic, ← hD, Matrix.mul_apply, conjTranspose_apply,
         fromCols_apply_inr] using hl (.inr i) j
     simpa only [adeleMatrix_radicalCentre] using IsIntMatrix.one.add ((hk_D.mul hM).mul hl_D)
   have h_centre : (D.radicalCentre M).2 ∈ stdLevel E n := mem_stdLevel.2 h_mat
@@ -494,12 +494,15 @@ lemma exists_eq_radicalElement_mul_actsOnFrame {g : G E s} {α : Matrix Unit Uni
     simpa [comp_kAdelic, fromCols_ext_iff, fromCols_mul_fromBlocks, Matrix.mul_assoc] using hg
   -- `A` splits `g` as a radical element times a Levi element, with `g₀` on the complement.
   obtain ⟨c, z, t, g₀, hg_eq, -, hg₀⟩ := A.exists_eq_radicalElement_mul_levi h_line
+  have h_levi : (A.levi (t, g₀)).adeleMatrix =
+      A.kAdelic * t.val * A.kCoord + A.iAdelic * g₀.adeleMatrix * A.iCoord +
+        A.lAdelic * (t⁻¹).valᴴ * A.lCoord := rfl
   have h_compl :
       (A.levi (t, g₀)).adeleMatrix * (A.iAdelic * B.kAdelic) = A.iAdelic * (B.kAdelic * γ) := by
-    simp [Splitting.levi, hg₀, h_rest, Matrix.mul_assoc, Matrix.add_mul, Matrix.mul_add]
+    simp [h_levi, hg₀, h_rest, Matrix.mul_assoc, Matrix.add_mul, Matrix.mul_add]
   obtain ⟨h_k, h_l⟩ : A.ActsOnFrame (A.levi (t, g₀)) t.val ∧
       A.symm.ActsOnFrame (A.levi (t, g₀)) (t⁻¹).valᴴ := by
-    constructor <;> simp [Splitting.levi, Matrix.mul_assoc, Matrix.add_mul]
+    constructor <;> simp [ActsOnFrame, h_levi, Matrix.mul_assoc, Matrix.add_mul]
   refine ⟨c, z, t.val, (t⁻¹).valᴴ, A.levi (t, g₀), hg_eq, ?_, ?_,
     by rw [conjTranspose_conjTranspose, t.inv_mul]⟩
   · simp [ActsOnFrame, comp_kAdelic, mul_fromCols, h_k, h_compl, fromCols_mul_fromBlocks,
