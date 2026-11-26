@@ -167,6 +167,7 @@ for file in site.rglob('*'):
     if not file.is_file():
         continue
     relative = file.relative_to(site)
+    check(file.suffix != '.ndjson', 'Private kernel export in the published site: ' + str(relative))
     if relative.parts[0] == 'source':
         group = 'indexed source atlas'
     elif file.suffix == '.html':
