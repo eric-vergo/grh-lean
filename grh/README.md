@@ -13,6 +13,8 @@ This is the readable edition, about 300,000 lines of code. A compact edition, ab
 
 ## Read the blueprint
 
+[Open the online blueprint](https://eric-vergo.github.io/grh-lean/) or read the chapter sources below.
+
 1. [From zeros to a comparison of volumes](blueprint/GrhBlueprint/Parts/Orientation.lean)
 2. [Theorem A. Short lifts and their denominators](blueprint/GrhBlueprint/Parts/ShortForms.lean)
 3. [Theorem B. Filling the target by translates](blueprint/GrhBlueprint/Parts/Spanning.lean)
