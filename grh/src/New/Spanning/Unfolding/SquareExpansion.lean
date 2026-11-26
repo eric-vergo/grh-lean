@@ -62,7 +62,7 @@ lemma leadingMinor_frameGram_eq_zero {R : Type} [CommRing R] {𝔰 : Shape} (T :
     rw [show 𝔰.besselFrame 0 = .inl ⟨0, hϱ⟩ from besselFrame_castSucc ⟨0, hϱ⟩]
     cases b using Fin.lastCases <;> simp [splitGram]
   have h_col (b : Fin (𝔰.ϱ + 1)) : T.frameGram g b 0 = 0 := by
-    rw [Shape.Form.frameGram, submatrix_apply, mul_apply, Fintype.sum_eq_single (𝔰.besselFrame 0)
+    rw [Shape.Form.frameGram, submatrix_apply, Matrix.mul_apply, Fintype.sum_eq_single (𝔰.besselFrame 0)
       fun j hj ↦ by rw [hg j hj, mul_zero], h_orth, zero_mul]
   exact det_eq_zero_of_column_eq_zero ⟨0, hl⟩ fun a ↦ h_col (Fin.castLE l.is_le a)
 
@@ -170,7 +170,7 @@ lemma apply_besselFrame_zero_mem_Ô {γ : S.G E} {c c' : S.Classes} {k : S.latti
     rw [hk, frameImage_translateByClassReps]
   have h_entry : (k : S.GFin).val (𝔰.besselFrame 0) (𝔰.besselFrame 0) =
       ((γ : GL 𝔰.BesselIndex E).val (𝔰.besselFrame 0) (𝔰.besselFrame 0) : 𝔸f E) := by
-    simpa [classCoord_eq_fromBlocks, mul_apply, Matrix.one_apply, h_first]
+    simpa [classCoord_eq_fromBlocks, Matrix.mul_apply, Matrix.one_apply, h_first]
       using congrFun₂ h_frame (𝔰.besselFrame 0) 0
   rw [← h_entry]
   exact k.property.isIntMatrix _ _

@@ -104,7 +104,7 @@ lemma New.Selmer.linearIndependent_of_notMem_span_Iio {F V J : Type} [Field F] [
   | empty => simp
   | insert j s h_lt ih =>
     rw [coe_insert]
-    exact ih.insert fun h ↦ hv j (Submodule.span_mono (Set.image_mono h_lt) h)
+    exact ih.insert fun h ↦ hv j (Submodule.span_mono (Set.image_mono (fun _ hx ↦ h_lt _ hx)) h)
 
 /-- Let `ν > 0`, and let the maps `ψ i` from a group to `ℤ/ℓ^ν` send products to sums. If their
 reductions modulo `ℓ` are linearly independent, then together they take every family of values (by
