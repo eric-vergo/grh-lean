@@ -670,7 +670,7 @@ theorem circle_mean_of_isCircleFactorization (ho : o.Injective) {u : Φ → n �
         rw [on_circle]
         field_simp
     _ = q 0 * β * F' fun τ ↦ A τ 0 := integral_comp_toCircle_eq_apply_zero
-      holomorphic.differentiableOn
+      (f := fun s ↦ q s * β * F' fun τ ↦ A τ s) holomorphic.differentiableOn
     _ = _ := by simp [β, at_centre, (h_factor _).weightMinors_eq, diagChar]
 
 /-- The mean over the circle `diag (s ^ o)` of a function of weight `u`. Let `o` be injective and
