@@ -235,7 +235,7 @@ lemma eulerProd_eq_exp (ha : ∀ v : FinPlace K, ‖a v‖ ≤ 1) (hs : 1 < s) :
   have h_bound (t : ℝ) (ht : σ ≤ t) (v : FinPlace K) : ‖logFactor t v‖ ≤ 2 * (v.q : ℝ) ^ (-σ) :=
     norm_log_one_add_neg_mul_cpow_le_of_norm_le_one ha hσ.le ht v
   have h_term (v : FinPlace K) : ContinuousAt (fun t : ℝ ↦ logFactor t v) s :=
-    ContinuousAt.clog (by fun_prop (disch := simp))
+    ContinuousAt.clog (by fun_prop (disch := simp [v.q_ne_zero, (zero_lt_one.trans hs).ne']))
       (one_add_neg_mul_cpow_mem_slitPlane_of_norm_le_one ha hs.le v)
   have h_cont : ContinuousAt (fun t : ℝ ↦ -∑' v : FinPlace K, logFactor t v) s :=
     (tendsto_tsum_of_dominated_convergence h_sum h_term (.mono (Ici_mem_nhds hσs) h_bound)).neg
@@ -280,7 +280,11 @@ lemma eulerProd_erase (ha : ∀ v : FinPlace K, ‖a v‖ ≤ 1) (Q : Finset (Fi
   have h_factor_ne {t : ℝ} (ht : 1 ≤ t) (w : FinPlace K) : 1 - a w * w.q ^ (-t : ℂ) ≠ 0 := by
     simpa [sub_eq_add_neg] using
       slitPlane_ne_zero (one_add_neg_mul_cpow_mem_slitPlane_of_norm_le_one ha ht w)
-  have hP_analytic : AnalyticAt ℂ P 1 := by fun_prop (disch := simp)
+  have hP_analytic : AnalyticAt ℂ P 1 := by
+    apply Q.analyticAt_fun_prod
+    intro w _
+    have hw : (w.q : ℂ) ∈ slitPlane := natCast_mem_slitPlane.2 w.q_ne_zero
+    fun_prop (disch := assumption)
   have hP_one : P 1 ≠ 0 := prod_ne_zero_iff.mpr fun w _ ↦ by simpa using h_factor_ne le_rfl w
   refine ⟨(hP_analytic.restrictScalars (𝕜' := ℂ)).comp_of_eq (ofRealCLM.analyticAt 1) (by simp),
     hP_one, fun s hs ↦ ?_⟩
