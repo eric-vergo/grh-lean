@@ -65,7 +65,7 @@ natural number `a` are at most `log b` for every natural number `b ≥ a`. -/
 lemma New.Selmer.sum_padicValNat_mul_log_le (T : Finset ℕ) (hT : ∀ l ∈ T, l.Prime) {a b : ℕ}
     (hab : a ≤ b) : ∑ l ∈ T, (padicValNat l a : ℝ) * log l ≤ log b :=
   calc ∑ l ∈ T, (padicValNat l a : ℝ) * log l = ∑ l ∈ T, a.factorization l * log l :=
-      sum_congr rfl fun l hl ↦ by rw [a.factorization_def (hT l hl)]
+      sum_congr rfl fun l hl ↦ by rw [a.factorization_def (hT l hl), Nat.padicValNat_def]
     _ ≤ ∑ l ∈ T ∪ a.factorization.support, a.factorization l * log l := by
       grw [← T.subset_union_left]
     _ = log a := by
@@ -527,7 +527,10 @@ lemma New.exists_isRegularFamily {P : Parameters} (D : Data P) :
   choose θ h_coprime h_ratio h_denominators using h_twist
   -- it remains to sum the bounds over the primes
   have h_error (T : Finset ℕ) (hT : ∀ l ∈ T, l.Prime) : ∑ l ∈ T, twistError l D * log l ≤ D.x₁ :=
-    ((isNegligible_twistError D).sum_mul_log_le T hT).trans D.le_of_hasLogBound
+    calc
+      _ ≤ D.x ^ 999 := (isNegligible_twistError D).sum_mul_log_le T hT
+      _ ≤ D.x ^ 1000000 := pow_le_pow_right₀ (D.le_of_hasLogBound : 1 ≤ D.x) (by decide)
+      _ ≤ D.x₁ := D.x_pow_le_x₁
   exact ⟨θ,
     { coprime := h_coprime
       height_le j p s hp := HeightLe.of_le h_error fun κ ↦ h_ratio κ j p s hp
