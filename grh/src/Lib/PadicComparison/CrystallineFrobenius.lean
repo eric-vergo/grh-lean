@@ -584,7 +584,7 @@ private lemma map_J_tensorAction_eq_pull {p : ℕ} [ThePrime p] {R : CommRingCat
       Functor.whiskerRight κ _ ≫ crysComparison.coeffHom := by
     ext
     -- `hβ` at `1 ⊗ x`, with `μ 1 = 1`.
-    exact congrArg up ((hβ ..).trans (congrArg (· ⊗ₜ _) (toRingHom FrobGal Bmax μ).map_one))
+    exact congrArg ULift.up ((hβ ..).trans (congrArg (· ⊗ₜ _) (toRingHom FrobGal Bmax μ).map_one))
   have h_pull : (crysComparison.trans cmp).pull α n = crysComparison.pull (red a ha) n :=
     (congrArg (pull ⟨_, ·⟩ _ n) h_coeff).trans
       ((pull_whiskerRight κ crysComparison.coeffHom _).trans
@@ -597,7 +597,7 @@ private lemma map_J_tensorAction_eq_pull {p : ℕ} [ThePrime p] {R : CommRingCat
       -- The coordinates of `w` are fixed by Frobenius, so `Frob ^ a` fixes `w`.
       have h_frob_w : WittVector.map (iterateFrobenius c.TiltRing p a) w = w :=
         ext fun i ↦ (congrFun (pow_iterate ..) _).symm.trans (iterate_fixed (hw i) _)
-      congrArg up ((hβ ..).trans (congrArg _ (hτ (map_one _) h_frob_w)))) _
+      congrArg ULift.up ((hβ ..).trans (congrArg _ (hτ (map_one _) h_frob_w)))) _
   -- Twisting points by `s` commutes with the inclusion of the points of `V`.
   have h_square : incl ≫ freeAbMap (toTwistPoints he_algebraMap he_smul s Y) =
       δ ≫ cmp.functor.whiskerLeft incl :=
@@ -657,7 +657,7 @@ private lemma sum_linearFrob_apply_eq_zero {p : ℕ} [ThePrime p] {R : CommRingC
   let V' := V.whisker (algFunctor ⋙ restrictAlg R OC)
   -- It suffices to work on the dense set `T` of points of `W` that every `u i` sends into `V`.
   let T := ⨅ i, V'.preimage (testPoints.map (u i))
-  have hT : IsCohomDense Ψ T := InfClosed.iInf_mem (s := IsCohomDense Ψ) (fun _ hU _ ↦ hU.inf)
+  have hT : IsCohomDense Ψ T := InfClosed.iInf_mem (s := Set.ofPred (IsCohomDense Ψ)) (fun _ hU _ ↦ hU.inf)
     (.of_top_le le_rfl) fun _ ↦ hV_dense.preimage _
   refine (hJ.bijective W).injective ((hT.isCohomEquiv n).1 ?_)
   -- `linearFrob` acts on the fixed period `C z` as the Weil pair, giving the class `y i`, and `J`
