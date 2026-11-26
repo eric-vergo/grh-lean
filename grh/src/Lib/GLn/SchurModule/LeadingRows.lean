@@ -220,7 +220,7 @@ lemma eq_of_aeval_eq_of_isUnit_topBlock (h_rank : ∀ τ : Φ, q τ + rankAt m �
   have h_generic (τ : Φ) : (topBlock (S := A) h_rank X τ).det ≠ 0 := by
     let unitArray : (Σ τ : Φ, n τ) × ℕ → ℤ := permArray fun σ a ↦ (rowEquivFin n σ a : ℕ)
     have h_one : (eval unitArray).mapMatrix (topBlock (S := A) h_rank X τ) = 1 :=
-      Matrix.ext fun a b ↦ by simp [topBlock, unitArray, permArray, one_apply, Fin.val_inj]
+      Matrix.ext fun a b ↦ by simp [topBlock, unitArray, permArray, Matrix.one_apply, Fin.val_inj]
     exact ne_zero_of_map (f := eval unitArray) (by simp [RingHom.map_det, h_one])
   have h_unit (τ : Φ) : IsUnit (topBlock h_rank (φ ∘ X) τ).det := by
     change IsUnit (φ.mapMatrix (topBlock h_rank X τ)).det
@@ -270,7 +270,7 @@ lemma det_positionEntry_append (h_rank : ∀ τ : Φ, q τ + rankAt m τ = rankA
   have h_complement : D - C * (topBlock h_rank y τ)⁻¹ * B = of fun s t : Fin k ↦
       schurComplementArray h_rank y (⟨τ, (rowEquivFin m τ).symm (I s)⟩, t) :=
     Matrix.ext fun s t ↦ by
-      simp [schurComplementArray, B, C, D, Matrix.mul_assoc, mul_apply, mulVec, dotProduct]
+      simp [schurComplementArray, B, C, D, Matrix.mul_assoc, Matrix.mul_apply, mulVec, dotProduct]
   let _ : Invertible (topBlock h_rank y τ) := invertibleOfIsUnitDet _ hy
   rw [← det_submatrix_equiv_self finSumFinEquiv, h_blocks, det_fromBlocks₁₁, invOf_eq_nonsing_inv,
     h_complement]
@@ -349,10 +349,10 @@ lemma aeval_fillingPoly_blockArray (h_rank : ∀ τ : Φ, q τ + rankAt m τ = r
     aeval (blockArray h_rank y) (fillingPoly ℤ (leadingWedge h_rank T)) =
       aeval y (fillingPoly ℤ T) := by
   have h_top (τ : Φ) : topBlock h_rank (blockArray h_rank y) τ = 1 :=
-    Matrix.ext fun a b ↦ by simp [topBlock, blockArray, one_apply, Fin.val_inj, eq_comm]
+    Matrix.ext fun a b ↦ by simp [topBlock, blockArray, Matrix.one_apply, Fin.val_inj, eq_comm]
   have h_corner (τ : Φ) (h : Fin (q τ)) : (of fun s t : Fin h ↦ positionEntry h_rank
       (blockArray h_rank y) τ (Fin.castAdd (rankAt m τ) (Fin.castLE h.is_le' s)) t) = 1 :=
-    Matrix.ext fun s t ↦ by simp [blockArray, one_apply, Fin.val_inj, eq_comm]
+    Matrix.ext fun s t ↦ by simp [blockArray, Matrix.one_apply, Fin.val_inj, eq_comm]
   have h_complement : schurComplementArray h_rank (blockArray h_rank y) = y := funext fun _ ↦ by
     simp [schurComplementArray, blockArray, dotProduct, Fin.is_lt, not_le.2]
   rw [aeval_fillingPoly_leadingWedge h_rank _ fun τ ↦ by simp [h_top], h_complement]
