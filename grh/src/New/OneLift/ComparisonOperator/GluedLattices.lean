@@ -335,7 +335,7 @@ lemma DividedLattice.reduceAt_conj_eq_one (L : DividedLattice O) (j : stdLevel E
     have h_inv : O.genIdele.val * (O.genIdele⁻¹.val ^ 2 * ((j⁻¹).val.val.val - 1) d c) ∈ Ô E :=
       mul_mem O.genIntAdele.2 (h_sq j⁻¹ (by simp [hj]) d c)
     rw [Subgroup.coe_inv, U.inv_val_eq_conjTranspose] at h_inv
-    simpa [sq, mul_assoc, one_apply, apply_ite star, @eq_comm n] using star_mem_Ô h_inv
+    simpa [sq, mul_assoc, Matrix.one_apply, apply_ite star, @eq_comm n] using star_mem_Ô h_inv
   have h_div (c d : n) :
       star O.genIdele⁻¹.val * (O.genIdele⁻¹.val ^ 2 * (j.val.val.val - 1) c d) ∈ Ô E := by
     refine mem_Ô.2 fun w ↦ ?_
@@ -363,7 +363,7 @@ lemma DividedLattice.reduceAt_conj_eq_one (L : DividedLattice O) (j : stdLevel E
       sum_mem fun d _ ↦ sum_mem fun c _ ↦
         mul_mem (mul_mem (L.mul_inv_mem a c) (h_div c d)) (h_int d)
     rw [h_conj]
-    simpa [mul_apply, sum_mul, mul_sum, sq, mul_assoc, mul_left_comm, ← Units.coe_star,
+    simpa [Matrix.mul_apply, sum_mul, mul_sum, sq, mul_assoc, mul_left_comm, ← Units.coe_star,
       -coe_star_inv] using h_sum
   refine ⟨mem_stdLevel.2 fun a b ↦ ?_, fun i ↦ (stdLevel.map_eq_one _).2 fun a b ↦ ?_⟩
   · simpa [sub_eq_add_neg, add_mem_cancel_right, ite_mem, Matrix.one_apply] using
@@ -572,7 +572,7 @@ lemma exists_congruenceGroup_inv_eq_one_sub (V : DividedSplitting N m a O z)
       reduction_levelModulus_eq_zero_iff.2
         (by simpa [sq, mul_mul_mul_comm] using mul_mem (h_div i j) (h_div j k))
     ext i k
-    simp [sq, mul_apply, ← hX, ← map_mul, h_mul]
+    simp [sq, Matrix.mul_apply, ← hX, ← map_mul, h_mul]
   obtain ⟨A, hA⟩ : IsUnit (1 - Y) := IsNilpotent.isUnit_one_sub ⟨2, h_sq⟩
   exact ⟨⟨A, by simp [V.mem_congruenceGroup_iff, hA, hY, smul_sub]⟩⁻¹, by simp [hA]⟩
 
@@ -654,7 +654,7 @@ lemma reducedInverse_mul_eq_iff (V : DividedSplitting N m a O z) {L : DividedLat
       reindex ε'.symm (.refl r) ((reindex ε' V.ε G).map O.chosenModulusSq.reduction * x) =
       G.map O.chosenModulusSq.reduction * x.submatrix V.ε id := by
     ext i j
-    simp [mul_apply, ← V.ε.sum_comp]
+    simp [Matrix.mul_apply, ← V.ε.sum_comp]
   have h_reindex_incl : reindex ε'.symm (.refl r)
       (V.genResidue • inclMatrix O.chosenModulusSq.ResidueRing O.incl) =
         V.genResidue • inclMatrix O.chosenModulusSq.ResidueRing (inr ∘ z) := by
@@ -826,7 +826,7 @@ lemma exists_isGlued (V : DividedSplitting N m a O z)
     -- and this determines it.
     have h_one : V.genResidue • (1 - x.submatrix (V.ε ∘ inr ∘ z) id) = 0 := by
       ext i j
-      simpa [G, glueMatrix, apply_ite, mul_apply, inclMatrix, diagonal_apply, mul_sub,
+      simpa [G, glueMatrix, apply_ite, Matrix.mul_apply, inclMatrix, diagonal_apply, mul_sub,
         Matrix.one_apply, sub_eq_zero] using
         congrFun₂ ((V.reducedInverse_mul_eq_iff hε' hL x).1 hx).symm (inr (z i)) j
     obtain ⟨Y, hY⟩ : ∃ Y : V.congruenceGroup,
@@ -840,10 +840,10 @@ lemma exists_isGlued (V : DividedSplitting N m a O z)
     obtain ⟨K, hK⟩ := V.exists_genResidue_mul_stackOverGenScalar_eq_zero s
     have h_cols (x y : N) (hy : y ∉ range V.dividedEmb) :
         V.genResidue * (D.map O.chosenModulusSq.reduction * K.val) x y = 0 := by
-      rw [hQ, Matrix.mul_assoc, mul_apply]
+      rw [hQ, Matrix.mul_assoc, Matrix.mul_apply]
       simp [mul_add, mul_sum, mul_left_comm V.genResidue, hK _ y hy]
     refine ⟨K, ?_⟩
-    simpa [hL, G, glueMatrix, ← submatrix_map, ε'.surjective.forall, mul_apply, -map_apply,
+    simpa [hL, G, glueMatrix, ← submatrix_map, ε'.surjective.forall, Matrix.mul_apply, -map_apply,
       fromBlocks_map] using h_cols
 
 end DividedSplitting
