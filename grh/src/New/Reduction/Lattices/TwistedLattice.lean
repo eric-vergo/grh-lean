@@ -401,7 +401,7 @@ lemma exists_matrix_elim_mem_lattice {n n' : ℕ} {y : Fin n → V} {z : Fin n' 
   · have h_lift : L.lift ξ (∑ k : Fin n, u i k • y k) ∈ L.lattice ξ ι :=
       mem_integralVectors.1 (hu i) ξ hξ
     simpa [← ValuationSubring.algebraMap_apply] using h_lift
-  · simpa [one_apply] using hz i
+  · simpa [Matrix.one_apply] using hz i
 
 /-- Let `L` be a twisted lattice with maps `Θ_ξ = L.lift ξ`. Let `l = ι.prime`, so that
 `‖ι x‖ = ‖ι.iso x‖` is the `l`-adic absolute value of `x` under `ι.iso : ℂ ≃ ℚ̄_l`, and let
