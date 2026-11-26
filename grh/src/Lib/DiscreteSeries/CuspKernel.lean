@@ -132,7 +132,9 @@ lemma kernel_operator_idempotent {G : Type*} [Group G] [TopologicalSpace G] [IsT
   calc T (T φ) y
     _ = ∫ x : G, e x * ∫ g : G, e g * φ (y * (x * g)) := by simp only [hT, mul_assoc]
     _ = ∫ g : G, (∫ x : G, e x * e (x⁻¹ * g)) * φ (y * g) :=
-      integral_smul_integral_eq_integral_conv_smul id h_ker.integrable h_ker.integrable h_bounded
+      integral_smul_integral_eq_integral_conv_smul (F := fun g : G ↦ φ (y * g))
+        (μ := volume) (ν := volume) (id : G → G) h_ker.integrable h_ker.integrable h_bounded
+        measurable_id
     _ = T φ y := by simp only [h_ker.convolution_self, hT]
 
 /-- Left translation by `a`, where `(a, z) ∈ D`, preserves the space `V` of the functions fixed by
@@ -250,7 +252,7 @@ lemma eq_zero_of_mem_fixed_invariant {G : Type*} [Group G] [TopologicalSpace G]
     have hθ : |θ| * (∫ g : G, ‖e g‖ * ℓ g) = c / n := by simp [θ, c, abs_div, field]
     exact eq_zero_of_map_phase_mul_eq_zero hT hℓ hH_lip (by rwa [hθ, div_lt_one (by positivity)])
       (fun _ ↦ rfl) ((hV φ).1 hφ).1 h_zero
-  exact h_inj.iterate n (by simpa using show (S ^ n) ψ = 0 by simp [h_nil])
+  exact h_inj.iterate n (by simpa [← FunLike.coe_pow_eq_iterate] using show (S ^ n) ψ = 0 by simp [h_nil])
 
 /-- Vanishing of constant terms. Let `G` be a second countable locally compact group with left Haar
 measure and let `e` be a minimal idempotent kernel (continuous, integrable, self-adjoint, with
