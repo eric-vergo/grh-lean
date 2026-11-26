@@ -337,7 +337,7 @@ lemma integral_classCutoff_integral_mul [WeilData E]
         (fun p : Y.besselReal × GInf E ε ↦ y (p.2, h.classPoint c)) (haar.prod volume) := by
       fun_prop
     simpa only [F, smul_mul_assoc, mul_assoc] using
-      (integrable_mul_comp_inv_mul hW_int he g₀⁻¹).mul_bdd hy_meas (.of_forall fun p ↦ hC _)
+      (integrable_mul_comp_inv_mul (R := Y.besselReal) (μ := volume) (ν := haar) hW_int he g₀⁻¹).mul_bdd hy_meas (.of_forall fun p ↦ hC _)
   -- The kernel `e` reproduces `y`.
   have h_fix (s : Y.besselReal) : ∫ x : GInf E ε, F (s, x) = W s * y (s * g₀, h.classPoint c) := by
     rw [← congrFun (hy.realConv_eq he) (s * g₀, h.classPoint c), realConv, ← integral_const_mul,
@@ -346,7 +346,8 @@ lemma integral_classCutoff_integral_mul [WeilData E]
   calc _ = ∫ x, (S.classCutoff c (h.realHomeomorph x)).toReal • ∫ s, F (s, x) ∂haar := by
         simp only [F, smul_mul_assoc, ← integral_mul_const, mul_assoc, mul_left_comm (W _)]
     _ = ∫ s, (S.classCutoff c (h.realHomeomorph s.1)).toReal • (∫ x, F (s, x)) ∂haar :=
-        integral_cutoff_swap volume haar (h.classUnipotentToReal c) (by fun_prop)
+        integral_cutoff_swap (R := Y.besselReal) (F := F)
+          (β := fun x ↦ S.classCutoff c (h.realHomeomorph x)) volume haar (h.classUnipotentToReal c) (by fun_prop)
           (h.tsum_classCutoff_realHomeomorph c) (by fun_prop) hF_inv hF_int
     _ = _ := by simp only [h_fix]
 
