@@ -201,7 +201,7 @@ private lemma isPrimitiveRoot_tateRoot_tateGen {c : C} {K : Type} [CommRing K] [
     rfl
   have h_root : (cyclotomic ℓ K).IsRoot ((tateRoot ψ (tateGen g c (.of ⟨⟩))).val : K) := by
     rw [h_val, ← map_cyclotomic ℓ φ]
-    exact isRoot_cyclotomic_compatibleRootsOfUnity.map
+    exact isRoot_cyclotomic_compatibleRootsOfUnity.map φ
   exact IsPrimitiveRoot.coe_units_iff.mp (isRoot_cyclotomic_iff.mp h_root)
 
 /-- Let A be local and absolutely integrally closed, with the prime ℓ invertible in A. If ℓ kills

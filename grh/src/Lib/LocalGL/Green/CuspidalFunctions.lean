@@ -499,7 +499,7 @@ lemma moebius_and_greenCuspidal_lsmul (η : K → ℂ) :
     · intro W hW
       have h_lt : finrank F (S W) < finrank F V :=
         (S W).finrank_lt fun h ↦ hW (Subtype.ext (top_unique h.ge))
-      rw [coeff_monomial, ite_eq_right (h_lt.trans_le hn).ne]
+      rw [coeff_monomial_apply, ite_eq_right (h_lt.trans_le hn).ne]
   -- `|W| ^ j` counts the `j`-tuples `v` in `W`; for `j < m` no `v` spans `V`.
   have h_root (j : ℕ) (hj : j < finrank F V) : M.eval ((Nat.card F ^ j : ℕ) : ℂ) = 0 := by
     have h_count (W : StableSubspace g) : ((Nat.card F ^ j : ℕ) : ℂ) ^ finrank F (S W) =

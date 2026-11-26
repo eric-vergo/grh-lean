@@ -279,7 +279,7 @@ lemma IsLine.of_acyclic {Y : TimesBNat C ⥤ Type 1} {ψ : C ⥤ C'} {A : C} {E 
             (r z).app D (.of (x, k.map .succ)) :=
           map_sub ((r z).app D).hom _ _
       _ = (r (F'.map g z - z)).app D (.of (x, k)) := by
-          rw [r_app, r_app, r_app D x (k.map .succ), h_square, map_sub, F'.map_comp_apply]
+          rw [r_app, r_app, r_app, h_square, map_sub, F'.map_comp_apply]
   have hq (y : (ψ ⋙ F').obj A) : S.g ≫ homOfValue (.restrict _ (ψ ⋙ F')) q y = r (F'.map i y) := by
     refine hom_ext fun D ⟨x, k⟩ ↦ (homOfValue_app (c := .restrict ..) q y D _).trans ?_
     -- Move `γ^k` across `q` (naturality; `ℕ` acts trivially on `reprBy A`), then use `hq_eq_comp`
