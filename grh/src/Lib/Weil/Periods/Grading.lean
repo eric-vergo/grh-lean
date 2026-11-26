@@ -427,7 +427,7 @@ f(Gr(i, σi)) · A(σi, p), where σ is the dual index `New.Grading.stringRevers
 lemma map_gradedGram_mul_apply {R κ : Type} {M : E} [CommRing R] (f : E →+* R) (A : Matrix ι κ R) :
     ∀ (i : ι) (p : κ), ((gradedGram Y.indexEquiv M).map f * A) i p =
       f (gradedGram Y.indexEquiv M i (Y.stringReversal i)) * A (Y.stringReversal i) p := by
-  simp [gradedGram, mul_apply, reindex_equiv Y.indexEquiv, apply_ite f, ← Fin.rev_eq_iff,
+  simp [gradedGram, Matrix.mul_apply, reindex_equiv Y.indexEquiv, apply_ite f, ← Fin.rev_eq_iff,
     stringReversal, Matrix.one_apply]
 
 /-- The entry a of the row vector y J is y(σa) J(σa, a), with σ the dual index
@@ -670,7 +670,7 @@ lemma ratCoordMatrix_inr (g : Gf E ι) (a b : ι) :
   -- The finite part is `ratCoordMatrixFin_snd`; the infinite part is that of `V.x * V.x⁻¹ = 1`.
   have h_inf : ((V.x.1 * V.x⁻¹.1) a b).1 = ((1 : Matrix ι ι (𝔸 E)) a b).1 := by rw [V.x.mul_inv]
   refine Prod.ext ?_ (by simp [ratCoordMatrixFin_snd (1, g)])
-  simpa [ratCoordMatrix_eq, mul_apply, Prod.fst_sum, funext_iff, apply_ite,
+  simpa [ratCoordMatrix_eq, Matrix.mul_apply, Prod.fst_sum, funext_iff, apply_ite,
     Matrix.one_apply] using h_inf
 
 /-- The finite part x_f of the point of a space (J, x) satisfies x_fᴴ J x_f = 1 over the finite
@@ -754,6 +754,8 @@ variable {ε : n → ℤˣ} {A : ℕ} {J : Matrix n n ℂ}
 `New.DiscreteSeries.SignFrame J ε`, so that pᴴJp = diag(ε). -/
 def DiscreteSeries.frameEquiv : U J ≃ₜ* USign ε :=
   ContinuousMulEquiv.mk (U.conj p.matrix p.gram_eq).symm
+    (((continuous_const.mul continuous_subtype_val).mul continuous_const).subtype_mk _)
+    (((continuous_const.mul continuous_subtype_val).mul continuous_const).subtype_mk _)
 
 /-- The function g ↦ c_λ(p⁻¹gp) on U(J), for l = 2λ and the frame p of
 `New.DiscreteSeries.SignFrame J ε`, so that pᴴJp = diag(ε). -/
