@@ -249,7 +249,9 @@ lemma scaledSiegelConst_mul_decayConst_le [S.IsAdmissible] :
       div_le_one_of_le₀ (le_self_pow₀ hs (by grind [S.ten_pow_five_le_varrho])) (by positivity)
     have h_inv : x⁻¹ ≤ S.b ^ 23 * S.b ^ (60 * 𝔰.n) := by
       grw [inv_div, div_le_self (by positivity) (one_le_pow₀ hQ), S.M_le_b_pow, S.N_le]
-    grw [div_le_self (by positivity) (by bound), h_two, h_s, h_inv, mul_one, ← pow_add, ← pow_mul,
+    have h_denom : (1 : ℝ) ≤ 2 * S.M ^ (𝔰.ϱ * (2 * 𝔰.ϱ + 1)) :=
+      one_le_mul_of_one_le_of_one_le (by norm_num) (one_le_pow₀ hM)
+    grw [div_le_self (by positivity) h_denom, h_two, h_s, h_inv, mul_one, ← pow_add, ← pow_mul,
       ← pow_add]
     refine pow_le_pow_right₀ hb ?_
     obtain ⟨m, hm⟩ : ∃ m : ℕ, 𝔰.ϱ = 10 ^ 5 + m := exists_add_of_le S.ten_pow_five_le_varrho
