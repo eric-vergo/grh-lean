@@ -151,9 +151,9 @@ lemma RealPlace.gram_definiteCols_mul_eq {m : Type} {Y : Matrix 𝔰.BesselIndex
     (𝔰.definiteColsᴴ * Y)ᴴ * (𝔰.definiteColsᴴ * Y) = Yᴴ * 𝔰.J₁ * Y := by
   obtain ⟨h_eStar, h_z⟩ :
       (∀ (a : Fin 𝔰.ϱ) (l : m), Y (eStar a) l = 0) ∧ ∀ l : m, Y 𝔰.z l = 0 := by
-    simpa [← ext_iff, inclMatrix, splitGram, middleGram, mul_apply, Matrix.one_apply,
+    simpa [← ext_iff, inclMatrix, splitGram, middleGram, Matrix.mul_apply, Matrix.one_apply,
       forall_fin_succ'] using hY
-  simp [← Matrix.ext_iff, inclMatrix, splitGram, middleGram, mul_apply, Matrix.one_apply, h_eStar,
+  simp [← Matrix.ext_iff, inclMatrix, splitGram, middleGram, Matrix.mul_apply, Matrix.one_apply, h_eStar,
     h_z]
 
 /-- The left inverse of `frameCols` that vanishes on the orthogonal complement of the negative
@@ -178,12 +178,12 @@ lemma RealPlace.frameCols_J₁_gram :
     𝔰.frameColsᴴ * 𝔰.J₁ * 𝔰.frameCols = diagonal (Pi.single 𝔰.top (-1)) := by
   ext a b
   cases a using lastCases <;> cases b using lastCases <;>
-    simp [inclMatrix, splitGram, middleGram, mul_apply, Matrix.one_apply, diagonal_apply,
+    simp [inclMatrix, splitGram, middleGram, Matrix.mul_apply, Matrix.one_apply, diagonal_apply,
       (castSucc_lt_last _).ne']
 
 lemma RealPlace.realFrameGram_eq :
     realFrameGram γ = 𝔰.frameColsᴴ * 𝔰.J₁ * (γ.val.val * 𝔰.frameCols) := by
-  simp [← Matrix.ext_iff, inclMatrix, frameGram, mul_apply, Matrix.one_apply]
+  simp [← Matrix.ext_iff, inclMatrix, frameGram, Matrix.mul_apply, Matrix.one_apply]
 
 /-- If the vector `frameCols x = γ frameCols x'` lies in the span of the frame `f` and in the span
 of `γ f`, then its products with the frame `γ f` are `(0, …, 0, -x' top)`. That is,
@@ -246,12 +246,12 @@ lemma RealPlace.exists_eq_one_sub_J₁_mul {m : Type} {W : Matrix 𝔰.BesselInd
   obtain ⟨h_eStar, h_X₀, -⟩ : (∀ (b : Fin 𝔰.ϱ) (l : m), W (eStar b) l = -W (.inl b) l) ∧
       (∀ (x : 𝔰.κ) (l : m), W (𝔰.indexX₀ x) l = -W (𝔰.indexX₀ x) l) ∧
       ∀ (b : Fin 𝔰.ϱ) (l : m), W (.inl b) l = -W (eStar b) l := by
-    simpa [← ext_iff, J₁_eq, inclMatrix, mul_apply, Matrix.one_apply, sum_univ_castSucc] using hW
+    simpa [← ext_iff, J₁_eq, inclMatrix, Matrix.mul_apply, Matrix.one_apply, sum_univ_castSucc] using hW
   have h_X₀_zero (x : 𝔰.κ) (l : m) : W (.inr (.inl (.inl x))) l = 0 := self_eq_neg.1 (h_X₀ x l)
   refine ⟨of fun a l ↦ lastCases (W 𝔰.z l / 2) (fun b ↦ W (.inl b) l) a, ?_⟩
   ext b l
   obtain b | (b | ⟨⟩) | b := b <;>
-    simp [J₁_eq, inclMatrix, mul_apply, Matrix.one_apply, sum_univ_castSucc, h_eStar,
+    simp [J₁_eq, inclMatrix, Matrix.mul_apply, Matrix.one_apply, sum_univ_castSucc, h_eStar,
       h_X₀_zero, one_add_one_eq_two, mul_div_cancel₀]
 
 /-- A vector of the negative space `y V₋` is determined by its products for `J₁` with the frame
@@ -312,7 +312,7 @@ lemma RealPlace.norm_det_eq_norm_det_mul_inclMatrix {n m : ℕ} {e : Fin m → F
   have hx' : (of x').det = 1 := by
     simp [det_of_isLowerTriangular (of x') fun a b hab ↦ (h_above a b hab).2, h_lead]
   have h_dets : ‖N.det‖ = ‖M.det‖ := by
-    simpa [det_mul, det_transpose, hx, hx'] using congrArg (‖det ·‖) h_mat
+    simpa only [det_mul, det_transpose, norm_mul, hx, hx', norm_one, mul_one] using congrArg (‖det ·‖) h_mat
   rw [h_dets, det_one_add_mul_comm, Matrix.mul_sub, hp, add_sub_cancel]
 
 end Frame
@@ -438,7 +438,7 @@ lemma RealPlace.inclMatrix_mul_dualProducts (hδ : (subframeBlock hi Z).det ≠ 
     (inclMatrix ℂ (subframeIndex hi))ᴴ * dualProducts hi Z = 1 := by
   rw [dualProducts, ← Matrix.mul_assoc, ← mul_nonsing_inv _ hδ.isUnit]
   congr 1
-  simp [← Matrix.ext_iff, inclMatrix, mul_apply, Matrix.one_apply]
+  simp [← Matrix.ext_iff, inclMatrix, Matrix.mul_apply, Matrix.one_apply]
 
 /-- If `Z` is the matrix of the products of the two frames, the products of the frame with the
 image under `γ` of the subframe `e₁, …, e_i, z` are the columns of `Z` at its indices. -/
@@ -577,7 +577,7 @@ lemma apply_eq_frameVector_dotProduct (h : IsTriangularBasis hi y Z ω L)
     simp [frameVector]
   rw [← h.conjTranspose_subframeCols_mul_J₁_mul_eq hδ, ← U.gram_invariant y⁻¹, Matrix.mul_assoc,
     ← h_col]
-  simp only [mul_apply, conjTranspose_apply, dotProduct, col_apply, Pi.star_apply]
+  simp only [Matrix.mul_apply, conjTranspose_apply, dotProduct, col_apply, Pi.star_apply]
 
 /-- If the frame vectors `y⁻¹ f_a` have length at most `ρ` and the block of `Z` at the subframe
 `e₁, …, e_i, z` is invertible, then `|det L| ≤ ρ ^ (i + 1)` for every triangular basis `(ω, L)`
@@ -991,7 +991,7 @@ theorem RealPlace.exists_majorant_volumeRatio_inv_pow (hi_le : i ≤ 𝔰.ϱ) {�
         G + (L₁ᴴ * of A + c)ᴴ * (L₁ᴴ * of A + c) := by
       rw [differenceX₀_eq_add hi_le hδ h_shift]
       ext a b
-      simp [G, c, L₁, v₀, mul_apply, vecMulVec_apply, sum_univ_castSucc, h_zero, add_comm,
+      simp [G, c, L₁, v₀, Matrix.mul_apply, vecMulVec_apply, sum_univ_castSucc, h_zero, add_comm,
         add_assoc]
     rw [h_split] at h_lower
     have h_pos : 0 < ‖(G + (L₁ᴴ * of A + c)ᴴ * (L₁ᴴ * of A + c)).det‖ := norm_pos_iff.2
