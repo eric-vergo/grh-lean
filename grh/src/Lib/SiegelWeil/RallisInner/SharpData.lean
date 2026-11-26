@@ -603,7 +603,7 @@ lemma SiegelWeil.IsSharpFn.isSharp (hΨ : IsSharpFn S T b 𝔪 J Ψ)
     simp [vacuumDatum, projOn_schrodingerOp_vacElem, hB]
   · -- the coefficient at a point `g` integral off `𝔪 𝔪̄`
     split_ifs with g_lvl
-    · exact congrArg _ (hΨ.fixes g g_lvl.1)
+    · exact congrArg (dataInner (S.hom T) (vacuumDatum S T 𝔪 Ψ).1) (hΨ.fixes g g_lvl.1)
     by_cases g_int : g ∈ stdLevel E n
     · exact hΨ.weilMatrixCoeff_eq_zero_of_mem_stdLevel_of_notMem ⟨g, g_int⟩ fun h_mem ↦
         g_lvl ⟨h_mem, g_int⟩
