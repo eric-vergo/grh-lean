@@ -8,6 +8,7 @@ import VersoManual
 import VersoBlueprint
 import VersoBlueprint.Commands.Graph
 import VersoBlueprint.Commands.Summary
+import GrhBlueprint.Notices
 import GrhBlueprint.Parts.Orientation
 import GrhBlueprint.Parts.ShortForms
 import GrhBlueprint.Parts.Spanning
@@ -61,3 +62,5 @@ The five conclusions are stated in the following declarations.
 {blueprint_graph}
 
 {blueprint_summary}
+
+{include 0 GrhBlueprint.Notices}
