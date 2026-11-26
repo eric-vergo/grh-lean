@@ -133,7 +133,7 @@ theorem leGramFibre_haar :
 omit [DecidableEq ι] [DecidableEq n] in
 theorem sum_norm_sq_eq_re_trace (Y : Matrix ι n ℂ) :
     ∑ a : ι, ∑ b : n, ‖Y a b‖ ^ 2 = (Yᴴ * Y).trace.re := by
-  simp [trace, mul_apply, Finset.sum_comm (s := (Finset.univ : Finset ι)), conj_mul',
+  simp [trace, Matrix.mul_apply, Finset.sum_comm (s := (Finset.univ : Finset ι)), conj_mul',
     ← Complex.ofReal_pow]
 
 omit [DecidableEq ι] in
@@ -186,8 +186,14 @@ theorem leFibreMeasure_conjTranspose_mul_mul {E : Matrix ι n₁ ℂ} {R : Matri
   have h_proj (t : Matrix n₁ n ℂ) (x : Matrix n₂ n ℂ) : Eᴴ * J * (J * E * t + R * x) = t := by
     simp [Matrix.mul_add, ← Matrix.mul_assoc, h_orth, Matrix.mul_assoc _ J J,
       IsHermitianInvolution.mul_self, hE]
-  exact .of_measurePreserving (measurePreserving_mul_mul_add_mul hE hR h_orth h_card)
-    (by fun_prop) h_proj fun _ ↦ Continuous.continuousAt (by fun_prop)
+  have hπ : Continuous fun y : Matrix ι n ℂ ↦ Eᴴ * J * y := by fun_prop
+  refine LeFibreMeasure.of_measurePreserving
+    (φ := fun p : Matrix n₁ n ℂ × Matrix n₂ n ℂ ↦ J * E * p.1 + R * p.2)
+    (π := fun y : Matrix ι n ℂ ↦ Eᴴ * J * y) (ρ := volume) (b := M)
+    (measurePreserving_mul_mul_add_mul hE hR h_orth h_card)
+    hπ.measurable h_proj fun x ↦ ?_
+  change ContinuousAt (fun t : Matrix n₁ n ℂ ↦ J * E * t + R * x) M
+  fun_prop
 
 /-- Choosing `g` with law `m` and completing `g E₁` by further columns with the Lebesgue measure, in
 the places given by `e` (`joinCols`), is the same as completing `E₁` first and then moving all
@@ -276,7 +282,7 @@ theorem LeGramFibre.append {E : Matrix ι n ℂ} {E₁ : Matrix ι n₁ ℂ} {E�
     exists_measurePreserving_hermBlocks e
   have φ_gram (Y : Matrix ι n ℂ) : (π₁ Y, π₂ Y) = φ (gramCoords J Y) := by
     rw [φ_apply, hermOfReal_gramCoords IsHermitianInvolution.isHermitian]
-    simp [π₁, π₂, split, joinCols, gramCoords, skewCoords, mul_apply, ← ext_iff]
+    simp [π₁, π₂, split, joinCols, gramCoords, skewCoords, Matrix.mul_apply, ← ext_iff]
   have h_base : (gramCoords J E₁, E₁ᴴ * J * E₂, gramCoords J E₂) = φ (gramCoords J E) := by
     simp only [← φ_gram, ← hE, π₁, π₂, split, LinearEquiv.symm_apply_apply]
   have h_both : LeFibreMeasure volume (volume.prod volume) (fun Y ↦ φ (gramCoords J Y))
@@ -308,7 +314,7 @@ theorem LeGramFibre.append_vector {E : Matrix ι n₁ ℂ} {v : ι → ℂ} (e :
       IsHermitianInvolution.isHermitian.im_star_dotProduct_mulVec_self y
     have h_norm : ((toCol ι ℂ y)ᴴ * J * toCol ι ℂ y) () () = star y ⬝ᵥ J *ᵥ y := by
       rw [Matrix.mul_assoc, h_col]
-      simp [mul_apply, dotProduct]
+      simp [Matrix.mul_apply, dotProduct]
     rw [toCorner_apply, mulVec_mulVec]
     refine Prod.ext rfl (Matrix.ext fun _ _ ↦ ?_)
     simp [gramCoords, skewCoords, h_norm, h_real]
@@ -330,7 +336,9 @@ theorem leGramFibre_dirac [IsEmpty n] (E : Matrix ι n ℂ) : LeGramFibre J E (d
       by simp [volume_eq_dirac_of_isEmpty E, volume_eq_dirac_of_isEmpty (gramCoords J E)]⟩
   have h_fibre : LeFibreMeasure volume volume (gramCoords J) (gramCoords J E)
       ((dirac () : Measure Unit).map fun _ ↦ E) :=
-    .of_measurePreserving h_vol (by fun_prop) (fun _ _ ↦ Subsingleton.elim _ _)
+    LeFibreMeasure.of_measurePreserving (φ := fun _ : Matrix n n ℝ × Unit ↦ E)
+      (π := gramCoords J) (ρ := dirac ()) (b := gramCoords J E) h_vol
+      (continuous_gramCoords J).measurable (fun _ _ ↦ Subsingleton.elim _ _)
       fun _ ↦ continuousAt_const
   simpa [LeGramFibre] using h_fibre
 
@@ -365,7 +373,7 @@ theorem LeGramFibre.insert {p q : ι → Prop} [DecidablePred p] [DecidablePred 
     · exact joinCol_inl ..
     · exact (joinCol_inr ..).trans (Pi.single_apply j 1 i)
   have h_products (y : ι → ℂ) : Eᴴ *ᵥ y = fun i : Subtype p ↦ y i :=
-    funext fun i ↦ by simp [E, inclMatrix, mulVec, dotProduct, one_apply]
+    funext fun i ↦ by simp [E, inclMatrix, mulVec, dotProduct, Matrix.one_apply]
   rw [← h_join]
   refine h_first.append_vector _ ?_ (h_fix.mono fun g hg ↦
     (mul_inclMatrix g.val.val _).trans (Matrix.ext fun i k ↦ hg i k k.2))
