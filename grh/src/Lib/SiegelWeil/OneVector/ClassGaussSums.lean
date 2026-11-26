@@ -164,7 +164,10 @@ lemma enorm_classGaussSum_sq_le (hJ : IsUnimodular P.integers J)
     have h_integrable : Integrable (uncurry fun (y d : κ → A) ↦ conj (F y) * F (y + d))
         ((volume.restrict M).prod (volume.restrict M)) := by
       rw [Measure.prod_restrict]
-      exact ContinuousOn.integrableOn_compact (M_compact.prod M_compact) (by fun_prop)
+      have hc : Continuous (fun q : (κ → A) × (κ → A) ↦ conj (F q.1) * F (q.1 + q.2)) :=
+        (Complex.continuous_conj.comp (F_cont.comp continuous_fst)).mul
+          (F_cont.comp (continuous_fst.add continuous_snd))
+      exact hc.continuousOn.integrableOn_compact (M_compact.prod M_compact)
     rw [← integral_conj, ← integral_mul_const, ← integral_integral_swap h_integrable]
     refine setIntegral_congr_fun M_open.measurableSet fun y hy ↦ ?_
     rw [integral_const_mul, setIntegral_add_left_eq_self_of_mem F hy]
