@@ -139,12 +139,13 @@ lemma exists_derivative_dvd_p_pow :
   have h_coeff : ((p ^ m : ℕ) : WittFq k.f) ∣ (k.e : WittFq k.f) := by
     have h_top : (X ^ k.e - R).derivative.coeff (k.e - 1) = (k.e : WittFq k.f) := by
       simp [coeff_derivative, hR_deg, NeZero.one_le]
-    exact ⟨(rem x).val.coeff (k.e - 1), by rw [← h_top, h_eq, coeff_smul, nsmul_eq_mul]⟩
+    exact ⟨(rem x).val.coeff (k.e - 1), by rw [← h_top, h_eq, Polynomial.coeff_smul, nsmul_eq_mul]⟩
   -- pass from `Λ` to `O_C` by `θ`, and on to `ℕ` by `p`-adic norms
   have h_coeff_OC : ((p ^ m : ℕ) : OC) ∣ (k.e : OC) := by
     simpa using (theta.comp (algebraMap (WittFq k.f) Ainf)).map_dvd h_coeff
   have h_norm : ‖((k.e : ℤ) : ℚ_[p])‖ ≤ (p : ℝ) ^ (-(m : ℤ)) := by
     simpa [← PadicComplex.norm_extends', valRingCp.dvd_iff_norm_le, norm_p_eq_inv] using h_coeff_OC
+  rw [← Nat.padicValNat_def]
   exact_mod_cast (Padic.norm_int_le_pow_iff_dvd _ _).mp h_norm
 
 /-- The subgroup Γ', with the restriction of j, is a group over G_p: its image is open. -/

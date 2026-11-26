@@ -204,7 +204,7 @@ lemma not_dvd_det_of_frobenius {Q ρ : Matrix d d Ainf} {B : Matrix d d c.S}
       K * R (det C) ∣ K ^ p ^ n ∧ Q.map π *ᵥ C.map R *ᵥ a ^ p ^ n = 0 := by
     clear hs
     induction n with
-    | zero => exact ⟨1, by simpa⟩
+    | zero => exact ⟨1, by simpa [-map_zero, RingHom.map_zero]⟩
     | succ n ih =>
       obtain ⟨C, hCK, hCa⟩ := ih
       -- the Frobenius `(ofAdd 1, 1)` acts on `OFlat` as `frobEnd` and commutes with `R`
@@ -257,7 +257,7 @@ lemma mul_smul_mul_smul_eq_smul_map_of_mul_eq {U Z : Matrix d d BPlus} {Q : Matr
     (toRingHom FrobGal BPlus m).mapMatrix Z)) = _
   rw [← map_mul]
   ext
-  simp [smul_def (A := BPlus), mul_apply, Finset.mul_sum, mul_left_comm (ainfToBPlus _), *,
+  simp [smul_def (A := BPlus), Matrix.mul_apply, Finset.mul_sum, mul_left_comm (ainfToBPlus _), *,
     ← mul_assoc, ← mul_pow]
 
 /-- Let `c` be a chart, let `E` be the image of its series X^e A + p (ξ times a unit),
