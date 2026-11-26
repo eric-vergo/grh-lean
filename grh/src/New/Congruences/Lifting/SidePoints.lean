@@ -35,6 +35,7 @@ See `New.Congruences.Lifting.SafeMoves` for related work.
 
 noncomputable section
 
+
 /-! ## Low and far windows of jumps, the gap condition, valuation sums -/
 
 section Windows
@@ -708,17 +709,28 @@ lemma exists_isOperatorOfCost_and_mem_deepElements (I : Finset ((_ : ℕ) × ℤ
     let low (b : ℕ) (u : ℤ) : ℤ := if b = a ∧ o' b u = n + 1 then n else o' b u
     have cover_low (b : ℕ) (u : ℤ) (hu : u ∈ S.jumpSet (i.stepBack b)) (m : ℤ) (h_le : o b u ≤ m)
         (h_lt : m < low b u) : (⟨b, m⟩ : Σ _ : ℕ, ℤ) ∈ I := by
-      refine mem_of_mem_insert_of_ne (cover b u hu m h_le (by grind)) fun h_eq ↦ ?_
+      have h_low_le : low b u ≤ o' b u := by
+        dsimp only [low]
+        split_ifs with h
+        · omega
+        · exact le_rfl
+      refine mem_of_mem_insert_of_ne (cover b u hu m h_le (h_lt.trans_le h_low_le)) fun h_eq ↦ ?_
       obtain ⟨rfl, rfl⟩ : b = a ∧ m = n := by simpa using h_eq
       -- here `m + 1 < o' b u`, so the pair `(b, m + 1)` contradicts the choice of `m`
+      have h_succ : m + 1 < o' b u := by
+        by_contra! h_le
+        have h_eq : o' b u = m + 1 := by omega
+        simpa [low, h_eq] using h_lt
       have succ_mem : (⟨b, m + 1⟩ : Σ _ : ℕ, ℤ) ∈ I :=
-        mem_of_mem_insert_of_ne (cover b u hu (m + 1) (by lia) (by grind)) (by simp)
+        mem_of_mem_insert_of_ne (cover b u hu (m + 1) (by omega) h_succ) (by simp)
       exact (lt_add_one m).not_ge (q_max _ succ_mem)
     have deep_low : A x ∈ S.deepElements i low := A_deep hx low cover_low
     -- `B` keeps the depth `low`; it remains to raise the lowered orders
     obtain ⟨B_const, B_deep⟩ : B (A x) ∈ S.deepElements i low := B_cost.mem_deepElements deep_low
     refine ⟨B_const, fun g ↦ mem_withOrders_of_mem_hodgeFil (B_deep g) fun b u hu h_lt μ hμ ↦ ?_⟩
-    obtain ⟨rfl, eq_succ⟩ : b = a ∧ o' b u = n + 1 := by grind
+    obtain ⟨rfl, eq_succ⟩ : b = a ∧ o' b u = n + 1 := by
+      by_contra h
+      simpa [low, h] using h_lt
     rw [eq_succ]
     refine B_step (A x) μ hμ.1 (fun γ ↦ ?_) g
     obtain ⟨-, low_values⟩ := deep_low.2 γ
