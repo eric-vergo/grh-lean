@@ -343,7 +343,7 @@ lemma exists_arc (C : U.GraphClosure γ ν) (z : C.scheme.left) :
   obtain ⟨κ, f, hκ, h_meet⟩ := exists_finite_analyticFamily_isLevelIso D ν
     (nonZeroDivisors.coe_ne_zero 𝔫)
   -- In each family some member `b k` is generic: its point specialises to those of all members.
-  choose b hb_mem hb using fun k ↦ exists_generic_member C.scheme.hom
+  choose b hb_mem hb using fun k ↦ exists_generic_member (U := (f k).domain ×ˢ Set.univ) C.scheme.hom
     ((f k).domain.isOpen.prod isOpen_univ)
     ((f k).isConnected.prod isConnected_univ) fun p hp ↦ C.holomorphicAt_point 0 p hp.1
   have h_dense : IsDenseFamily fun k ↦ (C.point ((f k).ballPoint 0 (b k))).left := by
