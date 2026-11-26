@@ -594,7 +594,7 @@ lemma PadicTest.le_ker_of_tiltNearZeros_le_ker {d : PadicTest} (f : c ⟶ d)
   -- Then `f e` lies in the Jacobson radical, `1 - f e` is a unit, and `p ^ n ∣ (1 - f e) * f r`
   -- gives `p ^ n ∣ f r`.
   have h_unit : IsUnit (1 - f.toRingHom e) := by
-    simpa [neg_add_eq_sub] using mem_jacobson_bot.mp (HenselianRing.jac h_mod) (-1)
+    simpa [neg_add_eq_sub] using Ring.mem_jacobson_iff.mp (HenselianRing.jac h_mod) (-1)
   exact h_unit.dvd_mul_left.mp (by simpa using map_dvd f.toRingHom h_dvd')
 
 /-- For an ideal `I` of the generic ring `R[1/p]` of `c`, the quotient of the tilt `R♭` by the
@@ -655,8 +655,8 @@ def tiltTheory {p : ℕ} (Ω : Type) [CommRing Ω] [InvertsPrime Ω p] [Algebra 
   -- The maps that kill `I` are those whose tilt factors, uniquely, through the perfect algebra
   -- `TiltRing c ⧸ J c I`.
   have h_supp (c : PadicTest) (I : Ideal c.GenericRing) :=
-    surjective_and_map_eq_zero_of_quotient_sieve tilt
-      (R := killingMaps (ringOf (genericTestOver Ω)) I)
+    surjective_and_map_eq_zero_of_quotient_sieve tilt (F := moduleCoeff (tensorCoeff M))
+      (A := c) (b := CommAlgCat.of OFlat (c.TiltRing ⧸ J c I)) (R := killingMaps (ringOf (genericTestOver Ω)) I)
       (CommAlgCat.ofHom (mkₐ OFlat (J c I)))
       (fun {d} f hf ↦ by
         have h_kill : ∀ y ∈ J c I, (tilt.map f).hom y = 0 := fun y ⟨a, ha, hy⟩ ↦
@@ -673,15 +673,16 @@ def tiltTheory {p : ℕ} (Ω : Type) [CommRing Ω] [InvertsPrime Ω p] [Algebra 
       simp [natCast_eq_zero_of_algebra_oFlat, ← Nat.cast_smul_eq_nsmul OFlat])
     -- Zariski descent: tilting and `· ⊗ M` keep the product of two tests. The rings `R[1/p]` do
     -- not depend on the ground field in `hasZariskiDescent_genericOver`, so `ℚ` will do.
-    zariski_descent :=
+    zariski_descent := by
       letI : EmbeddedInQpBar p ℚ := {}
-      hasZariskiDescent_genericOver (k := ℚ) (𝟭 PadicTest)
-        ⟨exists_isQuotientByElem, fun f g hfg ↦ (bijective_prod_tilt f g hfg).map_prod
-          (moduleCoeff (MonoidalCategory.tensorRight M) ⋙ forget AddCommGrpCat)⟩
+      as_aux_lemma =>
+        exact hasZariskiDescent_genericOver (k := ℚ) (𝟭 PadicTest) (F := tilt ⋙ moduleCoeff (tensorCoeff M))
+          ⟨exists_isQuotientByElem, fun f g hfg ↦ (bijective_prod_tilt f g hfg).map_prod
+            (moduleCoeff (MonoidalCategory.tensorRight M) ⋙ forget AddCommGrpCat)⟩
     -- By `h_supp` it is enough that `R♭ ⊗ M → (R♭ ⧸ J) ⊗ M` is onto.
-    restrict_surjective c I :=
-      (h_supp c I).1 (ULift.map_surjective.2 (LinearMap.rTensor_surjective M Quot.exists_rep))
-    dies_near c I x hx n hn hI := by
+    restrict_surjective c I := by
+      as_aux_lemma => exact (h_supp c I).1 (ULift.map_surjective.2 (LinearMap.rTensor_surjective M Quot.exists_rep))
+    dies_near c I x hx n hn hI := by as_aux_lemma =>
       -- By `h_supp`, `x` has image zero in `(R♭ ⧸ J) ⊗ M`.
       obtain ⟨a, ha, h_dies⟩ :=
         c.mem_nearZeros_of_rTensor_eq_zero I M x.down (congrArg ULift.down ((h_supp c I).2 x hx))
