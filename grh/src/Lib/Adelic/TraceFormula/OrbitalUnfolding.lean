@@ -633,8 +633,10 @@ lemma integral_mul_tripleKernel_mul (φ : TestFunction (Gf E n)) (he : IsCuspKer
   -- On the left substitute `(y, u) ↦ (u, u⁻¹ y)`; then integrate over `u` on both sides.
   rw [V.integral_tripleMeasure h_mul (measurePreserving_prod_inv_mul_swap volume volume),
     V.integral_tripleMeasure h_fst (.id _)]
-  congr with x
-  congr with y
+  apply integral_congr_ae
+  filter_upwards [] with x
+  apply integral_congr_ae
+  filter_upwards [] with y
   -- On each side the factors that depend on `u` form a convolution `e ⋆ e = e`.
   let c : G E s := x⁻¹ * V.ratEmbed γ * x
   calc _ = ∫ u, b x y * (e u * e (u⁻¹ * y) * e (y⁻¹ * c.1) * φ.1 c.2) := by
