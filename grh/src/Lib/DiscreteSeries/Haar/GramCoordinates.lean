@@ -69,7 +69,7 @@ theorem measurePreserving_fromRows {l m k : Type} [Fintype l] [Fintype m] [Finty
 theorem mul_joinCols {l : Type} [Fintype ι] (e : n₁ ⊕ n₂ ≃ n) (A : Matrix l ι ℂ)
     (x : Matrix ι n₁ ℂ) (y : Matrix ι n₂ ℂ) :
     A * joinCols e (x, y) = joinCols e (A * x, A * y) := by
-  simp [← ext_iff, e.surjective.forall, joinCols, mul_apply]
+  simp [← ext_iff, e.surjective.forall, joinCols, Matrix.mul_apply]
 
 /-- A vector as a matrix with one column. -/
 def toCol (κ R : Type) [TopologicalSpace R] : (κ → R) ≃ₜ Matrix κ Unit R :=

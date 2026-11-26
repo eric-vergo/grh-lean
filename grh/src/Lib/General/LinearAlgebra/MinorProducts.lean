@@ -359,7 +359,7 @@ lemma exists_alternatingMap_det_fromCols [Fintype L] [DecidableEq L] (e : L ≃ 
   -- The determinant `g` is an alternating form in columns indexed by `Fin k ⊕ c`. Curry it along
   -- this sum and evaluate the arguments indexed by `c` at the columns of `Z`.
   let g : (L → R) [⋀^Fin k ⊕ c]→ₗ[R] R := detRowAlternating.domDomCongr e
-  let atZ : MultilinearMap R (fun _ : c ↦ L → R) R →ₗ[R] R :=
+  let atZ : MultilinearMap (RingHom.id R) (fun _ : c ↦ L → R) R →ₗ[R] R :=
     { toFun φ := φ fun b ↦ Z.col b
       map_add' _ _ := rfl
       map_smul' _ _ := rfl }
@@ -414,7 +414,7 @@ lemma norm_det_fromCols_one_submatrix [Fintype L] [DecidableEq L] [Fintype c] [D
     have h_eq (a : Fin k) : Sum.elim ι t x = ι a ↔ x = .inl a := h_bij.1.eq_iff (b := .inl a)
     simp only [submatrix_apply, Equiv.trans_apply, Equiv.symm_apply_apply, Equiv.apply_symm_apply]
     -- compare the four blocks: `x` is a row in `ι` or in `t`, and `y` a column of `1` or of `Z`
-    cases x <;> cases h : e y <;> simp_all [ε, one_apply]
+    cases x <;> cases h : e y <;> simp_all [ε, Matrix.one_apply]
   rw [h_block, det_permute, det_submatrix_equiv_self, det_fromBlocks_zero₂₁]
   simp [abs_unit_intCast]
 
@@ -463,7 +463,7 @@ theorem sum_norm_det_fromCols_sq_le [Fintype L] [DecidableEq L] [Fintype c] [Fin
     _ ≤ ∏ b, ‖(Z'ᴴ * Z') b b‖ := hadamard_det_inequality (posSemidef_conjTranspose_mul_self Z')
     _ = ∏ b : c, ∑ x : L, ‖Z x b‖ ^ 2 := by
       refine (Fintype.prod_equiv ε _ _ fun b ↦ ?_).symm
-      simp [Z', mul_apply, Complex.conj_mul', ← Complex.ofReal_pow, ← Complex.ofReal_sum,
+      simp [Z', Matrix.mul_apply, Complex.conj_mul', ← Complex.ofReal_pow, ← Complex.ofReal_sum,
         abs_of_nonneg (sum_nonneg fun x _ ↦ sq_nonneg ‖Z x b‖)]
 
 end New

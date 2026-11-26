@@ -77,7 +77,7 @@ lemma norm_trace_mul_le_norm_mul_norm (X Y : Matrix n n ℂ) : ‖(X * Y).trace�
   have h_vec (M : Matrix n n ℂ) : ‖vec M‖ = ‖M‖ := rfl
   calc ‖(X * Y).trace‖ = ‖inner ℂ (vec (star X)) (vec Y)‖ := by
         rw [trace_mul_comm]
-        simp [vec, inner, trace, mul_apply]
+        simp [vec, inner, trace, Matrix.mul_apply]
     _ ≤ ‖X‖ * ‖Y‖ := by grw [norm_inner_le_norm, h_vec, h_vec, norm_star]
 
 lemma norm_trace_mul_le {X Y : Matrix n n ℂ} {ρ σ : ℝ} (hX : ‖X‖ ≤ ρ) (hY : ‖Y‖ ≤ σ) :
@@ -87,7 +87,7 @@ lemma norm_trace_mul_le {X Y : Matrix n n ℂ} {ρ σ : ℝ} (hX : ‖X‖ ≤ �
 
 lemma trace_star_mul_self_eq_norm_sq : (Xᴴ * X).trace = ((‖X‖ ^ 2 : ℝ) : ℂ) := by
   rw [frobenius_norm_sq_eq_sum, Finset.sum_comm]
-  simp [trace, mul_apply, conj_mul']
+  simp [trace, Matrix.mul_apply, conj_mul']
 
 /-- Left multiplication by a unitary matrix preserves the Hilbert–Schmidt norm. -/
 lemma frobenius_norm_mul_of_unitary (hX : Xᴴ * X = 1) (Y : Matrix n n ℂ) : ‖X * Y‖ = ‖Y‖ := by
