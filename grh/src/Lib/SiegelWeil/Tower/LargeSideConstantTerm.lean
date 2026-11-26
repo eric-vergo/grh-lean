@@ -183,7 +183,7 @@ theorem integrable_theta_cone [IsBaseAdapted X]
     pairTheta W V ψ ψ (localDatum W V w (stdRowDatum σ 𝔠.semilocalChar y) 𝔠.readsAt) (g, h)
   obtain ⟨Q, D, hD, h_decay⟩ : ∃ (Q : ℕ) (D : ℝ), 0 ≤ D ∧ ∀ (h : G E t) (w : PairFock E s t),
       Fock.fockMoment Q w ≠ ⊤ → ‖kernel h w‖ ≤ D * (Fock.fockMoment Q w).toReal := by
-    have h_std : stdRowDatum σ 𝔠.semilocalChar y ∈ schwartzBruhat fun x ↦ HasLeftInv x.transpose :=
+    have h_std : stdRowDatum σ 𝔠.semilocalChar y ∈ schwartzBruhat {x | HasLeftInv x.transpose} :=
       stdRowDatum_mem σ 𝔠.semilocalChar (s := y)
     have ⟨_, _, h_support⟩ := h_std
     obtain ⟨B, Q, C, h_decay⟩ := pairTheta_decay_of_onto W V ψ ψ _ 𝔠.readsAt.disjoint_star
