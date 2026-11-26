@@ -205,7 +205,7 @@ lemma dualColumnGaussian_inv (y : 𝔰.G₁) :
   -- the exchange of `e_b` with `e*_b`.
   rw [dualColumnGaussian, U.coe_inv IsHermitianInvolution.mul_self]
   congr 3
-  simp [sum_filter, sum_prod_type, splitGram, middleGram, mul_apply, Matrix.one_apply,
+  simp [sum_filter, sum_prod_type, splitGram, middleGram, Matrix.mul_apply, Matrix.one_apply,
     sum_add_distrib]
   ring
 
@@ -747,7 +747,7 @@ lemma exists_orthonormal_ker_lintegral_le {𝔰 : Shape} {s : ℕ} {L : ℝ} {m 
         (measurableSet_Iic.prod measurableSet_closedBall) (by fun_prop)
     _ = (∫⁻ r in Iic R, (ENNReal.ofReal (r / 36))⁻¹ ^ s ∂μ) * volume B := by
       rw [← prod_restrict, lintegral_prod_symm _ (by fun_prop)]
-      simp
+      simp [Set.univ_inter]
     _ ≤ ENNReal.ofReal (4 * 3 ^ 144) * ENNReal.ofReal R * volume B := by
       grw [setLIntegral_inv_pow_sphereDensity_le]
     _ ≤ (ENNReal.ofReal L ^ 2) ^ (99 * 𝔰.n * (j + 1)) := by
@@ -772,7 +772,7 @@ lemma RealPlaceSizes.norm_sq_mulVec_of_fixed (hF : RealPlaceSizes 𝔰 ρ s b) (
   set e : Matrix 𝔰.BesselIndex hF.complexData.FreeIndex ℂ := hF.complexData.orthonormalPart
   have he : eᴴ * (𝔰.J₁ * e) = 1 := by
     ext
-    simp [e, complexBasis, mul_apply, splitGram, middleGram, Matrix.one_apply, PlaceData.freeIndex,
+    simp [e, complexBasis, Matrix.mul_apply, splitGram, middleGram, Matrix.one_apply, PlaceData.freeIndex,
       Subtype.val_inj]
   calc ‖toLp 2 (g.val.val *ᵥ e *ᵥ w)‖ ^ 2
       = ‖star (g.val.val *ᵥ e *ᵥ w) ⬝ᵥ g.val.val *ᵥ e *ᵥ w‖ := by
