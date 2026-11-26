@@ -74,7 +74,7 @@ lemma degreeZeroPart_mul [Fintype ι'] {A : Matrix ι'' ι' R} {B : Matrix ι' �
       (if w'' i = w k then A i l * B l k else 0) =
         degreeZeroPart w'' w' A i l * degreeZeroPart w' w B l k := by
     grind [HasDegreeGe, degreeZeroPart_apply]
-  simp [degreeZeroPart_apply (A * B), mul_apply, ← h_term]
+  simp [degreeZeroPart_apply (A * B), Matrix.mul_apply, ← h_term]
 
 /-- If all entries of `A` lie in the subring `O`, then so do those of its part of degree `0`. -/
 lemma IsIntMatrix.degreeZeroPart {O : Subring R} {A : Matrix ι' ι R} (hA : IsIntMatrix O A) :
@@ -176,9 +176,9 @@ lemma exists_gram_eq_degreeZeroPart [HasPrimitiveRoot5040 E] {w : ι → ℤ} {k
   -- The rows of `G * n` of weight at least `0` are those of `G₀`.
   have h_row {a : ι} (ha : 0 ≤ w a) : (G * n.val) a j = G₀ a j :=
     calc (G * n.val) a j = (n.valᴴ * (G * n.val)) a j := by
-          simp [mul_apply (M := n.valᴴ), hn_col _ ha, one_apply, apply_ite star]
+          simp [Matrix.mul_apply (M := n.valᴴ), hn_col _ ha, Matrix.one_apply, apply_ite star]
       _ = G₀ a j := by rw [← mul_assoc, hn_gram]
-  rw [show n.val - 1 = G' * (G * n.val - G) by rw [mul_sub, ← mul_assoc, h_inv, one_mul], mul_apply]
+  rw [show n.val - 1 = G' * (G * n.val - G) by rw [mul_sub, ← mul_assoc, h_inv, one_mul], Matrix.mul_apply]
   refine Finset.sum_eq_zero fun a _ ↦ ?_
   obtain ha | ha := lt_or_ge (w i) (-w a)
   · rw [hG'_deg i a (by simpa using ha), zero_mul]
