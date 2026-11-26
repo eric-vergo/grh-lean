@@ -62,6 +62,7 @@ class IsDualFamily {I : outParam Type*} [AddCommGroup I] (B₀ : AddSubgroup B)
 def RespectsQuasiPeriods (ψ F : B → ℂ) : Prop :=
   ∀ (a : B) (c : ℂ), (∀ x : B, c * F (x + a) = F x) → ψ a = c
 
+open scoped Pointwise in
 /-- Stone–Weierstrass for monoids: let `M` be a submonoid of `C(K, ℂ)`, `K` compact, that is
 closed under conjugation and separates points (two points at which all `f ∈ M` agree are
 equal). Then the linear span of `M` is dense in `C(K, ℂ)`. -/

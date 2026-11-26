@@ -209,7 +209,7 @@ lemma New.IsValuationPair.exists_pivot_dvd {A n : Type*} [CommRing A] {R : Subri
   refine ⟨c.fst, c.snd, fun i j ↦ mem_span_singleton.1 ?_⟩
   change B c i j ∈ R ∙ B c p p
   rw [show B c i j = ∑ s : n, c.snd s j • ∑ r : n, c.fst i r • y r s by
-    simp [B, mul_apply, R.smul_def, mul_comm]]
+    simp [B, Matrix.mul_apply, R.smul_def, mul_comm]]
   exact sum_smul_mem _ _ fun s _ ↦ sum_smul_mem _ _ fun r _ ↦ y_mem r s
 
 /-- One elimination step. Let every entry `M i j` be the multiple `w i j * M p p` of the pivot, with
@@ -228,7 +228,7 @@ lemma New.exists_eq_mul_diagonal_mul_of_pivot_dvd {A n : Type*} [CommRing A] {R 
   let D : n → A := Sum.elim (fun _ ↦ M p p) d ∘ e.symm
   have block_entry (i j : {i : n // i ≠ p}) :
       M i j - w i p * M p j = ∑ s : {i : n // i ≠ p}, k i s * d s * l s j := by
-    simpa [↓mul_diagonal, mul_apply, R.smul_def] using congrFun₂ h_block i j
+    simpa [↓mul_diagonal, Matrix.mul_apply, R.smul_def] using congrFun₂ h_block i j
   have default_val : ((default : {i : n // i = p}) : n) = p := rfl
   refine ⟨lower, upper, D, (reindex e.symm e.symm).injective ?_⟩
   suffices M.submatrix e e =
@@ -247,7 +247,7 @@ lemma New.exists_eq_mul_diagonal_mul_of_pivot_dvd {A n : Type*} [CommRing A] {R 
   · simp [e, Unique.eq_default j, default_val, hw]
   · suffices M i j = w i p * M p p * w p j + ∑ s : {i : n // i ≠ p}, k i s * d s * l s j by
       -- `↓`: the product with a diagonal matrix is simplified before `mul_apply` expands it
-      simpa [e, ↓mul_diagonal, mul_apply, default_val]
+      simpa [e, ↓mul_diagonal, Matrix.mul_apply, default_val]
     rw [← block_entry, ← hw p j]
     ring
 

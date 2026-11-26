@@ -190,12 +190,12 @@ def H0 : Submodule R (ι → PointFn X) where
       ∀ (i : ι) (A : CommRingCat) (t : Spec A ⟶ X), ¬LandsIn t (L.opens i) → s i A t = 0}
   add_mem' := by
     simp [IsSection, PointFn.IsRegularOn]
-    grind
+    aesop (add simp [mul_add]) <;> grind
   zero_mem' := by simp [IsSection, PointFn.IsRegularOn]
   smul_mem' := by
     -- at a point `t` a scalar acts by multiplication with its image in the ring of `t`
     simp [IsSection, PointFn.IsRegularOn, HSMul.hSMul, SMul.smul]
-    grind
+    aesop (add simp [mul_left_comm]) <;> grind
 
 variable {L R} in
 lemma mem_H0 {s : ι → PointFn X} :

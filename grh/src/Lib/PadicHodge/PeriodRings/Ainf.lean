@@ -53,7 +53,7 @@ open MulSemiringAction Variety Polynomial PreTilt IsOfFinOrder nonZeroDivisors W
 lemma _root_.New.mk_complex_eq_mk_padicAlgCl {p : ℕ} [Fact p.Prime] : #ℂ = #(PadicAlgCl p) := by
   -- `PadicAlgCl p` is algebraic over `ℚ_[p]`, a quotient of a set of rational sequences, so it has
   -- at most continuum many elements
-  have h_padic : #ℚ_[p] ≤ continuum := mk_quotient_le.trans ((mk_set_le _).trans (by simp))
+  have h_padic : #ℚ_[p] ≤ continuum := mk_quotient_le.trans ((mk_set_le {f : ℕ → ℚ | IsCauSeq (padicNorm p) f}).trans (by simp [mk_arrow]))
   refine mk_complex.trans ((continuum_le_cardinal_of_module ℚ_[p] _).antisymm ?_)
   exact (Algebra.IsAlgebraic.cardinalMk_le_max ℚ_[p] (PadicAlgCl p)).trans
     (max_le h_padic aleph0_le_continuum)
@@ -595,11 +595,11 @@ lemma exists_algebraMap_eq_of_frobenius_eq {k : Type*} [CommRing k] [IsDomain k]
   have h_coeff_mem (n : ℕ) : ∃ z : ZMod p, castHom dvd_rfl k z = a.coeff n := by
     have h_root : a.coeff n ^ p = a.coeff n := by rw [← coeff_frobenius_charP, h_frobenius]
     exact (GaloisField.splits_zmod_X_pow_sub_X p).mem_range_of_isRoot
-      (FiniteField.X_pow_card_sub_X_ne_zero _ (Fact.out : p.Prime).one_lt)
+      (Polynomial.X_pow_sub_X_ne_zero (Fact.out : p.Prime).one_lt)
       (by simpa [sub_eq_zero] using h_root)
   choose z hz using h_coeff_mem
   -- The Witt vector over `ZMod p` with coordinates `z` is a `p`-adic integer.
-  refine ⟨equiv p ⟨z⟩, ?_⟩
+  refine ⟨equiv p (WittVector.mk p z), ?_⟩
   ext n
   simp [algebraMap_toAlgebra, hz]
 
@@ -967,7 +967,7 @@ lemma Ainf.shiftDiff_surjective (h : ¬IsUnit a) : Surjective (shiftDiff Ainf a)
   have h_mod_p : Surjective (shiftDiff OFlat (constantCoeff a)) :=
     OFlat.shiftDiff_surjective_of_not_isUnit (mt isUnit_iff_isUnit_constantCoeff.mpr h)
   -- the Witt vector over `ℕ → O^♭` whose `i`-th coordinate is `n ↦ (b n).coeff i`
-  let B : WittVector p (ℕ → OFlat) := ⟨fun i n ↦ (b n).coeff i⟩
+  let B : WittVector p (ℕ → OFlat) := WittVector.mk p fun i n ↦ (b n).coeff i
   obtain ⟨y, hy⟩ := exists_map_sub_mul_map_eq (a := B) 1 shift
     (algebraMap Ainf (WittVector p (ℕ → OFlat)) a) h_mod_p
   -- the components of the solution `y` form the required sequence
