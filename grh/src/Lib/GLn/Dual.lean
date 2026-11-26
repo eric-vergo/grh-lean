@@ -95,9 +95,9 @@ lemma GL.sign_mul_det_complementary_minor {R m a b : Type*} [CommRing R] [Fintyp
   have hBM : B * M = fromBlocks 1 B.toBlocks₁₂ 0 (A.submatrix (π ∘ ρ ∘ Sum.inr) (ρ ∘ Sum.inr)) := by
     ext (s | s) (t | t)
     · simp [B, M, transpose_fromRows, hA, Matrix.one_apply]
-    · simp [B, M, mul_apply, toBlocks₁₂, Matrix.one_apply]
+    · simp [B, M, Matrix.mul_apply, toBlocks₁₂, Matrix.one_apply]
     · simp [B, M, transpose_fromRows, hA]
-    · simp [B, M, mul_apply, toBlocks₁₂, Matrix.one_apply]
+    · simp [B, M, Matrix.mul_apply, toBlocks₁₂, Matrix.one_apply]
   have h_det : (A.submatrix (π ∘ ρ ∘ Sum.inr) (ρ ∘ Sum.inr)).det = B.det * M.det := by
     rw [← det_mul, hBM, det_fromBlocks_zero₂₁, det_one, one_mul]
   -- The sign of `π` squares to `1`.
@@ -292,7 +292,7 @@ lemma GL.exists_star_matrix (e e' : ∀ τ : Φ, n τ ≃ Fin (rankAt n τ))
   · ext T T'
     obtain ⟨S, rfl⟩ := (fillingComplement_bijective hκ).surjective T
     obtain ⟨S', rfl⟩ := (fillingComplement_bijective hκ).surjective T'
-    simp [P, mul_apply, one_apply, (fillingComplement_bijective hκ).injective.eq_iff, eq_comm]
+    simp [P, Matrix.mul_apply, Matrix.one_apply, (fillingComplement_bijective hκ).injective.eq_iff, eq_comm]
   ext T
   -- The minor of an array `x` on the rows listed by a column `I` at `τ`.
   let col (x : (Σ τ : Φ, n τ) × ℕ → R) (τ : Φ) {k : ℕ} (I : IncreasingMap (rankAt n τ) k) : R :=
@@ -609,7 +609,7 @@ lemma nonempty_mixedCartanEmbedding :
   -- The entries of `comulMatrix R` and of `J.map` are casts of integers, so `K R` is the cast of
   -- `K ℤ`.
   have hK_map (R : Type) [CommRing R] : (K ℤ).map ((↑) : ℤ → R) = K R := by
-    aesop (add simp mul_apply) (add simp Matrix.one_apply)
+    aesop (add simp Matrix.mul_apply) (add simp Matrix.one_apply)
   have h_cast : (Int.cast : ℤ → ℤ) = fun x : ℤ ↦ x := funext fun _ ↦ Int.cast_id
   suffices h_emb : MixedCartanEmbedding n kp km (kp + kc) from ⟨h_emb⟩
   exact
@@ -924,14 +924,14 @@ lemma weylNormSq_cartanProduct (hkp : HasColumnsBelow n N kp) (hkm : HasColumnsB
   have h_gram : (weylGram (fun _ : Φ ↦ n) (mixedWeight n kp km)).map (↑) = Mᴴ * G * M := by
     rw [← (mixedCartan n kp km).gram_eq]
     ext i j
-    simp [M, G, mul_apply]
+    simp [M, G, Matrix.mul_apply]
   -- An inclusion `ι` of letters has `ιᴴ ι = 1`, so `S(ι)ᴴ G S(ι) = G S(ιᴴ ι) = G`.
   have h_norm {k : Type} [Fintype k] [DecidableEq k] {κ : Φ → ℕ → ℕ} (hκ : HasColumnsBelow n k κ)
       {f : k → n} (hf : f.Injective) (v : WeylIndex k κ → ℂ) :
       weylNormSq (schur κ (fun _ : Φ ↦ inclMatrix ℂ f) *ᵥ v) = weylNormSq v := by
     have h_incl : (inclMatrix ℂ f)ᴴ * inclMatrix ℂ f = 1 := by
       ext i j
-      simp [inclMatrix, mul_apply, Matrix.one_apply, hf.eq_iff, eq_comm]
+      simp [inclMatrix, Matrix.mul_apply, Matrix.one_apply, hf.eq_iff, eq_comm]
     simp [weylNormSq, star_mulVec_dotProduct, schur_conjTranspose_weylGram_schur hκ.fitsRanks,
       hκ.schurDetExp_eq_zero, h_incl, schur_one]
   calc weylNormSq c
