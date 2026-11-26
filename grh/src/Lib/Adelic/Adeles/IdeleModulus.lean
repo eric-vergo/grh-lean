@@ -190,7 +190,9 @@ lemma eq_norm_inv_of_uniformizer (χ : (LocField w)ˣ →* ℝ)
   -- `χ` is `w.q` on both. Hence `χ x * w.q ^ k = 1`, and `‖x‖ = w.q ^ k`.
   have h_prod : χ (x * uniformizer w ^ (v x.val).log * uniformizer w) = w.q :=
     hχ (by simp [WithZero.exp_neg, -inv_exp])
-  have h_mul : χ x * (w.q : ℝ) ^ (v x.val).log = 1 := by simpa [hχ (v_uniformizer w)] using h_prod
+  have h_mul : χ x * (w.q : ℝ) ^ (v x.val).log = 1 := by
+    apply mul_right_cancel₀ (Nat.cast_ne_zero.mpr w.q_ne_zero : (w.q : ℝ) ≠ 0)
+    simpa [hχ (v_uniformizer w)] using h_prod
   rw [norm_locField_eq_q_zpow x.ne_zero, eq_inv_of_mul_eq_one_left h_mul]
 
 /-- For finite adeles `a`, `b` there is an idempotent `e` of `Ô`, the ring of integral finite
@@ -345,7 +347,14 @@ lemma volume_map_mulVec_adele (a : GL n (𝔸 E)) :
     .prod ⟨L.toLinearMap.continuous_of_finiteDimensional.measurable, h_inf⟩ ⟨by fun_prop, h_fin⟩
   -- Transport this scaling along the splitting of vectors.
   let split : (n → 𝔸 E) ≃ₜ+ (n → InfinitePlace E → ℂ) × (n → 𝔸f E) :=
-    { toEquiv := Equiv.arrowProdEquivProdArrow _ _ _, map_add' := fun _ _ ↦ rfl }
+    { toEquiv := Equiv.arrowProdEquivProdArrow _ _ _
+      map_add' := fun _ _ ↦ rfl
+      continuous_toFun := by
+        change Continuous (fun f : n → 𝔸 E ↦ (fun i ↦ (f i).1, fun i ↦ (f i).2))
+        fun_prop
+      continuous_invFun := by
+        change Continuous (fun f : (n → InfinitePlace E → ℂ) × (n → 𝔸f E) ↦ fun i ↦ (f.1 i, f.2 i))
+        fun_prop }
   refine map_addHaar_eq_smul_of_semiconj _ split (fun x ↦ ?_) h_prod.measurable
     (h_prod.map_eq.trans ?_)
   · -- taking components commutes with the sums that define `a *ᵥ x`
