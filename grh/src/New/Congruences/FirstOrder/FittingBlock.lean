@@ -381,7 +381,7 @@ lemma exists_rows_det_eq_pow_mul_det {Λ R E ι₀ ι : Type} [CommRing Λ] [Rin
   -- On `χ e` the matrix is block triangular, with `1` and `μ e • B e` on the diagonal.
   have h_blocks : M.map (χ e) = fromBlocks 1 ((M.map (χ e)).toBlocks₁₂) 0 (μ e • B e) := by
     ext (i | l) (j | j)
-    · simp [h_first, one_apply, eq_comm (a := i)]
+    · simp [h_first, Matrix.one_apply, eq_comm (a := i)]
     · rfl
     · simp [h_last, hw_zero]
     · simp [h_last, hw_eq]
@@ -754,7 +754,7 @@ lemma exists_row_apply_eq_zero {Λ A W S₀ S : Type} [CommRing Λ] [Ring A] [Al
   refine ⟨w - ∑ i : S₀, w (inr (inl i)) • ν i,
     sub_mem hw (sum_mem fun i _ ↦ N.smul_mem _ (hν i)), fun i ↦ ?_, funext fun j ↦ ?_⟩
   · simp [hν_eq]
-  · simp [vecMul_eq_sum, one_apply, sub_eq_neg_add]
+  · simp [vecMul_eq_sum, Matrix.one_apply, sub_eq_neg_add]
 
 end SmallLemmas
 

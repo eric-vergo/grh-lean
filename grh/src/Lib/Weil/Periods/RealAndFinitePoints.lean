@@ -170,7 +170,7 @@ lemma exists_integral_eq_mul_integral_besselReal (K : Subgroup (Gf E ι)) [hK : 
         simp only [integral_smul_nnreal_measure, ν, h_emb.integral_map, h_prod, NNReal.smul_def,
           Complex.real_smul]
     _ = (c * haar.real J : ℝ) * ∫ s : Y.besselReal, a s ∂haar := by
-        simp [integral_prod_mul, integral_indicator hJ_open.measurableSet, mul_assoc, mul_comm]
+        simp [Set.univ_inter, integral_prod_mul, integral_indicator hJ_open.measurableSet, mul_assoc, mul_comm]
 
 end New.Grading
 

@@ -136,9 +136,9 @@ lemma exists_sub_one_mul_frameCols_eq (s : 𝔰.besselGraph) :
   obtain ⟨⟨⟨u, hu⟩, h⟩, rfl⟩ := 𝔰.besselGraphChart.surjective s
   refine ⟨(frameMatrix u - 1).submatrix castSucc id,
     fun a b hab ↦ sub_eq_zero.2 (frameMatrix_unitriangular hu _ _ hab), ?_, ?_⟩
-  · simp [← Matrix.ext_iff, mul_apply, apply_inr_of_mem_besselU hu, frameMatrix, inclMatrix,
+  · simp [← Matrix.ext_iff, Matrix.mul_apply, apply_inr_of_mem_besselU hu, frameMatrix, inclMatrix,
       val_toBesselH_apply_coe, forall_fin_succ', Matrix.one_apply]
-  · simp [mul_apply, simpleRootSum, frameMatrix, val_toBesselH_apply_coe, Matrix.one_apply,
+  · simp [Matrix.mul_apply, simpleRootSum, frameMatrix, val_toBesselH_apply_coe, Matrix.one_apply,
       ne_of_lt]
 
 /-- An element `s` of `besselGraph` (the group `R`) acts on `X₀`, the span of the columns of
@@ -151,7 +151,7 @@ lemma exists_sub_one_mul_definiteCols_eq (s : 𝔰.besselGraph) :
   -- Write `s = h u`; the matrix `C` is the block of `u` from `X₀` to `e₁, …, e_ϱ`.
   obtain ⟨⟨⟨u, hu⟩, h⟩, rfl⟩ := 𝔰.besselGraphChart.surjective s
   use (u : Matrix 𝔰.BesselIndex 𝔰.BesselIndex ℂ).submatrix Sum.inl 𝔰.indexX₀
-  simp [← Matrix.ext_iff, mul_apply, apply_inr_of_mem_besselU hu, inclMatrix,
+  simp [← Matrix.ext_iff, Matrix.mul_apply, apply_inr_of_mem_besselU hu, inclMatrix,
     val_toBesselH_apply_coe, Matrix.one_apply]
 
 /-- Let `g` in `G₁` lower the flag of the frame `e₁, …, e_ϱ, z`. That is, `g - 1` maps the frame
@@ -165,8 +165,8 @@ lemma exists_besselGraph_fst_eq {g : 𝔰.G₁} {N : Matrix (Fin 𝔰.ϱ) (Fin (
     refine mem_besselS_iff_frameImage.2 fun i b hb ↦ sub_eq_zero.1 ?_
     have h_entry : (𝔰.isotropicCols * N) i b = 0 := by
       rcases i with a | i
-      · simpa [inclMatrix, mul_apply, Matrix.one_apply] using hN_tri a b hb
-      · simp [inclMatrix, mul_apply]
+      · simpa [inclMatrix, Matrix.mul_apply, Matrix.one_apply] using hN_tri a b hb
+      · simp [inclMatrix, Matrix.mul_apply]
     rwa [← hN, mul_inclMatrix] at h_entry
   obtain ⟨u, hu, h, rfl⟩ := exists_besselU_mul_toBesselH h_mem isUnit_one
   exact ⟨⟨(u * embedH h, h), by simpa [Shape.mem_besselGraph_iff_mul_inv_mem] using hu⟩, rfl⟩
@@ -243,13 +243,13 @@ lemma IsPosition.exists_mul_eq_frameCols_and_besselLength_le (hP : IsPosition ε
     · exact hP.gram_eq_zero a b (not_and_or.1 hab)
   have h_frame : vᴴ * signMatrix ε * v = 𝔰.frameColsᴴ * 𝔰.J₁ * 𝔰.frameCols := by
     simp_rw [← Matrix.ext_iff, h_entry]
-    simp [mul_apply, inclMatrix, splitGram, middleGram, forall_fin_succ', Matrix.one_apply]
+    simp [Matrix.mul_apply, inclMatrix, splitGram, middleGram, forall_fin_succ', Matrix.one_apply]
   have h_gram : (p.matrix.val * fromCols i₀ v)ᴴ * 𝔰.J₁ * (p.matrix.val * fromCols i₀ v) =
       (fromCols 𝔰.definiteCols 𝔰.frameCols)ᴴ * 𝔰.J₁ * fromCols 𝔰.definiteCols 𝔰.frameCols := by
     rw [gram_mul, p.gram_eq]
     simp only [conjTranspose_fromCols_eq_fromRows_conjTranspose, fromRows_mul, mul_fromCols]
     rw [hP.isometry, hP.orthogonal, hP.vec_orthogonal, h_frame]
-    simp [← Matrix.ext_iff, mul_apply, inclMatrix, splitGram, middleGram, forall_fin_succ',
+    simp [← Matrix.ext_iff, Matrix.mul_apply, inclMatrix, splitGram, middleGram, forall_fin_succ',
       Matrix.one_apply]
   -- Both families are independent, so Witt's theorem gives `x`.
   have h_indep : HasLeftInv (p.matrix.val * fromCols i₀ v) := by
@@ -258,7 +258,7 @@ lemma IsPosition.exists_mul_eq_frameCols_and_besselLength_le (hP : IsPosition ε
       rw [Matrix.mul_assoc, ← Matrix.mul_assoc _ p.matrix.val, Units.inv_mul, Matrix.one_mul, hZ]⟩
   have h_indep' : HasLeftInv (fromCols 𝔰.definiteCols 𝔰.frameCols) :=
     ⟨(fromCols 𝔰.definiteCols 𝔰.frameCols)ᴴ, by
-      simp [← Matrix.ext_iff, mul_apply, inclMatrix, Matrix.one_apply, forall_fin_succ', eq_comm]⟩
+      simp [← Matrix.ext_iff, Matrix.mul_apply, inclMatrix, Matrix.one_apply, forall_fin_succ', eq_comm]⟩
   obtain ⟨x, hx⟩ : ∃ x : 𝔰.G₁,
       x.val.val * (p.matrix.val * fromCols i₀ v) = fromCols 𝔰.definiteCols 𝔰.frameCols :=
     witt ⟨Complex.I, by simp⟩ isHermitian.eq IsHermitianInvolution.isUnit h_indep h_indep' h_gram

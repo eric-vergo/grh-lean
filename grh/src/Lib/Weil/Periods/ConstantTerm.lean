@@ -192,7 +192,7 @@ lemma zeroTerm_omega_of_inclMatrix [WeilData E] (D : U.Splitting V₀ {i // 0 < 
   -- `C` is block triangular, with a unitriangular block in weights `≤ 0`.
   have h_low : (C.toSquareBlockProp fun i ↦ ¬0 < wt i).det = 1 :=
     det_eq_one_of_unitriangular (lev := fun i ↦ -wt i.1) fun a b hab ↦ by
-      simp [toSquareBlockProp_def, h_one a b (not_lt.1 a.2) (neg_le_neg_iff.1 hab), one_apply,
+      simp [toSquareBlockProp_def, h_one a b (not_lt.1 a.2) (neg_le_neg_iff.1 hab), Matrix.one_apply,
         Subtype.ext_iff]
   have h_det : M.det = u.1 :=
     calc
@@ -352,9 +352,9 @@ lemma J_inv_mul_k_mul_eq_diagonal (hd : ∀ b : ι', d (Y'.stringReversal b) = -
   have h_rows : (inclMatrix E pos)ᴴ * (V.hom V').J = ((V.hom V').J * Q).submatrix pos id := by
     ext a l
     by_cases hl : d l.1 < Y.gradeOf l.2
-    · simp [Q, pos, inclMatrix, mul_apply, one_apply, diagonal_apply, hl]
+    · simp [Q, pos, inclMatrix, Matrix.mul_apply, Matrix.one_apply, diagonal_apply, hl]
     · have hl_nonneg : -Y.mapDegree d l ≤ 0 := by simpa using hl
-      simp [Q, pos, inclMatrix, mul_apply, one_apply, diagonal_apply, hl,
+      simp [Q, pos, inclMatrix, Matrix.mul_apply, Matrix.one_apply, diagonal_apply, hl,
         h_pair a.1 l (hl_nonneg.trans_lt a.2).ne]
   have h_zero : ∀ i ∉ range pos, ∀ l : ι' × ι, ((V.hom V').J * Q) i l = 0 := fun i hi l ↦ by
     have hi_nonpos : Y.mapDegree d i ≤ 0 := not_lt.1 fun h_pos ↦ hi ⟨⟨i, h_pos⟩, rfl⟩
@@ -441,7 +441,7 @@ lemma constTerm_congr_rat (hd : ∀ b : ι', d (Y'.stringReversal b) = -d b)
         w.1 (Y'.stringReversal b) (Y.stringReversal a) =
           w'.1 (Y'.stringReversal b) (Y.stringReversal a) :=
       neg_eq _ _ (by simpa [hd, gradeOf_stringReversal] using h)
-    simp +contextual [homBicharacter_eq, trace, mul_apply, formAdjoint_apply Y Y', hu, vecToMatrix,
+    simp +contextual [homBicharacter_eq, trace, Matrix.mul_apply, formAdjoint_apply Y Y', hu, vecToMatrix,
       rev_eq]
   rw [integrand, integrand, phase]
 
@@ -648,7 +648,7 @@ lemma tsum_constTerm_agreesWithStringMap (hd : ∀ b : ι', d (Y'.stringReversal
   have trace_eq : toAdele j * (y * x.out.1).trace - toAdele j * (y * Y.stringMap Y').trace =
       ((ξ x).map toAdele * v).trace := by
     rw [← mul_sub, ← trace_sub, ← Matrix.mul_sub, trace_mul_comm]
-    simp [trace, mul_apply, ξ, hy, hr, apply_ite, Finset.mul_sum, mul_assoc]
+    simp [trace, Matrix.mul_apply, ξ, hy, hr, apply_ite, Finset.mul_sum, mul_assoc]
   rw [swap, mul_div_right_comm, ← coe_div, ← AddChar.map_sub_eq_div, trace_eq]
 
 omit [Fintype X] in

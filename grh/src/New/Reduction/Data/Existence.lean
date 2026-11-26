@@ -98,7 +98,7 @@ lemma exists_three_term_free {n H L o : ℕ} (hL : 0 < L) (ho : (L * H) ^ n ≤ 
   have h_digit (v : Fin n → ℕ) (hv : v ∈ sphere n H k) (l : Fin n) : v l < L * H :=
     ((h_sphere.1 hv).1 l).trans_le (Nat.le_mul_of_pos_left H hL)
   refine ⟨(sphere n H k).image (map (L * H)), forall_mem_image.2 fun v hv ↦ h_lt v (h_digit v hv),
-    by simpa [card_image_of_injOn (map_injOn.mono h_digit)] using hk, ?_⟩
+    by simpa [card_image_of_injOn (map_injOn.mono (fun _ hv ↦ h_digit _ hv))] using hk, ?_⟩
   simp only [forall_mem_image, h_sphere]
   rintro u ⟨hu, hu_sq⟩ v ⟨hv, hv_sq⟩ w ⟨hw, hw_sq⟩ α α' hα hα' h_sum h_cong
   -- both sides of the congruence have digits below `L * H`, so they are equal digit by digit
@@ -128,7 +128,7 @@ lemma Parameters.exists_orderOf_placeClass_eq (P : Parameters) (s : ℕ) :
   set a : ℕ := 3 * l₀ s * u with ha
   have ha_odd : Odd a := by simp [ha, l₀, Nat.odd_mul, Nat.odd_pow_iff, hu, Nat.odd_iff.2]
   have h_order : orderOf (1 + 2 ^ v * (a : ℤ) : ZMod (2 ^ (s + v))) = 2 ^ s :=
-    ZMod.orderOf_one_add_mul_prime_pow Nat.prime_two v (by omega) (by omega) a
+    ZMod.orderOf_one_add_mul_prime_pow Nat.prime_two v (by omega) a
       (mod_cast ha_odd.not_two_dvd_nat) s
   refine ⟨v, ⟨a, by grind [towerDeg_eq]⟩, ?_⟩
   rw [← orderOf_units, P.placeClass_placeOfInt (by simp [isCoprime_one_left]), ← h_order, hq₀, ha]
