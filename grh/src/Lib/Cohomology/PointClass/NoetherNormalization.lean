@@ -124,7 +124,7 @@ lemma IsHomogeneousSolution.aeval_eq_zero_of_transcendental [Algebra B L] [IsSca
   have hP : P = 0 := transcendental_iff.mp ht P (h_sum.trans h_zero)
   refine sum_eq_zero fun n hn ↦ h_sol (homogeneousComponent_mem n F) ?_
   -- the value `F_n(g)` is the `n`-th coefficient of `P = 0`
-  simpa [P, Polynomial.coeff_monomial, hn] using congrArg (Polynomial.coeff · n) hP
+  simpa [P, Polynomial.coeff_monomial, Finsupp.single_apply, hn] using congrArg (fun Q : Polynomial _ ↦ Q.coeff n) hP
 
 lemma IsHomogeneousSolution.refl : IsHomogeneousSolution k v v := by tauto
 

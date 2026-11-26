@@ -840,7 +840,7 @@ lemma nablaBasis_eq_weylEval_smul_weylKernel_of_lt (e : ∀ τ : Φ, n τ ≃ Fi
   ext a b
   -- In entry `(a, b)` of the product only the position of row `a` of the column contributes; it
   -- is below the height by `h_lt`.
-  rw [mul_apply, sum_eq_ite ⟨_, h_lt ..⟩]
+  rw [Matrix.mul_apply, sum_eq_ite ⟨_, h_lt ..⟩]
   · -- the term at that position is the variable of entry `(a, b)`
     aesop
   · -- the terms at the other positions are zero
