@@ -450,6 +450,7 @@ lemma card_Ô_quot_span (ha_ne : a ≠ 0) :
     Nat.card (Ô E ⧸ span {(a : Ô E)}) = absNorm (span {a}) := by
   have h_comap : (span {algebraMap _ (Ô E) a}).comap (algebraMap (𝓞 E) (Ô E)) = span {a} :=
     Ideal.ext (by simp [dvd_iff_Ô ha_ne, mem_span_singleton])
+  rw [Ideal.absNorm_eq_natCard]
   exact (card_eq_of_bijective _ (bijective_quot_Ô ha_ne h_comap (by simp))).symm
 
 /-- For a CM field `E` and an integer `a` of `E`, the principal level K(a) (the g in K₀ with g -
