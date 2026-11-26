@@ -252,7 +252,7 @@ lemma norm_weylRep_mulVec_det_smul_weylEval_le_one {p : ℕ} [Fact p.Prime] [Pad
     exact norm_adeleExtension_le_one _ (hY τ).det_mem
   have h_entry (τ : InfinitePlace E) (i j : n) : ‖((gInv τ).val * (Y₀p τ).val) i j‖ ≤ 1 := by
     -- Without `map_inv` the inverse of `g` stays inside the image under the embedding.
-    simpa [gInv, Y₀p, mul_apply, -map_inv] using
+    simpa [gInv, Y₀p, Matrix.mul_apply, -map_inv] using
       norm_adeleExtension_le_one (weightEmbedding ιₚ τ) (hY₀ i j)
   have h_prod : ∏ τ, ‖(d τ).val‖ ≤ 1 :=
     Finset.prod_le_one₀ (fun τ _ ↦ norm_nonneg _) fun τ _ ↦ h_det τ
@@ -908,12 +908,18 @@ lemma _root_.New.finrank_ker_mul_le {V : Type} [AddCommGroup V] [Module ℂ V] [
 lemma ramifyingOp_empty {P : Parameters} (D : Data P) : D.ramifyingOp ∅ = 1 := by
   simp [ramifyingOp]
 
+private lemma representation_one_sub_of {G V : Type*} [Monoid G] [AddCommGroup V] [Module ℂ V]
+    (ρ : Representation ℂ G V) (g : G) :
+    ρ.asAlgebraHom (1 - MonoidAlgebra.of ℂ G g) = 1 - ρ g := by
+  rw [map_sub, map_one, Representation.asAlgebraHom_of]
+
 /-- Adding a prime `w ∉ s` to `s` multiplies `D.ramifyingOp s` on the left by `1 - z_w`, where
 `z_w = D.scalingGenerator w` acts on source forms through `D.centralRep`. -/
 lemma ramifyingOp_cons {P : Parameters} (D : Data P) (w : D.piNPlaces) {s : Finset D.piNPlaces}
     (hw : w ∉ s) :
     D.ramifyingOp (cons w s hw) = (1 - D.centralRep (D.scalingGenerator w)) * D.ramifyingOp s := by
-  simp [ramifyingOp]
+  unfold ramifyingOp
+  rw [Finset.prod_cons, map_mul D.centralRep.asAlgebraHom, representation_one_sub_of]
 
 /-- For admissible data `D`, let `s` be a finite set of primes of `E` dividing `π = D.piN`, where
 `π π̄ = N` is the prime `D.N`. For `w ∈ s` the chosen scaling `z_w = D.scalingGenerator w` acts on
