@@ -176,7 +176,10 @@ lemma exists_add_two_primes [NeZero ℓ] [NeZero N]
     exact ⟨fun j ↦ cond j v₁ v₀, fun j ↦ cond j B₁ B₀, fun j ↦ cond j φ₁ φ₀,
       Bool.injective_iff.2 h_ne, Bool.forall_bool.2 ⟨⟨hv₀, hB₀, hφ₀⟩, hv₁, hB₁, hφ₁⟩⟩
   choose hv hB hφU hφ using hv
-  let s' : SplitPlaces (K := K) ℓ N _ O (ι ⊕ Bool) :=
+  let I' : Set Gal(Ω/K) := {g | ∃ w : FinPlace K, ↑N ∉ w.asIdeal ∧
+    w ∉ Set.range (Sum.elim s.v v) ∧
+    ∃ B : ClosurePlace, IsPlaceOver B w ∧ g ∈ inertiaGroup Gal(Ω/K) B}
+  let s' : SplitPlaces (K := K) ℓ N I' O (ι ⊕ Bool) :=
     { cyclotomicCharMod_eq_one := hO
       dvd_level := hm.trans s.dvd_level
       v := Sum.elim s.v v
