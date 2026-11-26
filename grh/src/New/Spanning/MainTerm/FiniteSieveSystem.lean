@@ -76,7 +76,10 @@ lemma IsFillingData.massIntegral_full_le {E : Type} {𝔰 : Shape} [Field E] [CM
   have h_main_term : F.massIntegral K ≤
       F.groupMeasure K * F.groupMeasure F.congruenceSubgroup * (F.groupMeasure K + 2⁻¹ ^ 𝔰.n) :=
     massIntegral_le_main_add_error ⟨K, P.unitaryLevel_le_unitaryLevel_one, le_rfl⟩ le_rfl
-      modulus_le_half (by grind [S.pow_chain, Nat.le_self_pow (n := 4) (by norm_num) 𝔰.n])
+      modulus_le_half (by
+        obtain ⟨h₁, h₂, h₃⟩ := S.pow_chain
+        have hn := Nat.le_self_pow (n := 4) (by norm_num) 𝔰.n
+        omega)
   grw [h_main_term, ← half_pow_le_inv_pow_six]
   gcongr
   calc F.groupMeasure K + 2⁻¹ ^ 𝔰.n
