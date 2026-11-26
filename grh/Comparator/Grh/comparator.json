@@ -14,5 +14,7 @@
     "Quot.sound",
     "Classical.choice"
   ],
-  "enable_nanoda": true
+  "external_kernels": {
+    "nanoda": ["nanoda_bin"]
+  }
 }
