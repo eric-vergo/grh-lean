@@ -235,7 +235,7 @@ lemma sum_heckePolyCoeff_smul_modDatum_eq_modDatum
   -- Hence the sum puts in, at `v`, the product of `1 - q ^ l` over `l < corank`. This is the
   -- indicator of the invertible matrices, that is `ψ v ∘ det`, as `ψ v` is trivial.
   rw [(sum_heckePolyCoeff_smul_pairWeil h_unr h_unr h_split h_vac (α.frobValue n v)⁻¹).1]
-  have hX : α.frobValue n v ≠ 0 := by simp [AutChar.frobValue, HeckeChar.atUniformizer]
+  have hX : α.frobValue n v ≠ 0 := by simp [AutChar.frobValue, HeckeChar.atUniformizer, v.ne_bot]
   have h_local (x : Matrix n n (ResField v)) :
       ∏ l ∈ .range (card n - x.rank), (1 - v.q ^ l : ℂ) = ψ v x.det := by
     rw [hψ v hv, prod_range_corank_one_sub_q_pow]
