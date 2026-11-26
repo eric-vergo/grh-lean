@@ -106,7 +106,8 @@ lemma IsSchwartzVector.adjointDatum {y : PairFock E u s} (hy : IsSchwartzVector 
   let f : CoordChange E (.id ℂ) (homSigns u s) (homSigns s (-u)) := adjointCoords E s u
   have h_norm (x : InfinitePlace E × b × n → ℂ) : ‖f.realEquiv x‖₊ = ‖x‖₊ := by
     have h_coord (i : InfinitePlace E × n × b) : ‖f.realEquiv x i‖₊ = ‖x (i.1, i.2.swap)‖₊ := by
-      simp [f, flipCoords, starCoordEquiv, nnnorm, Prod.map, abs_unit_intCast]
+      simp [f, flipCoords, starCoordEquiv, Prod.map]
+      rcases Int.units_eq_one_or (homSigns u s i.2) with h | h <;> simp [h]
     refine eq_of_forall_ge_iff fun c ↦ ?_
     simp only [pi_nnnorm_le_iff, h_coord, Prod.forall, Prod.swap_prod_mk]
     exact forall_congr' fun _ ↦ forall_comm
@@ -116,7 +117,7 @@ lemma IsSchwartzVector.adjointDatum {y : PairFock E u s} (hy : IsSchwartzVector 
   intro N
   calc fockMoment N (Exchange.adjointDatum y)
       = ∫⁻ x, (1 + ‖f.realEquiv x‖ₑ) ^ N * ‖y (f.realEquiv x)‖ₑ ∂normalizedVolume _ := by
-        simp only [enorm, h_norm]
+        simp only [eNorm_eq_nnNorm, h_norm]
         rfl
     _ = fockMoment N y := h_measure.lintegral_comp_emb f.realEquiv.measurableEmbedding
         fun x ↦ (1 + ‖x‖ₑ) ^ N * ‖y x‖ₑ
@@ -154,7 +155,7 @@ lemma exists_localDatum_adjointDatum_eq_smul (W : Space E n s) (U : Space E b u)
     {μ : InfinitePlace E → ℤ} (𝔠 : SplitTameChar E μ) (y : PairFock E u s) :
     ∃ a : ℂ, ‖a‖ = 1 ∧ ∀ (Φ : Matrix r n (LocProd 𝔠.ramifiedPlaces) → ℂ)
       (Ψ : Matrix n b (LocProd 𝔠.ramifiedPlaces) → ℂ),
-      Ψ ∈ schwartzBruhat HasLeftInv → AreMatched SemilocalField.O σ 𝔠.semilocalChar Φ Ψ →
+      Ψ ∈ schwartzBruhat {x | HasLeftInv x} → AreMatched SemilocalField.O σ 𝔠.semilocalChar Φ Ψ →
         localDatum W (flipSpace U) (adjointDatum y)
             (fun x : Matrix b n (LocProd 𝔠.ramifiedPlaces) ↦ Ψ xᵀ) 𝔠.readsAt.star =
           a • (adjointCoords E s u).map (localDatum U W y Ψ 𝔠.readsAt) := by
@@ -206,7 +207,7 @@ lemma exists_mul_thetaSmall_adjointDatum_eq_mul_integral (W : Space E n s) (U : 
     (h_even : 2 ∣ card n) {μ : InfinitePlace E → ℤ} (𝔠 : SplitTameChar E μ) (y : PairFock E u s) :
     ∃ d : ℂ, ‖d‖ = 1 ∧ ∀ (Φ : Matrix r n (LocProd 𝔠.ramifiedPlaces) → ℂ)
       (Ψ : Matrix n b (LocProd 𝔠.ramifiedPlaces) → ℂ),
-      Ψ ∈ schwartzBruhat HasLeftInv → AreMatched SemilocalField.O σ 𝔠.semilocalChar Φ Ψ →
+      Ψ ∈ schwartzBruhat {x | HasLeftInv x} → AreMatched SemilocalField.O σ 𝔠.semilocalChar Φ Ψ →
         ∀ g : G E s,
         (rankTwist 𝔠.character⁻¹ n).val g.det * thetaSmall W (flipSpace U) 𝔠 (adjointDatum y) Ψ g =
           d * ∫ h : G E u, pairTheta U W (rankTwist 𝔠.character⁻¹ n) (rankTwist 𝔠.character⁻¹ n)
@@ -247,7 +248,7 @@ lemma thetaLarge_eq_smul_of_areMatched (W : Space E n s) (V : Space E r t) (U : 
         (stdColDatum 𝔠.semilocalChar z))
     {Φ : Matrix r n (LocProd 𝔠.ramifiedPlaces) → ℂ} {Ψ : Matrix n b (LocProd 𝔠.ramifiedPlaces) → ℂ}
     (hΨ : IsLocallyConstant Ψ) (hΦΨ : AreMatched SemilocalField.O σ 𝔠.semilocalChar Φ Ψ) :
-    Ψ ∈ schwartzBruhat HasLeftInv ∧ thetaLarge W V 𝔠 v Φ = c • thetaSmall W U 𝔠 y Ψ := by
+    Ψ ∈ schwartzBruhat {x | HasLeftInv x} ∧ thetaLarge W V 𝔠 v Φ = c • thetaSmall W U 𝔠 y Ψ := by
   -- The difference `𝒟 Ψ` of the two sides is equivariant, so its kernel is a stable space; it
   -- contains a standard datum, which generates.
   obtain ⟨M, 𝒟, h𝒟, h_diff⟩ : ∃ (M : Submodule ℂ (Matrix n b (LocProd 𝔠.ramifiedPlaces) → ℂ))
