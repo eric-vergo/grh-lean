@@ -64,7 +64,7 @@ theorem det_mulLeft_mulRight_real {m : Type _} [Fintype m] [DecidableEq m] (P : 
   set T : Matrix m n ℂ →ₗ[ℂ] Matrix m n ℂ :=
     mulRightLinearMap m ℂ Q ∘ₗ mulLeftLinearMap n ℂ P
   have h_matrix : toMatrix (stdBasis ℂ m n) (stdBasis ℂ m n) T = kronecker P Qᵀ := by
-    simp [T, ← ext_iff, toMatrix_apply, stdBasis, mul_apply, Pi.single_apply, ite_apply]
+    simp [T, ← ext_iff, toMatrix_apply, stdBasis, Matrix.mul_apply, Pi.single_apply, ite_apply]
   have h_det : T.det = P.det ^ card n * Q.det ^ card m := by
     rw [← det_toMatrix (stdBasis ℂ m n), h_matrix, kronecker, det_kronecker, det_transpose]
   exact T.det_restrictScalars.trans (by simp [h_det, norm_complex_eq, pow_mul, Complex.sq_norm])
@@ -397,7 +397,7 @@ variable {J J' y} [IsHermitianInvolution J']
 @[fun_prop]
 theorem measurable_cayleyChart : Measurable (cayleyChart J) := by
   suffices h : Measurable fun y : Matrix n n ℝ ↦ (cayleyChart J y : Matrix n n ℂ) by
-    simpa [measurable_comap_iff, Function.comp_def] using h
+    exact isClosedEmbedding_U.measurableEmbedding.measurable_comp_iff.mp h
   simp only [val_cayleyChart_coe, Matrix.inv_def, Ring.inverse_eq_inv']
   fun_prop
 
@@ -611,6 +611,7 @@ theorem differentiableAt_cayleyChartInv_mul {Φ : V → U J} {p : V} (hΦ : Diff
   -- `Ring.inverse` is differentiable at the unit `c * Φ p + 1`
   fun_prop (disch := assumption)
 
+open scoped Pointwise in
 /-- For any complex matrix x, the matrix e^{it} x + 1 is invertible for almost every real t; here
 the scalar e^{it} is taken as the element `New.circleScalar` t of U(J). -/
 theorem ae_isUnit_circleScalar_mul_add_one (x : Matrix n n ℂ) :
@@ -649,7 +650,10 @@ theorem Haar.lintegral_chart_rotate_le [FiniteDimensional ℝ V] [MeasureSpace V
   have h_meas : MeasurableSet {z : Matrix n n ℂ × ℝ |
       IsUnit (((circleScalar z.2 : U J) : Matrix n n ℂ) * z.1 + 1)} := by
     simp only [isUnit_iff_isUnit_det, isUnit_iff_ne_zero]
-    measurability
+    have h_det : Continuous fun z : Matrix n n ℂ × ℝ ↦
+        ((Complex.exp (z.2 * Complex.I) • (1 : Matrix n n ℂ)) * z.1 + 1).det := by
+      fun_prop
+    exact h_det.isOpen_support.measurableSet
   have h_swap : ∀ᵐ t, ∀ᵐ x ∂(volume.restrict A).map fun p ↦ (Φ p : Matrix n n ℂ),
       IsUnit (((circleScalar t : U J) : Matrix n n ℂ) * x + 1) :=
     (ae_ae_comm h_meas).1 (.of_forall ae_isUnit_circleScalar_mul_add_one)
