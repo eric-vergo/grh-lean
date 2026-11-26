@@ -94,8 +94,8 @@ variable {χ : MulChar F ℂ} {s : Matrix b n F} {Ψ : Matrix n b F → ℂ}
 omit [Fintype b] [DecidableEq n] in
 /-- If `Ψ` is locally constant with compact support in the matrices with a left inverse, then
 `y ↦ Ψ yᵀ` is locally constant with compact support in the matrices with a right inverse. -/
-lemma _root_.Membership.mem.transpose_mem_schwartzBruhat (h : Ψ ∈ schwartzBruhat HasLeftInv) :
-    (fun y : Matrix b n F ↦ Ψ yᵀ) ∈ schwartzBruhat fun x : Matrix b n F ↦ HasLeftInv xᵀ :=
+lemma _root_.Membership.mem.transpose_mem_schwartzBruhat (h : Ψ ∈ schwartzBruhat {x | HasLeftInv x}) :
+    (fun y : Matrix b n F ↦ Ψ yᵀ) ∈ schwartzBruhat {x : Matrix b n F | HasLeftInv xᵀ} :=
   schwartzBruhat.comp h transpose transpose_transpose fun _ hx ↦ hx
 
 omit [DecidableEq n] in
@@ -103,7 +103,7 @@ omit [DecidableEq n] in
 vanishes off the matrices with a left inverse. -/
 lemma schwartzBruhat.mem_of_support_isPrimitiveMatrix (h : IsLocallyConstant Ψ)
     (hs : ∀ y : Matrix n b F, Ψ y ≠ 0 → IsPrimitiveMatrix O y) :
-    Ψ ∈ schwartzBruhat HasLeftInv := by
+    Ψ ∈ schwartzBruhat {x | HasLeftInv x} := by
   refine ⟨h, isCompact_O.matrix.closure_of_subset fun y hy ↦ (hs y hy).1, fun y hy ↦ ?_⟩
   obtain ⟨-, L, -, hL⟩ := hs y hy
   exact ⟨L, hL⟩
@@ -185,7 +185,7 @@ omit [DecidableEq n] in
 compact support in the matrices that have a left inverse: it is a locally constant function cut off
 by the clopen set of integral matrices, and it vanishes off the primitive ones. -/
 lemma stdColDatum_mem_schwartzBruhat (hs : IsIntMatrix O s) :
-    stdColDatum χ s ∈ schwartzBruhat HasLeftInv := by
+    stdColDatum χ s ∈ schwartzBruhat {x | HasLeftInv x} := by
   have h_loc : IsLocallyConstant fun y : Matrix n b F ↦ invOnUnits χ (s * y).det :=
     hχ.isLocallyConstant_invOnUnits.comp_continuous (by fun_prop)
   have h_clopen : IsClopen {y : Matrix n b F | IsIntMatrix O y} :=
@@ -198,12 +198,12 @@ omit [Fintype b] [DecidableEq b] in
 /-- For tame χ, the datum `stdRowDatum e χ s`, that is `x ↦ χ⁻¹ (det (s; x))`, is locally constant
 with compact support in the matrices that have a right inverse. -/
 lemma stdRowDatum_mem [DecidableEq a] :
-    stdRowDatum e χ s ∈ schwartzBruhat fun x : Matrix a n F ↦ HasLeftInv xᵀ := by
+    stdRowDatum e χ s ∈ schwartzBruhat {x : Matrix a n F | HasLeftInv xᵀ} := by
   -- `stdRowDatum e χ s` is `stdColDatum χ 1` composed with the map that stacks `x` under `s`;
   -- this map is continuous, and taking the rows `a` is a left inverse of it.
   let rows (M : Matrix n n F) : Matrix a n F := M.submatrix (e ∘ .inr) id
   -- Rows of an invertible matrix have a right inverse.
-  have rows_full : Set.MapsTo rows HasLeftInv fun x ↦ HasLeftInv xᵀ := fun M ⟨L, hL⟩ ↦
+  have rows_full : Set.MapsTo rows {x | HasLeftInv x} {x | HasLeftInv xᵀ} := fun M ⟨L, hL⟩ ↦
     hasLeftInv_invLastRows_transpose e (.mkOfMulEqOne L M hL)
   have stack_cont : Continuous fun x : Matrix a n F ↦ (s.fromRows x).submatrix e.symm id := by
     refine (continuous_matrix fun i j ↦ ?_).matrix_submatrix _ _
@@ -493,7 +493,7 @@ lemma exists_lineTerm_localDatum (X : V'.Splitting V Unit) [IsBaseAdapted A] [Is
   -- `slice_localDatum` leaves one integral for each `f i`; the last one is given by `h_gauss`.
   have h_integrals : ∏ i, ∫ t in (O : Subring F), rd.ψ (π (star (w i).2) * t) * f i t =
       ε * γ * (invOnUnits χ (π a.2) / invOnUnits χ (π (star a.2) * ϖ.val)) := by
-    simp [w, f, integral_const_mul, volume_O, Measure.real, h_gauss, mul_comm (rd.ψ _), mul_assoc,
+    simp [w, f, integral_const_mul, Set.univ_inter, volume_O, Measure.real, h_gauss, mul_comm (rd.ψ _), mul_assoc,
       mul_comm ϖ.val, mul_div_left_comm]
   rw [ite_isIntegralUnit_eq_ite_invOnUnits_div, lineTermReal, lineTerm_eq_slice, h_point,
     slice_localDatum rd (isAdapted_lineTermSplitting A X β) (stdRowDatum_mem _ _) w v f h_factor,
@@ -532,12 +532,12 @@ lemma components_of_mat_eq_one_add (g : G E r) (C C' : Matrix m m (𝔸 E))
       (atPlaces 𝔠.ramifiedPlaces g.2).1 = (1 + C).map (componentsAt 𝔠) := by
   refine ⟨?_, ?_, ?_⟩
   · -- both idempotents vanish at infinity
-    aesop (add simp [Prod.ext_iff, funext_iff, one_apply, ext_iff.symm])
+    aesop (add simp [Prod.ext_iff, funext_iff, Matrix.one_apply, ext_iff.symm])
   · -- both idempotents vanish at the places outside `S ∪ S̄`
-    aesop (add simp [Gf.supportedOn, Gf.atPlace, star_idem, one_apply, ext_iff.symm, Prod.ext_iff,
+    aesop (add simp [Gf.supportedOn, Gf.atPlace, star_idem, Matrix.one_apply, ext_iff.symm, Prod.ext_iff,
       funext_iff])
   · -- at the places of `S` the first idempotent is `1` and the second is `0`
-    aesop (add simp [atPlaces, 𝔠.star_notMem, funext_iff, star_idem, one_apply, ext_iff.symm,
+    aesop (add simp [atPlaces, 𝔠.star_notMem, funext_iff, star_idem, Matrix.one_apply, ext_iff.symm,
       Prod.ext_iff])
 
 /-- Let `𝒟` be an equivariant lift on `M` and let `ν` in the unitary group have matrix
