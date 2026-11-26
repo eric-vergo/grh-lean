@@ -442,7 +442,7 @@ private noncomputable def reciprocityChars (K : Type) [Field K] [EmbeddedNumberF
 `a` prime to `l` has `a • n • χ g = 0`. -/
 private noncomputable def QZChar.coprimeOrderSubgroup (g : Γ) (n l : ℕ) : AddSubgroup (QZChar Γ) :=
   let primeToL : Submonoid ℕ :=
-    { carrier := l.Coprime, mul_mem' := .mul_right, one_mem' := l.gcd_one_right }
+    { carrier := {a | l.Coprime a}, mul_mem' := .mul_right, one_mem' := l.gcd_one_right }
   (Submodule.torsion' ℤ QZ primeToL).toAddSubgroup.comap
     (.mk' (fun χ : QZChar Γ ↦ n • χ.val g) (by simp))
 
