@@ -128,7 +128,8 @@ lemma absNorm_denominator_le {y : E} (hy : y ∈ ratIntegralOff T) :
     rintro _ ⟨a, rfl⟩
     exact ((mem_Ô_iff T).1 (h_integral a)).left
   calc
-    _ = (denominator y).toAddSubgroup.index := rfl
+    (denominator y).absNorm = (denominator y).toAddSubgroup.index := by
+      rw [Ideal.absNorm_eq_natCard]; rfl
     _ = D.relIndex f.range := by rw [h_comap, index_comap]
     _ ≤ _ := relIndex_le_of_le_right h_range (denomIndex_ne_zero T _)
 
@@ -281,7 +282,8 @@ lemma mem_ratIntegralOff_of_transform_ne_zero {G : 𝔸 E → ℂ}
       New.stdAddChar E (toAdele (y / S.deltaE) * -a') *
         ∫ z, New.stdAddChar E (toAdele (y / S.deltaE) * -z) * G z := by
     rw [← integral_const_mul, ← integral_add_left_eq_self _ a']
-    congr with z
+    apply integral_congr_ae
+    filter_upwards [] with z
     rw [hG a ha, neg_add, mul_add, AddChar.map_add_eq_mul, Circle.coe_mul, mul_assoc]
   -- The factor is a value of the finite character: removing the components at `T` is
   -- multiplication by an idempotent, which can be moved from `a` to `y`.
@@ -1035,6 +1037,7 @@ lemma globalWeight_scaledHead_le [S.IsAdmissible] {A : Finset Eˣ}
       rw [prod_const, card_univ, Fintype.card_fin]
       ring
 
+set_option maxRecDepth 4096 in
 omit [T.StarStable] in
 /-- The sum of the weights of the heads of length `i ≤ ϱ` with entries in a finite set `A` of
 numbers integral off `T` is at most `b ^ (130 n⁹ f)`: the number of heads whose products are small
@@ -1120,6 +1123,7 @@ lemma sq_sum_globalWeight_le [S.IsAdmissible] {A : Finset Eˣ}
 
 end
 
+set_option maxRecDepth 4096 in
 omit [WeilData E] [T.StarStable] in
 /-- The sieve. Let `b = S.b`, `M = S.M` and `N = S.N` be the size parameter, the level and the prime
 of the admissible filling data `S`, let `k`, `ϱ`, `n = ϱ + 1` be the parameters of its shape `𝔰`,
@@ -1174,10 +1178,12 @@ theorem sieve [S.IsAdmissible] {A : Finset Eˣ}
   let massBound : ℝ := (∏ v, (1 + S.b⁻¹ ^ 10) / (S.besselSystem v).deg) * mass_T
   let Γ : ℝ := S.b ^ (400 * 𝔰.n ^ 9 * numInfPlaces E)
   let ε : ℝ := S.decayConst * S.b ^ (2002 * 𝔰.n ^ 9 * numInfPlaces E)
+  have h_product := hJ_T.pi (τ := InfinitePlace E) (J' := fun v ↦ (S.besselSystem v).bandLimit)
+    (fun v ↦ (S.besselSystem v).hasLocalBounds.1)
   have K : S.IsGlobalSieveSystem T 𝔰.ϱ J massBound (S.globalWeight T) fun ξ ↦
       (∏ v, 𝔰.scaledVolumeRatio * S.b ^ (2000 * 𝔰.n ^ 9) * dampedPower (𝔰.k - 𝔰.n ^ 7) ‖ξ.1 v‖⁻¹) *
         S.frequencyDecay T ξ.2 :=
-    hJ_T.pi fun v ↦ (S.besselSystem v).hasLocalBounds.1
+    h_product
   have hx (v : InfinitePlace E) (p : Fin 𝔰.ϱ → A) (t : Eˣ) :
       (·.1 v) ∘ S.scaledHead T p t = x v p t := rfl
   have hy (p : Fin 𝔰.ϱ → A) (t : Eˣ) : (·.2) ∘ S.scaledHead T p t = y p t := by
