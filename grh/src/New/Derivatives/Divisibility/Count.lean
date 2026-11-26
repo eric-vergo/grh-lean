@@ -224,7 +224,7 @@ lemma jet_columnDetProd_subst [DecidableEq Φ] (i' : WeylIndex n' κ) (c : Φ �
     ext b k : 1
     rw [Matrix.mul_assoc, diagonal_mul, AlgHom.mapMatrix_apply, map_apply, of_apply,
       linSubst_directionSubst_X]
-    simp only [newDirection, dotProduct, mul_apply, of_apply, RingHom.mapMatrix_apply, map_apply,
+    simp only [newDirection, dotProduct, Matrix.mul_apply, of_apply, RingHom.mapMatrix_apply, map_apply,
       transpose_apply, map_sum, map_mul, smul_eq_C_mul, sum_mul]
     exact congrArg _ (sum_comm.trans (sum_congr rfl fun k' _ ↦ sum_congr rfl fun a _ ↦ by ring))
   have h_poly : linSubst (directionSubst c (newDirection g y)) (columnDetProd R i') =

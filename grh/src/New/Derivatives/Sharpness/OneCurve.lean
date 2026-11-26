@@ -118,7 +118,7 @@ lemma rpow_pow_le_norm_factorial_succ (n : ℕ) :
     ((p : ℝ) ^ (-(1 / (p - 1)) : ℝ)) ^ n ≤ ‖((n + 1)! : ℂ_[p])‖ := by
   have hp : (1 : ℝ) < p := mod_cast (Fact.out : p.Prime).one_lt
   have h_legendre : ((p : ℝ) - 1) * padicValNat p (n + 1)! ≤ n := by
-    rw [← Nat.cast_pred (Fact.out : p.Prime).pos]
+    rw [← Nat.cast_pred (Fact.out : p.Prime).pos, Nat.padicValNat_def]
     exact mod_cast Nat.le_of_lt_succ
       (sub_one_mul_padicValNat_factorial_lt_of_ne_zero p n.succ_ne_zero)
   calc ((p : ℝ) ^ (-(1 / (p - 1)) : ℝ)) ^ n = (p : ℝ) ^ (-(n / (p - 1)) : ℝ) := by
