@@ -91,7 +91,7 @@ lemma translateByClassReps_mem_floorGroup {σ : S.G E} (hσ : σ ∈ floorGroup 
     S.translateByClassReps c c' σ ∈ floorGroup 𝔰.ϱ := by
   simp [mem_floorGroup, Sum.forall, apply_eq_one_apply_of_mem_floorGroup hσ,
     coe_translateByClassReps, classBasis, toBesselH,
-    besselLatticeBasis, mul_apply, Matrix.one_apply]
+    besselLatticeBasis, Matrix.mul_apply, Matrix.one_apply]
 
 /-- Let `σ` fix the vectors `e_a`, `e*_a` of the `ϱ = 𝔰.ϱ` hyperbolic pairs (`floorGroup 𝔰.ϱ`). Let
 `L = h_c⁻¹ σ h_c'` be its translate by the representatives of the classes `c`, `c'`, and let `z` be
@@ -107,7 +107,7 @@ lemma orbitPoint_top_translateByClassReps_inv {σ : S.G E} (hσ : σ ∈ floorGr
         (c.out⁻¹.val.val *ᵥ algebraMap E (𝔸f E) ∘ fun j : 𝔰.κ ↦ σ.val.val (𝔰.indexX₀ j) 𝔰.z) := by
   -- The change of basis on the right fixes `z`, so the column of `σ` at `z` remains.
   have h_fix : (classBasis c').val *ᵥ Pi.single 𝔰.z 1 = Pi.single 𝔰.z 1 := by
-    simp [funext_iff, Sum.forall, classBasis, toBesselH, besselLatticeBasis, mul_apply]
+    simp [funext_iff, Sum.forall, classBasis, toBesselH, besselLatticeBasis, Matrix.mul_apply]
   have h_column : orbitPoint 𝔰.top (S.translateByClassReps c c' σ)⁻¹ =
       S.latticeBasis⁻¹.val *ᵥ
         fromBlocks 1 0 0 (fromBlocks (fromBlocks c.out⁻¹.val.val 0 0 1) 0 0 1) *ᵥ
@@ -121,7 +121,7 @@ lemma orbitPoint_top_translateByClassReps_inv {σ : S.G E} (hσ : σ ∈ floorGr
   -- Both sides are the inverse of the lattice basis applied to a vector; compare the vectors.
   congr 1
   simp [funext_iff, Sum.forall, frameGram, splitGram, middleGram, mulVec, ← piN_mul_star,
-    ← mul_assoc, ← star_mul, apply_eq_one_apply_of_mem_floorGroup hσ, dotProduct, mul_apply]
+    ← mul_assoc, ← star_mul, apply_eq_one_apply_of_mem_floorGroup hσ, dotProduct, Matrix.mul_apply]
 
 /-- The norm equation. Let `σ` be an isometry of the hermitian form `h` over `E`, and let it fix the
 vectors `e_a`, `e*_a` of the `ϱ = 𝔰.ϱ` hyperbolic pairs (`floorGroup 𝔰.ϱ`). Let `z` be the basis
@@ -137,11 +137,11 @@ lemma mul_star_dotProduct_eq_last_frameProducts {σ : S.G E} (hσ : σ ∈ floor
   let ω : 𝔰.κ → E := fun j ↦ σ.val.val (𝔰.indexX₀ j) 𝔰.z
   let a : E := σ.val.val 𝔰.z 𝔰.z
   have h_last : S.frameProducts σ 𝔰.top 𝔰.top = -(S.N * a) := by
-    simp [a, frameGram, middleGram, splitGram, mul_apply]
+    simp [a, frameGram, middleGram, splitGram, Matrix.mul_apply]
   have h_form : (σ.val.valᴴ * (S.ratMiddle E).splitGram * σ.val.val) 𝔰.z 𝔰.z =
       (S.ratMiddle E).splitGram 𝔰.z 𝔰.z := by rw [mem_U.1 σ.prop]
   have h_norm : star ω ⬝ᵥ ω + -(star a * S.N * a) = -S.N := by
-    simpa [apply_eq_one_apply_of_mem_floorGroup hσ, middleGram, splitGram, mul_apply, dotProduct,
+    simpa [apply_eq_one_apply_of_mem_floorGroup hσ, middleGram, splitGram, Matrix.mul_apply, dotProduct,
       Matrix.one_apply]
       using h_form
   rw [h_last, star_neg, star_mul', star_natCast]
@@ -158,7 +158,7 @@ lemma translateByClassReps_weylElem_mul (c c' : S.Classes) (p : ℕ → Eˣ) (σ
   simp +contextual [Subtype.ext_iff, ← mul_assoc, Units.ext_iff, ← ext_iff, Sum.forall, weylElem,
     weylOn, coe_translateByClassReps, classBasis, toBesselH, besselLatticeBasis,
       fromBlocks_multiply,
-    fromCols_mul_fromBlocks, mul_apply, Matrix.one_apply, BesselIndex.level, h_level,
+    fromCols_mul_fromBlocks, Matrix.mul_apply, Matrix.one_apply, BesselIndex.level, h_level,
     apply_ite (algebraMap E (𝔸f E))]
 
 end
@@ -702,7 +702,8 @@ lemma hasSum_besselOrbitalIntegral_cosetAmplitude [WeilData E]
     ext i
     rw [eval_integral_piLp (h_int ⟨δ w, h_mem⟩).eval_piLp i]
     simp [besselOrbitalIntegral, besselKernel]
-  · rw [indicator_of_notMem hw, Function.comp_apply, indicator_of_notMem fun h ↦ hw h.2]
+  · have h_not : δ w ∉ X ∩ S.termsOver c s c' := fun h ↦ hw h.2
+    rw [indicator_of_notMem hw, Function.comp_apply, indicator_of_notMem h_not]
 
 /-- Let `F` be a filling datum at `T` (`hF`), that is, a large lattice datum on the completions at
 `T` whose modulus `F.levelUnit` is the component of `M = p₀p₁ = S.ideleM`. Let `M⁻¹` be integral off
