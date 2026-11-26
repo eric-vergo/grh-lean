@@ -203,7 +203,7 @@ lemma IsWeakChainDatum.gaugeLe_restrictedChain_collisionSum (hΨ : IsWeakChainDa
       -D.divisibilityBound p j ∅ ≤ D.collisionSum p ∅ + (D.loss p - D.gain p) / D.m := by
     have h_bound : D.gain p / D.m - D.collisionSum p ∅ - D.f * D.logB ^ 2 * (D.a / p) / D.m ≤
         D.divisibilityBound p j ∅ := by
-      simpa using le_divisibilityBound (mem_range.1 hj) hp_small ∅
+      simpa [Finset.inter_empty] using le_divisibilityBound (mem_range.1 hj) hp_small ∅
     have h_loss : D.f * D.logB ^ 2 * (D.a / p) / D.m ≤ D.loss p / D.m :=
       div_le_div_of_nonneg_right (D.le_loss p) hm_pos.le
     rw [sub_div]
