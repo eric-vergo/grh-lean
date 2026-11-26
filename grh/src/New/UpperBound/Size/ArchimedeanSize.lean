@@ -301,7 +301,7 @@ lemma sum_rowSizeSum_le {P : Parameters} (D : Data P) :
     grw [D.jetSize_le_add (D.diagramWeight_le_rowMainLength_add_rowSlack hj τ i),
       D.rowMainLength_add_rowSlack_le τ i, h_box]
   have h_first : ∑ τ : D.Φ, D.jetSize (D.columnCount τ 1) = #D.aPlaces * D.jetSize D.a := by
-    simp [columnCount, apply_ite D.jetSize, D.jetSize_zero]
+    simp [columnCount, apply_ite D.jetSize, D.jetSize_zero, Finset.univ_inter]
   let main : ℝ :=
     ∑ τ : D.Φ, D.jetSize (D.columnCount τ 1) + (D.k - 1) * ∑ τ : D.Φ, D.jetSize (D.weight τ)
   let slack : ℝ := D.f * (25 * D.logB * (D.natB + D.offWeight + D.n D.m * D.halfGap ^ 2))
