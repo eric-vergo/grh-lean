@@ -186,7 +186,7 @@ lemma classGaussSum_one_zero_eq_one (hJ : IsUnimodular P.integers J) {α b : A} 
     rw [zero_add]
     exact (P.self_dual _).2 (sub_mem h_norm hα) (P.element * b) (mul_mem P.element_mem hb)
   rw [classGaussSum, setIntegral_congr_fun (isOpen_latticeMultiple 1).measurableSet h_phase]
-  simp [Measure.real, volume_latticeMultiple]
+  simp [Measure.real, Set.univ_inter, volume_latticeMultiple]
 
 /-- The mass of the lattice on an integral quadric. Let `ζ_R(μ) ≤ 2`, where
 `ζ_R(μ) = idealZeta R μ` is the sum of `[R : I] ^ (-μ)` over the ideals of finite index. Let `J` be
@@ -214,7 +214,7 @@ theorem one_add_enorm_measure_intVectors_sub_one_le (h : P.IsDisintegration volu
     classGaussSum_one_zero_eq_one hJ (mul_mem P.skewUnit_inv_mem ht) hb
   have h_head : ∫ b : skewAdjoint A in S, G b ∂P.skewMeasure = 1 := by
     rw [setIntegral_congr_fun hS hG_one]
-    simp [Measure.real, S, P.skewMeasure_setOf_mem]
+    simp [Measure.real, S, Set.univ_inter, P.skewMeasure_setOf_mem]
   have h_class : (intVectors P.integers κ : Set (κ → A)) = residueClass 1 0 := by
     simp [residueClass, mem_latticeMultiple, intVectors]
   have h_tail : (((l t (intVectors P.integers κ : Set (κ → A))).toReal - 1 : ℝ) : ℂ) =
