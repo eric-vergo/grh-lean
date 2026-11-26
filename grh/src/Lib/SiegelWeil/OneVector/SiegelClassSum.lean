@@ -305,7 +305,7 @@ lemma New.exists_isAddFundamentalDomain_realAdele (E : Type) [Field E] [CMType E
       fun x ↦ s.existsUnique_congr_right.1 (h_unique x)
   refine ⟨ι, Ω, h_inj, fun a z ↦ realAdele_add _ z, h_bdd, h_fund, fun β hβ ↦ ?_⟩
   split_ifs with hβ0
-  · simpa [hβ0, μ, measureReal_def] using congrArg ((↑) : ℝ → ℂ) h_vol
+  · simpa [hβ0, μ, Set.univ_inter, measureReal_def] using congrArg ((↑) : ℝ → ℂ) h_vol
   -- Translating `z` by `t + star t` multiplies the integral by `stdAddChar(βt)`. If the integral
   -- is not zero, then `stdAddChar(βt) = 1` for all adeles `t`, so `β = 0`.
   contrapose hβ0
@@ -424,7 +424,8 @@ lemma New.SiegelWeil.siegel_weil_fourierCoeff {E κ : Type} [Field E] [CMType E]
       P (s β +ᵥ z) = (lagrangian (shearSplitting β)).zeroTerm (stdSpace E κ) (twist z) := by
     have h_shift : realAdele (s β +ᵥ z) = toAdele (β : E) + realAdele z := realAdele_add β z
     rw [hP, zeroTerm_shearSplitting (h_twist z), h_shift]
-    congr with x
+    apply integral_congr_ae
+    filter_upwards with x
     simp [mul_sub, ← map_mul, ← mul_assoc, div_eq_inv_mul, add_mul, mul_add, map_sub_eq_div,
       map_add_eq_mul]
     ring
@@ -619,7 +620,8 @@ lemma New.integral_gaussian_mul_stdAddChar {E κ : Type} [Field E] [CMType E] [W
   rw [h_infinite, integral_withDensity_eq_integral_smul Φ₀.continuous.measurable,
     ← integral_prod_mul, ← Measure.volume_eq_prod,
     ← (volume_measurePreserving_arrowProdEquivProdArrow ..).integral_comp']
-  congr with x
+  apply integral_congr_ae
+  filter_upwards with x
   simp [MeasurableEquiv.arrowProdEquivProdArrow, dotProduct, stdAddChar, realAdele, map_ofNat,
     fourierChar, ← Complex.exp_add, ← Complex.exp_sum, mul_mul_mul_comm _ (Φ₀ _ : ℂ),
     sum_comm (γ := κ), ← ofReal_pow, sum_mul, ← sum_neg_distrib, ← sum_add_distrib,
@@ -828,7 +830,7 @@ lemma New.norm_sub_one_le_of_normDensity_eq {E n : Type} [Field E] [CMType E] [W
       have ht : (star y ⬝ᵥ y - 1) * traceOneAdele ∈ Ô E :=
         mul_mem (sub_mem (star_dotProduct_mem hy hy) (one_mem _)) traceOneAdele_mem
       simpa [← mul_add, ← star_dotProduct] using (ψf_inv_two_mul_add_star _).trans (hz _ ht)
-    simpa [C, coe_stdLattice, volume_pi_pi, Measure.real] using
+    simpa [C, coe_stdLattice, Set.univ_inter, volume_pi_pi, Measure.real] using
       setIntegral_congr_fun (μ := volume) meas F_eq
   -- The part of `∫ F` off `C` is `(x - 1) vol L`; in `gauss` the part on `C` uses up `vol L`.
   have h_compl : ∫ z in Cᶜ, F z = (x - 1) * volÔ E ^ Fintype.card n := by
