@@ -30,6 +30,12 @@ For one lift, an auxiliary comparison operator is built from a gluing map and it
 
 Congruences between eigensystems can make a projection onto just some eigensystems nonintegral. The first-order congruence argument bounds denominators using Galois extension classes. A Selmer group collects such classes subject to specified local conditions. At each prime a tame character is chosen so its first $`m` powers simultaneously control Selmer lengths and valuations of critical Hecke-value ratios. Applying the denominator bound and summing local losses gives a regular family of twists. Its bounds are precisely what the determinant comparison consumes. [Regular families](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/src/New/Congruences/FitTwistsExist.lean).
 
-:::theorem "grh-guide-long" (lean := "New.Data.integral_forms_long")
+:::theorem "grh-guide-twists" (lean := "New.exists_isRegularFamily, New.Data.exists_hasSmallRatios_heightLe_liftDeterminant_div, New.Data.heightLe_chainDeterminant_one_div")
+For each admissible datum there is a regular family indexed by the prime and its chosen complex-to-adic identification. It supplies small inverse Hecke-value ratios and a bound for the heights of the single-lift determinant ratios. The chain comparison turns these into the height bound for the full determinant ratio.
+:::
+
+The intermediate projection bound is an operator statement. On the relevant space the operator preserves Hecke eigenspaces and its eigenvalues have bounded valuation. Applying it to the projection of an integral form orthogonal to the false lifts restores integrality. The bound on those valuations uses the lengths of the twisted Selmer groups. The twisting theorem chooses one character for the finite family of main summands and critical pairs at the given prime. Controlling its first powers together lets it serve all stages of one chain. [Denominator bound](https://eric-vergo.github.io/grh-lean/source/New.Congruences.FirstOrder.DenominatorBound.html) and [twisting theorem](https://eric-vergo.github.io/grh-lean/source/New.Congruences.Selmer.TwistingTheorem.html).
+
+:::theorem "grh-guide-long" (lean := "New.Data.integral_forms_long") (uses := "grh-guide-twists")
 For an independent family of at least `(1 − 4/b²) d` target vectors, let $`c` bound its logarithmic squared covolume and let $`δ` bound its index. Then `d (mainAmount − 3 f a (log b)⁴) ≤ c + 2δ`.
 :::
