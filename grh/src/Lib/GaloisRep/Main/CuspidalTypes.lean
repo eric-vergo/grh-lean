@@ -162,7 +162,7 @@ lemma exists_eq_one_add_mul_mul_and_map_trace_ne_zero (N : ℕ) {a : LocField w}
         using h_ne_zero
     have h_trace : (b.map Subtype.val * (K.val * (diagonal d * (s * K⁻¹.val)))).trace =
         (k⁻¹ * b * k) j i * d i * t := by
-      simp [s, ← hk, ← mul_assoc, trace_mul_cycle _ s, trace_mul_single, mul_apply, ← map_inv,
+      simp [s, ← hk, ← mul_assoc, trace_mul_cycle _ s, trace_mul_single, Matrix.mul_apply, ← map_inv,
         diagonal]
     rwa [h_trace]
 

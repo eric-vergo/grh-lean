@@ -553,7 +553,9 @@ private lemma pdQuotientMk_lineEnvelope_var_ofAdd_one {A : CrysTest Amax} (t : A
       pdQuotientMk (lineEnvelope t).obj (algebraMap A.obj (lineEnvelope t).obj t) := by
   have h_sub_mem : algebraMap A.obj (lineEnvelope t).obj t - lineEnvelope.var t (.ofAdd 1) ∈
       pdIdeal (lineEnvelope t).obj := by
-    simpa [lineGen] using! algebraMap_mem_pdIdeal (A.obj[ℚ≥0]) {lineGen t} rfl
+    rw [IsScalarTower.algebraMap_apply A.obj (A.obj[ℚ≥0]) (lineEnvelope t).obj]
+    have h := algebraMap_mem_pdIdeal (A.obj[ℚ≥0]) {lineGen t} rfl
+    simpa only [lineGen, map_sub] using! h
   exact (Ideal.Quotient.eq.mpr h_sub_mem).symm
 
 /-- The point of the root systems of t modulo 𝔡 at the envelope `lineEnvelope t`: the variable v
