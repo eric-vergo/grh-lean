@@ -121,36 +121,49 @@ def check_reading_pages(site):
               f'{document}: missing upstream provenance link')
 
 
+def check_atlas(site):
+    atlas = site / 'source'
+    index = Page(atlas / 'index.html')
+    catalog = dict(json.loads((atlas / 'catalog.json').read_text()))
+    sources = {'.'.join(p.relative_to('src').with_suffix('').parts): p for p in Path('src').rglob('*.lean')}
+    check(catalog.keys() == sources.keys(), 'Source atlas module coverage mismatch')
+    indexed = {module: set(names) for module, names in catalog.items()}
+    total_lines = total_links = 0
+    for module, source in sources.items():
+        filename = module + '.html'
+        check(filename in index.hrefs, 'Missing module link: ' + module)
+        page = Page(atlas / filename)
+        compiler = json.loads((Path('.lake/build/lib/lean') / source.relative_to('src').with_suffix('.ilean')).read_text())
+        expected = set(compiler['decls'])
+        check(set(catalog[module]) == expected, 'Incomplete declaration search: ' + module)
+        check(all('d-' + d in page.ids for d in expected), 'Missing declaration anchor: ' + module)
+        lines = source.read_text().splitlines()
+        total_lines += len(lines)
+        total_links += len(page.source_links)
+        check(page.lines == lines, 'Published text differs from Lean source: ' + module)
+        for href in page.source_links:
+            target, anchor = href.split('#', 1)
+            target_module = target.removesuffix('.html') if target else module
+            check(anchor.startswith('d-') and anchor[2:] in indexed.get(target_module, set()),
+                  'Unknown source reference in ' + module + ': ' + href)
+        check(all('L' + str(n) in page.ids for n in range(1,len(lines)+1)), 'Missing line: ' + module)
+        check(all(not h.startswith('#') or h[1:] in page.ids for h in page.hrefs), 'Broken local link: ' + module)
+    return len(sources), sum(map(len, catalog.values())), total_lines, total_links
+
+
 site = Path(sys.argv[1])
+if sys.argv[2:] == ['--atlas-only']:
+    modules, declarations, lines, links = check_atlas(site)
+    print(f'Verified {modules} modules, {declarations:,} declaration anchors, {lines:,} source lines '
+          f'and {links:,} linked references')
+    sys.exit(0)
 check_navigation(site)
 if sys.argv[2:] == ['--links-only']:
     sys.exit(0)
 check_reading_pages(site)
 if sys.argv[2:] == ['--reading-only']:
     sys.exit(0)
-atlas = site / 'source'
-index = Page(atlas / 'index.html')
-catalog = dict(json.loads((atlas / 'catalog.json').read_text()))
-sources = {'.'.join(p.relative_to('src').with_suffix('').parts): p for p in Path('src').rglob('*.lean')}
-check(catalog.keys() == sources.keys(), 'Source atlas module coverage mismatch')
-indexed = {module: set(names) for module, names in catalog.items()}
-for module, source in sources.items():
-    filename = module + '.html'
-    check(filename in index.hrefs, 'Missing module link: ' + module)
-    page = Page(atlas / filename)
-    compiler = json.loads((Path('.lake/build/lib/lean') / source.relative_to('src').with_suffix('.ilean')).read_text())
-    expected = set(compiler['decls'])
-    check(set(catalog[module]) == expected, 'Incomplete declaration search: ' + module)
-    check(all('d-' + d in page.ids for d in expected), 'Missing declaration anchor: ' + module)
-    lines = source.read_text().splitlines()
-    check(page.lines == lines, 'Published text differs from Lean source: ' + module)
-    for href in page.source_links:
-        target, anchor = href.split('#', 1)
-        target_module = target.removesuffix('.html') if target else module
-        check(anchor.startswith('d-') and anchor[2:] in indexed.get(target_module, set()),
-              'Unknown source reference in ' + module + ': ' + href)
-    check(all('L' + str(n) in page.ids for n in range(1,len(lines)+1)), 'Missing line: ' + module)
-    check(all(not h.startswith('#') or h[1:] in page.ids for h in page.hrefs), 'Broken local link: ' + module)
+modules, declarations, _, _ = check_atlas(site)
 landing = Page(site / 'index.html')
 check('source/index.html' in landing.hrefs, 'Landing page has no source atlas link')
 check({'reading/guide.html', 'reading/guide.html#2-glossary', 'reading/guide.html#3-sizes',
@@ -181,4 +194,4 @@ size = sizes.total()
 for group, value in sorted(sizes.items()):
     print(f'{group}: {value:,} bytes')
 check(size < 1_000_000_000, f'Published site exceeds the 1 GB budget ({size:,} bytes)')
-print(f'Verified {len(sources)} modules, {sum(map(len,catalog.values())):,} declaration anchors, and {size:,} published bytes')
+print(f'Verified {modules} modules, {declarations:,} declaration anchors, and {size:,} published bytes')
