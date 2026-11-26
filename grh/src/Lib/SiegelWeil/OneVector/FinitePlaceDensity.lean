@@ -201,7 +201,7 @@ theorem exists_content {p : ι → A} {i : ι} (h_unit : IsUnit (p i)) :
       (h_column : replicateCol Unit p = V.val.submatrix id (Embedding.punit i) * _), rfl⟩ :=
     P.isAdelic.isValuationPair.hermite (.punit i) (replicateCol Unit p)
   have h_col (j : ι) : p j = V.1 j i * V⁻¹.1 i ⬝ᵥ p := by
-    simpa [mul_apply, dotProduct, Embedding.punit, -coe_units_inv] using congrFun₂ h_column j ()
+    simpa [Matrix.mul_apply, dotProduct, Embedding.punit, -coe_units_inv] using congrFun₂ h_column j ()
   -- The scalar divides the unit `p i`, so it is a unit `t`.
   have h_prod_unit : IsUnit (V.1 i i * V⁻¹.1 i ⬝ᵥ p) := by rwa [← h_col i]
   obtain ⟨t, ht⟩ : IsUnit (V⁻¹.1 i ⬝ᵥ p) := isUnit_of_mul_isUnit_right h_prod_unit
@@ -733,7 +733,7 @@ lemma integral_eq_mul_of_section {X Y : Type*} [AddCommGroup X] [AddCommGroup Y]
       (shear₂.comp (measurePreserving_swap.comp shear₁)))
   calc
     _ = ∫ q : X × Y, f q.1 * K.indicator 1 q.2 ∂μ.prod ν := by
-      simp [integral_prod_mul f, integral_indicator hK, K_one, Measure.real]
+      simp [integral_prod_mul f, integral_indicator hK, K_one, Measure.real, Set.univ_inter]
     _ = ∫ q : X × Y, (p ⁻¹' K).indicator c q.1 * a q.2 ∂μ.prod ν := by
       rw [← he.integral_comp']
       refine integral_congr_ae (.of_forall fun q ↦ ?_)

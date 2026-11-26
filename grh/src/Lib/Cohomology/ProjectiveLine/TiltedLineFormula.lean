@@ -241,7 +241,10 @@ lemma exists_isLerayHirschBasis_of_isCohomDense [InvertsPrime A ℓ] (M : Torsio
     pullbackAlong oneLocConst i.snd.toTotalH
   -- `{j} ∩ u.support` is empty if `u j = 0`, and `{j}` with `u j ≠ 0` otherwise.
   have hj : LinearIndepOn (ZMod ℓ) u ({j} ∩ u.support) := by
-    by_cases h_uj : u j = 0 <;> simp [h_uj]
+    by_cases h_uj : u j = 0
+    · simp [h_uj]
+    · rw [Set.inter_eq_left.mpr (Set.singleton_subset_iff.mpr h_uj)]
+      simpa using h_uj
   obtain ⟨b, -, h_jb, h_span, h_indep⟩ := exists_linearIndepOn_extension hj (Set.subset_univ _)
   -- Every class of the point is pulled back along `oneLocConst`
   -- (`TorsionCoeff.pullbackAlong_oneLocConst_surjective`), so the `u i` span.
