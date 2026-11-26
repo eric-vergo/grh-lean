@@ -50,7 +50,9 @@ To build and validate the full blueprint and source atlas, run `./scripts/check-
 
 ## Checks
 
-The upstream authors report a successful build of the Lean 4.35.0 original and a three-axiom report for each public theorem. They also report acceptance by nanoda, con-leche, con-ron and Comparator v4.35.0. The upstream README says no mathematician has read the proof through. [Original verification report](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/README.md#checks).
+**Upstream Lean 4.35.0.** The authors report that both editions compiled and each public theorem used `propext`, `Classical.choice` and `Quot.sound`. For the readable edition, nanoda, con-leche and con-ron accepted an export containing the five theorems and their transitive dependencies, including Mathlib. For the compact edition, the authors replayed every project module through Lean’s kernel. They also ran Comparator v4.35.0 separately on both editions on Linux with a stand-in for its sandbox. The authors say no mathematician has read the proof through. [Readable verification report](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/README.md#checks) and [compact verification report](../grh-compact/README.md#checks).
+
+**This fork’s Lean 4.36.0 checks.** The local script checks the three permitted axioms for each theorem in canonical `Main`. The blueprint produces five individual comparator verdicts against the challenge declarations. A fresh kernel replay covers the declarations attached to blueprint nodes and the theorem roots. The workflow also offers a separate, optional Linux job running sandboxed Comparator with nanoda. [Verification script](scripts/check-blueprint.sh) and [workflow](../.github/workflows/grh-blueprint.yml).
 
 In this fork the [challenge](Comparator/Grh/Challenge.lean) fixes the five public statements. The [solution mirror](Comparator/Grh/Solution.lean) represents the declarations from [Main](src/Main.lean) for the comparator and blueprint. The challenge contains placeholders by design. The blueprint imports the solution.
 
