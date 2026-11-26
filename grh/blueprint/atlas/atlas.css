@@ -10,3 +10,4 @@ pre { overflow: auto; border: 1px solid #8886; padding: 1rem 0; tab-size: 2; }
 details, form { margin: 1rem 0; }
 summary, button { cursor: pointer; }
 input, button { font: inherit; }
+.ref { text-decoration: underline dotted; text-underline-offset: .15em; }

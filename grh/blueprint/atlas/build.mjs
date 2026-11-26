@@ -14,6 +14,35 @@ const escape = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 const modulePage = name => encodeURIComponent(name) + '.html';
 
+// Lean records LSP columns in UTF-16, which are JavaScript string offsets.
+function sourceLinks(index, known) {
+  const links = new Map();
+  for (const [key, reference] of Object.entries(index.references ?? {})) {
+    const constant = JSON.parse(key).c;
+    if (!constant || !known.get(constant.m)?.has(constant.n)) continue;
+    const page = constant.m === index.module ? '' : modulePage(constant.m);
+    const href = page + '#d-' + encodeURIComponent(constant.n);
+    for (const [line, start, last, end] of reference.usages) {
+      if (line !== last || start >= end) continue;
+      if (!links.has(line)) links.set(line, []);
+      links.get(line).push({start, end, href});
+    }
+  }
+  return links;
+}
+
+function renderLine(text, references) {
+  let markup = '';
+  let at = 0;
+  for (const ref of (references ?? []).sort((a,b) => a.start-b.start || a.end-b.end)) {
+    if (ref.start < at || ref.end > text.length) continue;
+    markup += escape(text.slice(at,ref.start));
+    markup += '<a class="ref" href="'+escape(ref.href)+'">'+escape(text.slice(ref.start,ref.end))+'</a>';
+    at = ref.end;
+  }
+  return markup + escape(text.slice(at));
+}
+
 async function walk(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const file = path.join(dir, entry.name);
@@ -39,12 +68,20 @@ for (const file of entries) {
   const name = file.slice(4, -5).split(path.sep).join('.');
   titles.set(name, file);
 }
+const indexFile = file => path.join('.lake/build/lib/lean',file.slice(4,-5)+'.ilean');
+const known = new Map();
+if (!pilot) {
+  for (const [name,file] of titles) {
+    const compiler = JSON.parse(await readFile(indexFile(file),'utf8'));
+    known.set(name,new Set(Object.keys(compiler.decls)));
+  }
+}
 for (const [name, file] of titles) {
   const source = await readFile(file, 'utf8');
   const lines = source.split('\n');
   if (lines.at(-1) === '') lines.pop();
   const idx = pilot ? { module: name, decls: {}, directImports: [] } :
-    JSON.parse(await readFile(path.join('.lake/build/lib/lean',file.slice(4,-5)+'.ilean'), 'utf8'));
+    JSON.parse(await readFile(indexFile(file), 'utf8'));
   if (idx.module !== name || !idx.decls || !Array.isArray(idx.directImports)) {
     throw new Error('Missing compiler index for ' + file);
   }
@@ -60,8 +97,9 @@ for (const [name, file] of titles) {
   const imports = idx.directImports.map(([mod]) => titles.has(mod)
     ? '<a href="' + modulePage(mod) + '">' + escape(mod) + '</a>' : escape(mod));
   const links = decls.map(([decl]) => '<li><a href="#'+anchor(decl)+'">'+escape(decl)+'</a></li>');
+  const refs = sourceLinks(idx,known);
   const rendered = lines.map((line,i) => '<span class="line" id="L'+(i+1)+'">'+(anchors.get(i+1) ?? []).join('')+
-    '<a class="ln" aria-label="Line '+(i+1)+'" href="#L'+(i+1)+'">'+(i+1)+'</a>'+escape(line)+'</span>').join('\n');
+    '<a class="ln" aria-label="Line '+(i+1)+'" href="#L'+(i+1)+'">'+(i+1)+'</a>'+renderLine(line,refs.get(i))+'</span>').join('\n');
   await write(modulePage(name), page(name,
     '<p><code>'+escape(file)+'</code> · '+lines.length+' lines · '+decls.length+' compiler-indexed declarations</p>'+
     '<p>Imports: '+imports.join(', ')+'</p><details><summary>Declarations in source order</summary><ul>'+
