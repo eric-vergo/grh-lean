@@ -661,7 +661,7 @@ lemma exists_originFunctions_factorization_det_dvd [Fintype E] [DecidableEq E] {
   -- The columns of `P⁻¹` are independent modulo `𝔪_O`, which bounds the number of these `j`.
   have h_card (δ : ℕ) : #{i : X × Exponents N k n | ¬t i ∣ T.sqrtPrime ^ δ} ≤ Fintype.card X *
       finrank (ResidueField O) ((T.map (residue O)).deepForms k n r (δ + 1)) :=
-    card_le_mul_finrank_of_dual_rows P⁻¹.val P.val (fun j _ i ↦ by rw [P.mul_inv, one_apply])
+    card_le_mul_finrank_of_dual_rows P⁻¹.val P.val (fun j _ i ↦ by rw [P.mul_inv, Matrix.one_apply])
       fun j hj y ↦ T.residue_mem_translatesIn (h_deep δ j (mem_filter.1 hj).2 y)
   rw [det_mul, det_diagonal, (isUnits_det_units P).mul_right_dvd, mul_sum]
   exact (prod_dvd_pow_sum_card ht_pow).trans
