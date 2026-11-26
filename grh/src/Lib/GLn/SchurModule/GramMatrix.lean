@@ -84,8 +84,8 @@ lemma fockPairing_weylKernel_permArray_self :
     of fun i a ↦ permArray (fun (σ : Φ) (b : n σ) ↦ (rowEquivFin n σ b : ℕ)) (⟨τ, a⟩, i)
   have h_orth (τ : Φ) : p τ * (p τ)ᵀ = 1 := by
     ext i j
-    rw [mul_apply, ← (rowEquivFin n τ).symm.sum_comp]
-    simp [p, permArray, Fin.val_inj, one_apply, eq_comm]
+    rw [Matrix.mul_apply, ← (rowEquivFin n τ).symm.sum_comp]
+    simp [p, permArray, Fin.val_inj, Matrix.one_apply, eq_comm]
   let f : MatrixPoly (Σ τ : Φ, Fin (rankAt n τ)) R := highestPoly R κ (rankAt n)
   calc fockPairing R (rowSubst p f) (rowSubst p f)
     _ = fockPairing R f f := by
@@ -651,7 +651,7 @@ lemma hasLeftInv_comulMatrix : HasLeftInv (comulMatrix ℤ n κ κ') := by
   refine ⟨fun k ↦ (vecMulVec (Function.invFun (nablaCombination κ') (g k))
       (Function.invFun (nablaCombination κ) (f k))).vec,
     ext_row fun k ↦ vecMul_comulMatrix_eq_iff.mpr ?_⟩
-  simp [Fintype.linearCombination_apply, ↓sum_coords_nablaBasis, hf, hg, hfg, one_apply]
+  simp [Fintype.linearCombination_apply, ↓sum_coords_nablaBasis, hf, hg, hfg, Matrix.one_apply]
 
 /-- Let ξ, η, ζ be complex vectors of the Weyl modules of weights κ, κ' and κ+κ'. Assume the
 polynomial of ζ is the product of those of ξ and η, where the polynomial `toPoly` of a vector ξ is
