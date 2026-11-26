@@ -495,7 +495,7 @@ lemma ker_le_of_cuts_out_coincidences {u c : W ⟶ X} {s : Finset (W.obj (of k k
     have hκ : 𝟙 a.coordRing ≫ κ = ζ ≫ structureMap :=
       a.eq_comp_of_map_point_eq _ (by rw [hκz, Set.mem_singleton_iff.mp hzw])
     simpa [hκ, hK.nontrivial] using h_le hb_colon
-  exact (Submodule.colon_eq_top_iff_subset _).mp (by simpa using colon_top)
+  exact Submodule.colon_eq_top_iff_subset.mp (by simpa using colon_top)
 
 omit [CharZero k] in
 /-- Carrying a chart expression along a map of algebras. Let `A` be a chart of `X` and `v` a map
