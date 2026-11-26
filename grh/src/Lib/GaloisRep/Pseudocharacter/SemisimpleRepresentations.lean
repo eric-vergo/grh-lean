@@ -643,8 +643,8 @@ lemma eventually_exists_isLatticeIn [TopologicalSpace G] [IsTopologicalGroup G] 
   -- The entries of `s` as a representation with values in matrices over `O'`.
   let u : G →* Matrix n n O' :=
     { toFun := fun x ↦ of fun i j ↦ ⟨s x i j, h_mem x i j⟩
-      map_one' := by simp [← ext_iff, Subtype.ext_iff, one_apply, apply_ite]
-      map_mul' x y := by simp [← ext_iff, Subtype.ext_iff, mul_apply] }
+      map_one' := by simp [← ext_iff, Subtype.ext_iff, Matrix.one_apply, apply_ite]
+      map_mul' x y := by simp [← ext_iff, Subtype.ext_iff, Matrix.mul_apply] }
   -- `(P⁻¹)⁻¹ * r g * P⁻¹ = s g`, whose entries are those of `u g`
   exact ⟨u, P⁻¹, fun g ↦ by ext i j; simp [u, s]⟩
 
