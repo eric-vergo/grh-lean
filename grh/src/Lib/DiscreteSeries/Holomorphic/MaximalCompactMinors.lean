@@ -145,7 +145,10 @@ noncomputable abbrev diagTorusK (t : n → Circle) : maxCompactU ε :=
 /-- The map sending a tuple of complex numbers of modulus one to its diagonal matrix in
 `U(diag ε)` is continuous. -/
 @[fun_prop]
-theorem continuous_diagTorus : Continuous (diagTorus ε) := continuous_U_iff_matrix.mpr (by fun_prop)
+theorem continuous_diagTorus : Continuous (diagTorus ε) := by
+  apply continuous_U_iff_matrix.mpr
+  change Continuous (fun t : n → Circle ↦ diagonal (fun i ↦ (t i : ℂ)))
+  exact Continuous.matrix_diagonal (continuous_pi fun i ↦ continuous_subtype_val.comp (continuous_apply i))
 
 /-- The Haar measure `New.haarK ε` on `New.maxCompactU ε` has total mass one. -/
 instance : IsProbabilityMeasure (haarK ε) := ⟨haarMeasure_self⟩
