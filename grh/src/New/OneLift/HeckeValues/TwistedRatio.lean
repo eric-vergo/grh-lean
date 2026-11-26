@@ -149,7 +149,7 @@ lemma trivialLift_ne_zero (H : p.HasLiftRank n) (ϑ : D.TameChar) : trivialLift 
   -- The squared norm of the unscaled lift is a product of nonzero numbers.
   have h_ne : (‖(lValueData H ϑ).trivialLift‖ : ℂ) ^ 2 ≠ 0 := by
     rw [h_norm_sq, L_inv_mul]
-    simp [hC, p.L_mul_ne_zero ϑ, Finset.prod_eq_zero_iff]
+    simp [hC, p.L_mul_ne_zero ϑ, Finset.prod_eq_zero_iff, IsDedekindDomain.HeightOneSpectrum.ne_bot]
   rw [trivialLift]
   exact smul_ne_zero (p.vacuumScale_pow_mul_pow_rowLengthSum_ne_zero (card n)) (by simpa using h_ne)
 
@@ -159,7 +159,7 @@ elements, with `z ≥ 2`, and let `ϑ` be a tame character. The algebraic part `
 ϑ = ‖trivialLift H ϑ‖ ^ 2 / N(Q) ^ (card n - 1)` is a positive real number. -/
 lemma algPart_pos (H : p.HasLiftRank n) (ϑ : D.TameChar) : 0 < algPart H ϑ := by
   have h_norm : 0 < ‖trivialLift H ϑ‖ := norm_pos_iff.2 (trivialLift_ne_zero H ϑ)
-  have h_level : 0 < ϑ.normQ := Nat.pos_of_ne_zero (by simp [Finset.prod_eq_zero_iff])
+  have h_level : 0 < ϑ.normQ := Nat.pos_of_ne_zero (by simp [Finset.prod_eq_zero_iff, IsDedekindDomain.HeightOneSpectrum.ne_bot])
   rw [algPart]
   exact_mod_cast (show (0 : ℝ) < ‖trivialLift H ϑ‖ ^ 2 / ϑ.normQ ^ (card n - 1) by positivity)
 
@@ -180,7 +180,7 @@ theorem exists_ne_zero_algPart_eq_mul_L (H : p.HasLiftRank n) :
     ^ p.rowLengthSum
   have h_scale : scale ≠ 0 := p.vacuumScale_pow_mul_pow_rowLengthSum_ne_zero (card n)
   refine ⟨‖scale‖ ^ 2 * C, mul_ne_zero (by simpa using h_scale) hC, fun ϑ ↦ ?_⟩
-  have h_level : (ϑ.normQ : ℂ) ≠ 0 := by simp [Finset.prod_eq_zero_iff]
+  have h_level : (ϑ.normQ : ℂ) ≠ 0 := by simp [Finset.prod_eq_zero_iff, IsDedekindDomain.HeightOneSpectrum.ne_bot]
   calc algPart H ϑ
       = ‖scale‖ ^ 2 * (‖(lValueData H ϑ).trivialLift‖ ^ 2 / ϑ.normQ ^ (card n - 1)) := by
         rw [algPart, trivialLift, norm_smul, Complex.ofReal_mul]
