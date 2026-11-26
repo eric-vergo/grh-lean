@@ -191,7 +191,7 @@ private lemma New.Period.sum_thetaBdR_mul_trace_eq_jump_of_isHodgeFrame {p : ℕ
   -- The entry `(i, c)` of `F` is a map `φ` of weight `k₁ i` on `T`, hence a combination of the
   -- `β l` with `k l = k₁ i` with algebraic coefficients (`hodgeTateMaps.mem_span_same_weight`).
   have h_entry (y : T) : F y i c = b i (u y *ᵥ Pi.single c 1) := by
-    simp [pi_eq_sum_univ' (col _ c), F, ← hbP, ↓mul_apply, mul_comm]
+    simp [pi_eq_sum_univ' (col _ c), F, ← hbP, ↓Matrix.mul_apply, mul_comm]
   -- `φ` pulls `b i` back along the equivariant map `y ↦ u y *ᵥ Pi.single c 1`.
   let φ : hodgeTateMaps ρ (ofId ℤ_[p] ℂ_[p]) (k₁ i) :=
     hodgeTateMaps.pull (φ := algebraMap ℤ_[p] (PadicAlgCl p)) ⟨applyVec u (Pi.single c 1), by simp⟩
@@ -361,9 +361,15 @@ lemma New.GaloisRep.eventually_trace_sub_sum_mem_closedBall {ℓ : ℕ} [ThePrim
   -- The coefficients of y have norm at most 1, and the norm is ultrametric. (`using!`: the
   -- coefficients act through their coercion to `ℚ̄_ℓ`, which plain `using` does not match.)
   filter_upwards [tendstoUniformly_iff.mp h_conv ε hε] with η hη y
-  simpa [lift_apply, Finsupp.sum, mul_sum, univ.sum_comm, smul_sub, smul_sum] using!
-    norm_sum_le_of_forall_le_of_nonneg hε.le fun g _ ↦ (norm_smul ..).trans_le
-      ((mul_le_of_le_one_left (by simp) (y.coeff g).prop).trans (mem_ball_iff_norm.mp (hη g)).le)
+  let δ (g : G) := b * (r g).val.trace - ∑ x : ι η, a η x * ((ρ η x).rep g).val.trace
+  have hδ (g : G) : ‖δ g‖ ≤ ε := by simpa only [δ, dist_eq_norm] using (hη g).le
+  have hterm (g : G) : ‖y.coeff g • δ g‖ ≤ ε := by
+    change ‖((y.coeff g : ℤ_[ℓ]) : ℚ_[ℓ]) • δ g‖ ≤ ε
+    rw [norm_smul]
+    exact (mul_le_of_le_one_left (norm_nonneg _) (y.coeff g).prop).trans (hδ g)
+  have hsum : ‖∑ g ∈ y.coeff.support, y.coeff g • δ g‖ ≤ ε :=
+    norm_sum_le_of_forall_le_of_nonneg hε.le fun g _ ↦ hterm g
+  simpa [δ, lift_apply, Finsupp.sum, mul_sum, univ.sum_comm, smul_sub, smul_sum] using! hsum
 
 /-- Linear relations pass to the limit. Let `r` have non-degenerate trace form, `F` be a proper
 filter, `S` a finite set of indices `l`, and let the traces of the `ρ η x` weighted by `a * c l`
