@@ -223,7 +223,7 @@ lemma expSubst_sum {I : Type*} {t : Finset I} {a : I → MvPowerSeries σ ℂ_[p
 /-- The norm of a nonzero natural number `n` in `ℂ_[p]` is `p ^ (-v_p(n))`. -/
 lemma norm_natCast_eq_inv_pow_padicValNat {n : ℕ} (hn : n ≠ 0) :
     ‖(n : ℂ_[p])‖ = (p : ℝ)⁻¹ ^ padicValNat p n := by
-  simpa [Padic.norm_eq_zpow_neg_valuation, hn] using PadicComplex.norm_extends' p n
+  simpa [Padic.norm_eq_zpow_neg_valuation, Nat.padicValNat_def, hn] using PadicComplex.norm_extends' p n
 
 /-- For `p` prime and `n < p ^ K` one has `n / (p - 1) - K ≤ v_p(n!) ≤ n / (p - 1)`, a consequence
 of Legendre's formula. -/
@@ -233,7 +233,7 @@ lemma padicValNat_factorial_mem_Icc {n K : ℕ} (hn : n < p ^ K) :
   -- are at most `K` digits, each at most `p - 1`.
   have hp1 : 1 < p := hp.out.one_lt
   have legendre : (p - 1) * padicValNat p n ! + (p.digits n).sum = n := by
-    rw [sub_one_mul_padicValNat_factorial, Nat.sub_add_cancel (digit_sum_le p n)]
+    rw [Nat.padicValNat_def, hp.out.sub_one_mul_multiplicity_factorial, Nat.sub_add_cancel (digit_sum_le p n)]
   have digit_le : ∀ d ∈ p.digits n, d ≤ p - 1 :=
     fun d hd ↦ le_sub_one_of_lt (digits_lt_base hp1 hd)
   have sum_le : (p.digits n).sum ≤ K * (p - 1) :=
