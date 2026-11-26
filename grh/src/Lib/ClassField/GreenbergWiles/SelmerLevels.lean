@@ -96,7 +96,8 @@ def PlaceAboveLevel : Type := {B : ClosurePlace // B N < 1} ⊕ InfinitePlace Ω
 instance : MulAction G (PlaceAboveLevel N) :=
   @Sum.instMulAction G {B : ClosurePlace // B N < 1} (InfinitePlace Ω) _
     -- the places above `N` form a set that is stable under `G`, as `G` fixes `N`
-    (SubMulAction.mk _ fun g _ hB ↦ by simpa using! (smul_apply_smul_lt_one_iff g).mpr hB).mulAction
+    (SubMulAction.mk (R := G) {B : ClosurePlace | B N < 1} fun g _ hB ↦ by
+      simpa using! (smul_apply_smul_lt_one_iff g).mpr hB).mulAction
     -- on the infinite places `G` acts through the automorphisms of `Ω` over `ℚ`
     (.compHom _ (toAlgAut G ℚ Ω))
 
