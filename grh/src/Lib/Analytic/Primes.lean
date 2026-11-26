@@ -340,7 +340,8 @@ lemma New.norm_sub_mul_sum_term_le (ha : ∀ n : ℕ, 0 ≤ a n)
     have h_pos : 0 < z.re := (inv_pos.2 hU_pos).trans_le h_right
     have h_tail : ‖F z / z - P‖ ≤ rexp E * (3 * U) := by
       refine norm_le_of_term_le_majorant ha h_series hF hC hCX hX hU
-        ((Finset.hasSum_iff_compl _).1 (h_series z h_pos)) fun n hn ↦ ?_
+        (s := {n | n ∉ Finset.range ⌈rexp U⌉₊}) (z := z)
+        ((Finset.hasSum_iff_compl (Finset.range ⌈rexp U⌉₊)).1 (h_series z h_pos)) fun n hn ↦ ?_
       have hn_ge : rexp U ≤ n := Nat.ceil_le.1 (not_lt.1 (mt Finset.mem_range.2 hn))
       have h_log : U ≤ Real.log n := (le_log_iff_exp_le (U.exp_pos.trans_le hn_ge)).2 hn_ge
       rcases le_total (Real.log n) (U + X ^ 2) with h_in | h_out

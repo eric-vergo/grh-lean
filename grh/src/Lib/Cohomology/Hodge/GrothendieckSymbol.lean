@@ -196,7 +196,7 @@ def detCochain : freeAb.obj (witnessed R d) ⟶ hodgeCoeff :=
     (fun c t ↦ det (fun i ↦ (t.val.snd i).down) • ω.app c (FreeAbelianGroup.of t.val.fst))
     fun c c' φ t ↦ by
       -- `φ` commutes with `det`, and `ω` is natural
-      refine congrArg up (.symm ((exteriorMap_smul ..).trans (congrArg₂ _ (map_det ..) ?_)))
+      refine congrArg ULift.up (.symm ((exteriorMap_smul ..).trans (congrArg₂ _ (map_det ..) ?_)))
       exact (congrArg ULift.down (ω.naturality_apply φ (FreeAbelianGroup.of t.val.fst))).symm
 
 /-- If every row of t has dot product 1 with f, then the signed sum over j of the minors of t
@@ -248,7 +248,7 @@ lemma pi_comp_detCocycle :
 m_1∧…∧m_d. -/
 def volumeForm : freeAb.obj (HodgeTest.sqZeroExt ⋙ affineSpace k d) ⟶ hodgeCoeff :=
   desc (fun c v ↦ ⟨(ιMulti c.baseAlg d (TrivSqZeroExt.snd ∘ v.down)).val⟩) fun _ _ _ _ ↦
-    congrArg up (exteriorMap_iotaMulti ..).symm
+    congrArg ULift.up (exteriorMap_iotaMulti ..).symm
 
 /-- The class [dT/T], in the Hodge cohomology of degree d of 𝔸^d relative to 𝔸^d ∖ 0, of the
 cocycle det(l_1, …, l_d)·dT_1 ∧ … ∧ dT_d on tuples of linear forms with l_j(T) = 1. -/
@@ -358,7 +358,7 @@ lemma smul_grothendieckSymbol_eq_fractionClass (hf : U ≤ unimodularLocus f)
   simp [volumeForm, formOfExteriorPower, w]
   -- (`erw`: the rows `l i ᵥ* σ M` are the product matrix only up to unfolding `Matrix.mul`)
   erw [det_mul, ← map_det]
-  refine congrArg up (.trans ?_
+  refine congrArg ULift.up (.trans ?_
     (congrArg (_ • ·) ((add_zero _).trans (exteriorMap_smul ..))).symm)
   simp [exteriorMap_iotaMulti, mul_smul, ← smul_comm a]
   rfl
@@ -501,7 +501,7 @@ lemma symbolClass_one :
   · -- the boundary of `v` with the one witness `l` is `v` with no witness
     with_unfolding_all congrm .of ⟨⟨_, $(funext nofun)⟩, _⟩
   · -- the cocycle sends it to `det l • volumeForm v = l • ι m`
-    refine congrArg up ?_
+    refine congrArg ULift.up ?_
     simp [volumeForm]
     rfl
 
@@ -686,7 +686,7 @@ lemma snocRel.exists_detTensor_boundary_eq
   · -- Here `ω x = ι w` with `a • w` the module part of `x`; hence `volumeForm (v, x)` is
     -- `a • volumeForm v * ι w`.
     obtain ⟨w, hw, hωx⟩ := hω c ⟨x, hx⟩
-    refine ⟨_ ⊗ₜ .of ⟨x, hx⟩, rfl, congrArg up ?_⟩
+    refine ⟨_ ⊗ₜ .of ⟨x, hx⟩, rfl, congrArg ULift.up ?_⟩
     simp [volumeForm, ExteriorAlgebra.ιMulti, ↓List.ofFn_succ', a, smul_smul, ← hw, mul_comm]
     -- `erw`, because `hωx` is stated on the subtype of unimodular points.
     erw [hωx]
