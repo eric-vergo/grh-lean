@@ -73,12 +73,12 @@ lemma trace_besselCharMatrix_mul (u : T.G) :
       (u.val.val (.inl a) (𝔰.besselFrame a.succ) +
         (T.splitGram * u.val.val) (𝔰.besselFrame a.succ) (eStar a)) := by
     -- The instantiated `sum_comm` moves the frame index outwards; the sums stay over one type.
-    simp [besselCharMatrix, trace, mul_apply, sum_mul, add_mul, sum_add_distrib,
+    simp [besselCharMatrix, trace, Matrix.mul_apply, sum_mul, add_mul, sum_add_distrib,
       @sum_comm (Fin _), -Fintype.sum_sum_type]
   have h_dual (a : Fin 𝔰.ϱ) : (T.splitGram * u.val.val) (𝔰.besselFrame a.succ) (eStar a) =
       star (u⁻¹.val.val (.inl a) (𝔰.besselFrame a.succ)) := by
     rw [h_unitary]
-    simp [mul_apply]
+    simp [Matrix.mul_apply]
   simp [h_trace, h_dual, simpleRootSum, sum_add_distrib]
 
 /-- On the Bessel subgroup S (`New.Shape.Form.besselS`), σ(u⁻¹) = −σ(u), where σ is the sum
@@ -479,7 +479,7 @@ theorem enorm_sq_le_of_forall_mem_inner_sq_le {H : Submodule ℂ E} {V : E} {B :
     ‖V‖ₑ ^ 2 ≤ B := by
   obtain h_top | h_fin := eq_or_ne B ∞
   · simp [h_top]
-  have h_self : ‖⟪V, V⟫_ℂ‖ₑ ^ 2 ≤ B * ‖V‖ₑ ^ 2 := closure_minimal h_le
+  have h_self : ‖⟪V, V⟫_ℂ‖ₑ ^ 2 ≤ B * ‖V‖ₑ ^ 2 := closure_minimal (t := {u : E | ‖⟪u, V⟫_ℂ‖ₑ ^ 2 ≤ B * ‖u‖ₑ ^ 2}) (fun u hu ↦ h_le u hu)
     (isClosed_le (by fun_prop) ((ENNReal.continuous_const_mul h_fin).comp (by fun_prop))) hV
   have h_enorm : ‖⟪V, V⟫_ℂ‖ₑ = ‖V‖ₑ ^ 2 := by simp [inner_self_eq_norm_sq_to_K, ← ofReal_norm]
   rw [h_enorm, sq (‖V‖ₑ ^ 2)] at h_self

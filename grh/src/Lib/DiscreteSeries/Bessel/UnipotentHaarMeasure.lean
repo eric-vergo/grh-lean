@@ -160,7 +160,7 @@ lemma measurePreserving_conj_bessel {S : Subgroup 𝔰.G₁} {P : 𝔰.BesselInd
     obtain ⟨d, d_entry, d_norm⟩ := exists_dilation (U.one_le_norm u)
     have hd : d ∈ normalizer (S : Set 𝔰.G₁) := by
       refine mem_normalizer_iff''.2 fun v ↦ ?_
-      simp_rw [hS, d_entry, one_apply]
+      simp_rw [hS, d_entry, Matrix.one_apply]
       congr! 3
       -- The factor is `1` on the diagonal and nonzero elsewhere.
       split <;> simp [*, zpow_ne_zero]
@@ -308,7 +308,7 @@ theorem IsUnimodularHaar.of_freeEntries {S : Subgroup 𝔰.G₁}
 /-- `New.RealPlace.unipotentOf`, the parametrisation of 𝖴⁰, is continuous. -/
 @[fun_prop]
 lemma continuous_unipotentOf : Continuous (unipotentOf (𝔰 := 𝔰)) := by
-  simp only [continuous_U_iff_matrix, unipotentOf]
+  simp only [continuous_U_iff_matrix, unipotentOf, U.of, IsUnit.unit_spec]
   fun_prop
 
 /-- `New.RealPlace.liftUnitriangular`, the lift to G₁ (into 𝖴) of the unitriangular (ϱ + 1)×(ϱ + 1)
@@ -316,7 +316,7 @@ matrices: its block on the frame e_0, …, e_{ϱ-1}, z has the entries `x : Uppe
 the diagonal. It is continuous. -/
 @[fun_prop]
 theorem continuous_liftUnitriangular : Continuous (liftUnitriangular (𝔰 := 𝔰)) := by
-  simp only [continuous_U_iff_matrix, liftUnitriangular]
+  simp only [continuous_U_iff_matrix, liftUnitriangular, U.of, IsUnit.unit_spec]
   fun_prop
 
 /-- The free positions of 𝖴 in row e_a are the columns of level strictly between a and 2ϱ − a. -/
@@ -370,12 +370,12 @@ lemma exists_measurePreserving_linearEquiv_freeEntries :
   let E₀ : 𝔰.UnipotentParams →ₗ[ℝ] (Subtype (IsFreeEntry₀ (𝔰 := 𝔰)) → ℂ) × (Fin 𝔰.ϱ → ℝ) :=
     (freeEntries IsFreeEntry₀).toLinearMap ∘ₗ mulLeftLinearMap _ ℝ 𝔰.isotropicCols ∘ₗ rows
   have h_definite (q : 𝔰.UnipotentParams) (a : Fin 𝔰.ϱ) (i : 𝔰.κ) :
-      rows q a (𝔰.indexX₀ i) = q.1 a i := by simp [rows, mul_apply, inclMatrix, Matrix.one_apply]
+      rows q a (𝔰.indexX₀ i) = q.1 a i := by simp [rows, Matrix.mul_apply, inclMatrix, Matrix.one_apply]
   have h_dual (q : 𝔰.UnipotentParams) (a b : Fin 𝔰.ϱ) :
       rows q a (eStar b) = skewOfReal q.2 a b := by
-    simp [rows, mul_apply, inclMatrix, Matrix.one_apply]
+    simp [rows, Matrix.mul_apply, inclMatrix, Matrix.one_apply]
   have hE₀ (q : 𝔰.UnipotentParams) : E₀ q = (fun x ↦ rows q x.1.1 x.1.2, fun a ↦ q.2 a a) := by
-    simp [E₀, mul_apply, h_dual, skewOfReal, inclMatrix, Prod.ext_iff, funext_iff, Matrix.one_apply]
+    simp [E₀, Matrix.mul_apply, h_dual, skewOfReal, inclMatrix, Prod.ext_iff, funext_iff, Matrix.one_apply]
   have h_isometry (q : 𝔰.UnipotentParams) : ∑ x, ‖(E₀ q).1 x‖ ^ 2 + ∑ a, (E₀ q).2 a ^ 2 =
       ∑ a, ∑ i, ‖q.1 a i‖ ^ 2 + ∑ a, ∑ b, q.2 a b ^ 2 := by
     -- `skewOfReal` turns the real entries `(a, b)`, `(b, a)` into one complex entry with the same
@@ -435,7 +435,7 @@ lemma exists_freeEntries_unipotentOf_eq_shear :
     have h_entry : (E (shift q.1)).1 ⟨(a, 𝔰.indexX₀ i), by simp⟩ =
         (unipotentOf (q.1, 0)).val.val (.inl a) (𝔰.indexX₀ i) :=
       congrFun (congrArg Prod.fst h_shift) _
-    simpa [hE_apply, unipotentOf, mul_apply, inclMatrix, Matrix.one_apply] using h_entry
+    simpa [hE_apply, unipotentOf, Matrix.mul_apply, inclMatrix, Matrix.one_apply] using h_entry
   -- The free entries of `unipotentOf q` are affine in `q.2`, with linear part `b ↦ E (0, b)`.
   have h_affine : freeEntries IsFreeEntry₀ (unipotentOf q).val.val =
       freeEntries IsFreeEntry₀ (unipotentOf (q.1, 0)).val.val + E (0, q.2) := by
