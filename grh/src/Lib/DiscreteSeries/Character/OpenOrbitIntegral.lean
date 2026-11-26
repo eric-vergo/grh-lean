@@ -116,7 +116,7 @@ lemma norm_principalMinor_mul_gain_le (h : ℕ) (u : GL n ℂ) (l f : n → ℤ)
       -- and `m ≤ f c - g i` because `i` lies inside the minor
       have h_entry : principalMinor (twoPowDiagConj u (-g)) (· = j) =
           ((∑ k : n, ‖u k j‖ ^ 2 * 2 ^ (-g k) : ℝ) : ℂ) := by
-        simp [principalMinor, default, toSquareBlockProp, mul_apply, diagonal, ← conj_mul',
+        simp [principalMinor, default, toSquareBlockProp, Matrix.mul_apply, diagonal, ← conj_mul',
           mul_right_comm]
       have h_exp : m ≤ f c + -g i := by grind [Pi.inf_apply, inside i]
       simp only [q, hsep, true_and, Fintype.prod_ite_eq', h_entry, ofReal_re]
@@ -414,14 +414,16 @@ lemma orbital_eq_char_sub_offOrbitIntegral (hg : l.HasGap h) :
       [GeneralLinearGroup.det_ne_zero, IsHermitianInvolution.det_ne_zero])
   obtain ⟨F_int, F_orbit⟩ : Integrable (fun g : USign ε ↦ F g) ∧ ∫ g : USign ε, F g =
       (∫ k : USign (1 : n → ℤˣ), F k) - offOrbitIntegral l (signMatrix ε * diagTorus ε x) :=
-    integral_eq_sub_setIntegral_compl_openOrbit hg.injective ε
+    integral_eq_sub_setIntegral_compl_openOrbit (F := F) hg.injective ε
       (fun y b hb ↦ by simpa using F_mul y b hb) F_cont
   -- For the signs `1` the group `K` is all of `U(n)`, with the same measure.
   have h_meas : MeasurePreserving (maxCompactU (1 : n → ℤˣ)).subtype (haarK 1) volume :=
-    MonoidHom.measurePreserving (by fun_prop) (by simp [mem_maxCompactU, Function.Surjective])
+    MonoidHom.measurePreserving (f := (maxCompactU (1 : n → ℤˣ)).subtype)
+      continuous_subtype_val (by simp [mem_maxCompactU, Function.Surjective])
       (by simp)
   have K_eq_U : ∫ k : maxCompactU (1 : n → ℤˣ), F k ∂haarK 1 = ∫ k : USign (1 : n → ℤˣ), F k :=
-    h_meas.hasLaw.integral_comp (F_cont.comp continuous_subtype_val).aestronglyMeasurable
+    h_meas.hasLaw.integral_comp (f := fun k : USign (1 : n → ℤˣ) ↦ F k)
+      (F_cont.comp continuous_subtype_val).aestronglyMeasurable
   rw [sign_mul_orbital_eq_integral_weightMinors_div hg x hx F_int,
     kTypeNormSq_mul_kTypeChar_eq_integral hg x hx, F_orbit, K_eq_U]
 
@@ -468,7 +470,11 @@ lemma eq_mul_offOrbitIntegral_of_pos {P Q : ℂ[n → ℤ]}
         prod_mul_distrib, Finsupp.sum, zpow_sum_of_ne_zero, _root_.zpow_mul]
     simpa only [eval_eq, hD] using hP x (by rwa [hD])
   have h_start : 0 < circleMap 0 1 0 := by simp [circleMap]
-  have D_cont : ContinuousWithinAt (D ∘ circleMap 0 1) {0}ᶜ 0 := by fun_prop (disch := simp)
+  have D_cont : ContinuousWithinAt (D ∘ circleMap 0 1) {0}ᶜ 0 := by
+    apply Continuous.continuousWithinAt
+    change Continuous (fun θ : ℝ ↦ diagonal fun i : n ↦ circleMap 0 1 θ ^ f i)
+    exact Continuous.matrix_diagonal (continuous_pi fun i ↦
+      (continuous_circleMap 0 1).zpow₀ (f i) (fun _ ↦ Or.inl (by simp)))
   have acc_near : ∀ᶠ θ : ℝ in nhdsWithin 0 {0}ᶜ, (D (circleMap 0 1 θ)).IsAccretive :=
     D_cont.tendsto.eventually (D_acc h_start).setOf_mem_nhds
   -- the circle tends to `1` without meeting it, as its derivative there is not zero
