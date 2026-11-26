@@ -797,7 +797,7 @@ lemma keepsLineMod_lineElement : KeepsLineMod i (lineElement w i) where
     have h_block : (diagonal fun j : n ↦ residueOrZero (if j = i then (uniformizer w).1 else 1)
         ).toSquareBlockProp (· ≠ i) = 1 := by
       ext ⟨a, ha⟩ ⟨b, hb⟩
-      simp [toSquareBlockProp_def, diagonal_apply, one_apply, ha, h_one]
+      simp [toSquareBlockProp_def, diagonal_apply, Matrix.one_apply, ha, h_one]
     simp [h_block]
 
 /-- An element `g` of the double coset of `diag (ϖ, 1, …, 1)` by the stabiliser of the line of

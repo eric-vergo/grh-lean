@@ -490,7 +490,7 @@ theorem heckeSplit_mem_of_heckePolyOp (N : Submodule ℂ (Module.End ℂ W))
       have h_poly : (∑ j ∈ range (Fintype.card n + 1), f (a j) • .X ^ j : ℂ[X]) = 0 :=
         Polynomial.funext fun U ↦ by
           simpa [Polynomial.eval_finsetSum, mul_comm] using congrArg f (h_eval U)
-      simpa [Polynomial.coeff_X_pow, hi] using congrArg (Polynomial.coeff · i) h_poly
+      simpa [Polynomial.coeff_X_pow, hi] using congrArg (fun p : ℂ[X] ↦ p.coeff i) h_poly
     -- the factor, a power of `q`, is nonzero
     have h_mkQ : N.mkQ (heckeSplit π hw i) = 0 :=
       (smul_eq_zero.mp h_a_zero).resolve_left (by simp [w.q_bounds])
