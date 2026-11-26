@@ -161,7 +161,10 @@ theorem exists_contDiff_witt {J : Matrix m m ℂ} (hJ : Jᴴ = J) {x : Matrix m 
       refine ((HasFDerivAt.comp 1 (by simpa [hL₁] using hasFDerivAt_exp_zero) hL').fun_mul'
         ((hasFDerivAt_id 1).fun_sub hL')).congr_fderiv ?_
       simp only [hL₁, NormedSpace.exp_zero, sub_zero, id, one_smul, MulOpposite.op_one]
-      exact sub_add_cancel _ L'
+      simp [Function.comp_apply, hL₁]
+      ext z i j
+      change z i j - L' z i j + L' z i j = z i j
+      exact sub_add_cancel _ _
   obtain ⟨A, hA, hTA⟩ : ∃ A, ContDiff ℝ ∞ A ∧ ∀ᶠ z in nhds 1, T (A z) = z := by
     have hT : ContDiffAt ℝ ω T 1 := by fun_prop
     obtain ⟨A, hA, h_eq⟩ := exists_contDiff_eventuallyEq (hT.to_localInverse hT' (by simp))
@@ -169,7 +172,9 @@ theorem exists_contDiff_witt {J : Matrix m m ℂ} (hJ : Jᴴ = J) {x : Matrix m 
     exact ⟨A, hA, (h_eq.fun_comp T).trans (HasStrictFDerivAt.eventually_right_inverse _)⟩
   let z (y : Matrix m b ℂ) : Matrix m m ℂ := 1 - (x - y) * w * J
   have hz : Tendsto z (nhds x) (nhds 1) := Continuous.tendsto' (by fun_prop) _ _ (by simp [z])
-  refine ⟨fun y ↦ expU ⟨L (A (z y)), hL _⟩, by fun_prop,
+  refine ⟨fun y ↦ expU ⟨L (A (z y)), hL _⟩, by
+    change ContDiff ℝ ∞ fun y ↦ NormedSpace.exp (L (A (z y)))
+    fun_prop,
     (hz.eventually hTA).mono fun y hy ↦ ⟨w * (A (z y))ᴴ * J * x, ?_⟩⟩
   calc NormedSpace.exp (L (A (z y))) * x * (w * (A (z y))ᴴ * J * x)
     _ = T (A (z y)) * x := by rw [Matrix.mul_assoc, ← hL_span, ← Matrix.mul_assoc]
@@ -187,9 +192,9 @@ lemma isSchwartzVector_realBoxProd {ι ι₁ ι₂ : Type*} [Fintype ι] [Decida
   -- `v`; padding a vector with zeros does not increase its maximum norm.
   intro N
   have pad_left (x : ι₁ → ℂ) : ‖(realCoordSum he).equiv (x, 0)‖ₑ ≤ ‖x‖ₑ := by
-    simp [realCoordSum, enorm, pi_nnnorm_le_iff, e.surjective.forall, nnnorm_le_pi_nnnorm]
+    simp [realCoordSum, eNorm_eq_nnNorm, pi_nnnorm_le_iff, e.surjective.forall, nnnorm_le_pi_nnnorm]
   have pad_right (y : ι₂ → ℂ) : ‖(realCoordSum he).equiv (0, y)‖ₑ ≤ ‖y‖ₑ := by
-    simp [realCoordSum, enorm, pi_nnnorm_le_iff, e.surjective.forall, nnnorm_le_pi_nnnorm]
+    simp [realCoordSum, eNorm_eq_nnNorm, pi_nnnorm_le_iff, e.surjective.forall, nnnorm_le_pi_nnnorm]
   let inner : fockSpace ε := ∫ y, w y • realHeisenbergOp ((realCoordSum he).equiv (0, y))
     Fock.vacVector
     ∂normalizedVolume ι₂
@@ -487,7 +492,7 @@ lemma exchangeSection_frameProjection_mul {t' : b → ℤˣ}
   rcases forall_or_exists_not fun y ↦ σ (unitaryMovedFrame k y A) = 0 with hσ_zero | ⟨y, hy⟩
   · simp [exchangeSection, hσ_zero]
   -- It is enough to see that `A w` and `x w` give the same projection.
-  congr 1
+  apply congrArg (fun y ↦ exchangeSection σ k j M κ v₀ v₁ y A)
   funext w
   have hγA : γ ((A w)ᴴ * signMatrix (t' ⊕ᵥ s) * A w) = ((A w)ᴴ * signMatrix (t' ⊕ᵥ s) * A w)⁻¹ := by
     simpa only [unitaryMovedFrame, U.gram_invariant] using hγ_supp _ hy w
@@ -588,7 +593,7 @@ lemma atRealPlace_inv_sum_mul_fromRows {t' : b → ℤˣ} (u : GInf E t') (q : G
   rw [← Matrix.mul_assoc]
   ext
   -- `↓`: expand the products into sums of entries before the factors are rewritten.
-  simp [G.sum, ↓mul_apply, Prod.fst_sum, U.sum, blockGL, Matrix.one_apply]
+  simp [G.sum, ↓Matrix.mul_apply, Prod.fst_sum, U.sum, blockGL, Matrix.one_apply]
 
 /-- The Gram matrix of the frame `fromRows 1 0` of the first summand, for the form with signs
 `t' ⊕ᵥ s`, is the form with signs `t'`. -/
