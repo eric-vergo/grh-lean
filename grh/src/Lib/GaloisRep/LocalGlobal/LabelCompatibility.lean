@@ -207,7 +207,7 @@ lemma exists_isTameExponent (hA : IsPlaceOver A w) (f : ℕ) :
   -- `ρ ζ` is again primitive, being a root of the cyclotomic polynomial; `T` is injective
   have hρζ : IsPrimitiveRoot (ρ hζ.toInteger) N := by
     rw [← isRoot_cyclotomic_iff, ← map_cyclotomic N ρ]
-    exact (isRoot_cyclotomic_iff.2 hζ.toInteger_isPrimitiveRoot).map
+    exact IsRoot.map ρ (isRoot_cyclotomic_iff.2 hζ.toInteger_isPrimitiveRoot)
   obtain ⟨j, -, hj, hTj⟩ :
       ∃ j < N, j.Coprime N ∧ T (ρ hζ.toInteger) ^ j = Complex.exp (2 * Real.pi * Complex.I / N) :=
     (hρζ.map_of_injective IsFaithfulMulChar.injective).isPrimitiveRoot_iff.1
