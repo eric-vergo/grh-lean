@@ -573,7 +573,9 @@ lemma DescentPair.isSharpFn_blockFn [WeilData E] :
     exact mem_levelOf.2 ⟨k.property, funext fun i ↦ congrFun h_all (.inl i)⟩
   le_stdLevel := levelOf_le_stdLevel
   ne_zero h := by
-    have h_normSq : star O.blockFn ⬝ᵥ O.blockFn ≠ 0 := by simp [O.blockFn_normSq, prod_eq_zero_iff]
+    have h_normSq : star O.blockFn ⬝ᵥ O.blockFn ≠ 0 := by
+      simp [O.blockFn_normSq, prod_eq_zero_iff]
+      exact fun i h ↦ ((O.twistPlace i).ne_bot h).elim
     simp [h] at h_normSq
   fixes k hk := by
     -- This is the transformation law of the datum for the pair `(k, 1)`.
