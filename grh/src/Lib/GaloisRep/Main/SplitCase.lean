@@ -283,7 +283,9 @@ lemma New.GaloisRep.exists_isLevel_of_localCongruence_hom {E : Type} {a : ℕ} [
   let χ : K.1 →* ℂ :=
     ϑ.comp (.mk' (fun k ↦ ⟨atPlace v k, ((mem_K k).1 k.2).left⟩) (by simp))
   have χ_near : χ =ᶠ[nhds 1] 1 :=
-    .mono (isOpen_localCongruence.preimage_of_continuous.mem_nhds (by simp)) fun _ ↦ ϑ_one _
+    .mono (((isOpen_localCongruence (m := 1)).preimage
+      ((continuous_atPlace v).comp continuous_subtype_val)).mem_nhds (by simp)) fun k hk ↦
+        ϑ_one ⟨atPlace v k, ((mem_K k).1 k.prop).left⟩ hk
   have K_off (k : Gf E (Fin a)) (k_int : k ∈ stdLevel E (Fin a)) (k_v : atPlace v k = 1) :
       k ∈ K.1 ↔ k ∈ V := by simp [mem_K, k_v, k_int]
   have χ_off (k : K.1) (k_v : atPlace v k.val = 1) : χ k = 1 := by simp [χ, k_v, ϑ_one]
@@ -326,7 +328,8 @@ lemma New.GaloisRep.isCompatibleAt_of_isApproximatingMonoid {ℓ : ℕ} {E : Typ
   let tr (g : Gal(Ω/E)) : N := ⟨_, trace_mem g⟩
   have r_jump (η : Set.Ioi (0 : ℝ)) (i : Fin (s η)) : HasJumpsAt (r ⟨η, i⟩) A (jumps κ a) :=
     (r_sph ⟨η, i⟩ hA).2.1
-  have ρ_limit : IsTraceLimit ρ A atBot t fun η i ↦ ⟨r ⟨η, i⟩⟩ :=
+  let family (η : Set.Ioi (0 : ℝ)) (i : Fin (s η)) : Period.PadicRep Gal(Ω/E) ℓ := ⟨r ⟨η, i⟩⟩
+  have ρ_limit : IsTraceLimit ρ A atBot t family :=
     ⟨ρ_cont, ρ_nondeg, fun η i ↦ r_cont ⟨η, i⟩, fun η i ↦ (r_sph ⟨η, i⟩ hA).1,
       .inr ⟨jumps κ a, r_jump⟩, apx.tendstoUniformly.comp tr⟩
   refine ⟨ρ_limit.isGoodAt, ρ_limit.jumpsRelAt r_jump fun τ k m n h_eq h_lim ↦ ?_,
@@ -340,12 +343,23 @@ lemma New.GaloisRep.isCompatibleAt_of_isApproximatingMonoid {ℓ : ℕ} {E : Typ
       simpa [← h_eq, sum_mul] using h_sum.mul_const ((jumps κ a τ).count k : PadicAlgCl ℓ)
     exact cast_inj.1 (tendsto_nhds_unique h_count h_lim)
   · have X_deg : X.natDegree = a := by simpa using (hX.isMonicOfDegree hf).natDegree_eq
-    refine ρ_limit.polyKillsAt (n := a + 1) (Q := fun η i ↦ (Q ⟨η, i⟩).map ιℓ) (by simp [X_deg])
-      (fun η i ↦ by simp [Q_deg u_split]) (fun η i ↦ (r_sph ⟨η, i⟩ hA).2.2 σ hσ) fun j ↦ ?_
+    have h_kill (η : Set.Ioi (0 : ℝ)) (i : Fin (s η)) :
+        PolyKillsAt (r ⟨η, i⟩) A σ ((Q ⟨η, i⟩).map ιℓ) :=
+      (r_sph ⟨η, i⟩ hA).2.2 σ hσ
+    let polys (η : Set.Ioi (0 : ℝ)) (i : Fin (s η)) : (PadicAlgCl ℓ)[X] := (Q ⟨η, i⟩).map ιℓ
+    refine IsTraceLimit.polyKillsAt (ℓ := ℓ) (E := E) (m := Fin a)
+      (I := Set.Ioi (0 : ℝ)) (ι := fun η ↦ Fin (s η)) (ρ := family) (r := ρ) (A := A)
+      (F := atBot) (a := t) ρ_limit (s := σ) (n := a + 1) (P := X.map ιℓ.toRingHom)
+      (Q := polys) ?_ ?_ ?_ ?_
+    · simp [X_deg]
+    · intro η i
+      simp [polys, Q_deg u_split]
+    · exact h_kill
+    intro j
     -- Divide the pair `d` of coefficients by `c` and multiply it by the pair of traces.
     obtain ⟨c, hc, c_mem⟩ := coeff_mem u_split X hX j
     let d : N := ⟨_, c_mem⟩
-    simpa [tr, d, mul_assoc, hc] using
+    simpa [tr, d, polys, family, mul_assoc, hc] using
       apx.tendstoUniformly_eval (c⁻¹ • .X 0 * .X 1) fun g ↦ ![d, tr g]
 
 /-- Let `x` be a split place and `H` an open subgroup. There is a finite set `S` of places such that
