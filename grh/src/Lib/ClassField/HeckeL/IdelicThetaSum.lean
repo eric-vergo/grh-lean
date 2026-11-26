@@ -275,9 +275,11 @@ lemma hasSum_adelicTent_mul_range
     have hy_ne_zero : y ≠ 0 := fun hy_zero ↦ hy (by simp [f, hy_zero, hρ])
     exact ⟨⟨_, .mk0 y hy_ne_zero, rfl⟩, rfl⟩
   -- Only finitely many points of the discrete `j.range` lie in the compact support of `f`.
-  have h_fin_supp : Function.HasFiniteSupport fun y : j.range ↦ f y :=
-    tendsto_coe_cofinite_of_isDiscrete _ ⟨h_disc⟩ <|
-      Filter.mem_cocompact'.mpr ⟨_, hasCompactSupport_adelicTent_mul ρ d (b * γ), subset_closure⟩
+  have h_fin_supp : Function.HasFiniteSupport fun y : j.range ↦ f y := by
+    have ht := tendsto_cofinite_cocompact_iff.mp
+      (tendsto_coe_cofinite_of_isDiscrete j.range ⟨h_disc⟩) (tsupport f)
+      (hasCompactSupport_adelicTent_mul ρ d (b * γ))
+    exact ht.subset fun y hy ↦ subset_tsupport f hy
   rw [(summable_of_hasFiniteSupport h_fin_supp).hasSum_iff]
   calc ∑' y : j.range, f y
       = ∑' γ' : principalIdeles K, f (g γ') :=
