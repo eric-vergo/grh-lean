@@ -280,8 +280,9 @@ integral, as `v((j + 1)!) ≤ j / (p - 1)`. -/
 lemma norm_pow_le_norm_factorial_succ {c : ℂ_[p]} (hc : ‖c‖ ≤ p ^ (-(1 / (p - 1)) : ℝ)) (j : ℕ) :
     ‖c‖ ^ j ≤ ‖((j + 1).factorial : ℂ_[p])‖ := by
   have hp : (1 : ℝ) < p := Nat.one_lt_cast.2 (Fact.out : p.Prime).one_lt
-  have h_val : (p - 1) * padicValNat p (j + 1).factorial ≤ j :=
-    Nat.le_of_lt_succ (sub_one_mul_padicValNat_factorial_lt_of_ne_zero p j.succ_ne_zero)
+  have h_val : (p - 1) * padicValNat p (j + 1).factorial ≤ j := by
+    rw [Nat.padicValNat_def]
+    exact Nat.le_of_lt_succ (sub_one_mul_padicValNat_factorial_lt_of_ne_zero p j.succ_ne_zero)
   have h_real : (padicValNat p (j + 1).factorial : ℝ) ≤ j / (p - 1) := by
     rw [le_div_iff₀' (sub_pos.2 hp), ← Nat.cast_pred (Fact.out : p.Prime).pos]
     exact_mod_cast h_val
