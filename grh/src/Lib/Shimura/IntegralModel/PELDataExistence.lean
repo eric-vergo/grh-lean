@@ -156,7 +156,8 @@ lemma exists_star_eq_neg_and_im_pos {E : Type} [Field E] [CMBase E]
     rwa [← algebraMap_mem_Ô, map_mul] at h_int
   · -- Transitivity of the different; the relative different of `E / F` is trivial.
     rw [differentIdeal_eq_differentIdeal_mul_differentIdeal ℤ (𝓞 F) (𝓞 E)]
-    exact mul_mem_mul (by simp [F]) (mem_map_of_mem _ hμ)
+    have hγ_mem : γ ∈ differentIdeal (𝓞 F) (𝓞 E) := by rw [differentIdeal_eq_top]; trivial
+    exact Ideal.mul_mem_mul hγ_mem (Ideal.mem_map_of_mem (algebraMap (𝓞 F) (𝓞 E)) hμ)
   · -- The terms in `z - star z` agree; what is left follows from `c s + μ a = 1` and `γ ^ 2 = -1`.
     have h_one_E : ((c • (s : F) + algebraMap (𝓞 F) F μ * a : F) : E) = 1 := by
       rw [h_one, OneMemClass.coe_one]

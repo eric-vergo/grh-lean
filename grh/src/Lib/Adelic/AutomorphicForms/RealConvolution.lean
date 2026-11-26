@@ -67,7 +67,11 @@ noncomputable def bumpProduct (α : NumberField.InfinitePlace E → DiscreteSeri
   toFun x := ∏ w : NumberField.InfinitePlace E, (α w).val.val (x w)⁻¹
   continuous_toFun := by fun_prop
   hasCompactSupport' := HasCompactSupport.intro (isCompact_univ_pi fun w ↦ (α w).2.inv) (by
-    grind [prod_eq_zero_iff, image_eq_zero_of_notMem_tsupport, Set.mem_inv])
+    intro x hx
+    contrapose! hx
+    intro w _
+    by_contra h
+    exact hx (Finset.prod_eq_zero (Finset.mem_univ w) (image_eq_zero_of_notMem_tsupport h)))
 
 /-- For `n` nonempty and `g` in G_∞, the product over the infinite places of the operator norms
 ‖g_w‖ is at least 1 and at least each of its factors. -/
@@ -147,7 +151,9 @@ theorem isCuspKernel_typeKernel [Nonempty n] {l : NumberField.InfinitePlace E �
       ‖typeKernel l s x‖ * (∏ w, ‖(x w).val.val‖) ^ (B + 1) := by
     have h_loc : Integrable fun x : GInf E s ↦
         ∏ w, e w (x w) * (‖(x w).val.val‖ : ℂ) ^ (B + 1) :=
-      .fintype_prod fun w ↦ (h w).integrable_dsKernel_mul_norm_pow (B + 1) le_rfl
+      Integrable.fintype_prod (μ := fun _ ↦ volume)
+        (f := fun w (g : USign s) ↦ e w g * (‖g.val.val‖ : ℂ) ^ (B + 1))
+        fun w ↦ (h w).integrable_dsKernel_mul_norm_pow (B + 1) le_rfl
     simpa [h_prod, prod_mul_distrib, prod_pow] using h_loc.norm
   have h_bump (w : NumberField.InfinitePlace E) : ∃ α : DiscreteSeries.Bumps s,
       ∀ g : USign s, ∫ x : USign s, α.val.val x⁻¹ * e w (x⁻¹ * g) = e w g :=
@@ -286,12 +292,13 @@ theorem realConv_realConv (hF : IsBoundedMeasurable F) (hα : Integrable α) {p 
     (hp : Integrable p) (a : GInf E s) :
     realConv α (fun g : G E s ↦ realConv p F (g * (a, 1))) =
       realConv (fun y : GInf E s ↦ ∫ x : GInf E s, α x * p ((x * a)⁻¹ * y)) F := by
-  ext ⟨g, k⟩
+  funext ⟨g, k⟩
   -- Fubini's theorem and a left translation of the inner variable by `x * a`.
   have h_meas : Measurable fun x : GInf E s ↦ ((g * x, k) : G E s) := by fun_prop
   have h_conv : ∫ x, α x * ∫ y, p y * F (g * (x * a * y), k) =
       ∫ y, (∫ x, α x * p ((x * a)⁻¹ * y)) * F (g * y, k) :=
-    integral_smul_integral_eq_integral_conv_smul (fun x : GInf E s ↦ x * a) hα hp
+    integral_smul_integral_eq_integral_conv_smul (F := fun x : GInf E s ↦ F (g * x, k))
+      (fun x : GInf E s ↦ x * a) hα hp
       (hF.comp h_meas) (by fun_prop)
   simpa [realConv, mul_assoc, Prod.mul_def] using h_conv
 
