@@ -225,7 +225,7 @@ lemma New.GaloisRep.isSplitPrimeToDisc_below_of_prime_norm {E : Type} [Field E] 
   obtain ⟨c, hc⟩ :
       Ideal.Quotient.mk w.asIdeal (algebraMap (𝓞 (QuadField d)) (𝓞 E) (QuadField.betaK d)) ∈
         AddSubgroup.zmultiples (Ideal.Quotient.mk w.asIdeal (d : 𝓞 E)) :=
-    mem_zmultiples_of_prime_card (hp := ⟨hq_prime⟩) rfl
+    mem_zmultiples_of_prime_card (hp := ⟨hq_prime⟩) w.asIdeal.absNorm_eq_natCard.symm
       (mt Ideal.Quotient.eq_zero_iff_mem.mp hd_notMem)
   have hx_mem :
       QuadField.betaK d - ((c * d : ℤ) : 𝓞 (QuadField d)) ∈ (w.below (QuadField d)).asIdeal :=
