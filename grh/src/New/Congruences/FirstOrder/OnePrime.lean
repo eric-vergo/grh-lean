@@ -172,7 +172,7 @@ lemma commutingProd_sum {𝒜 : J → Subring R}
   have Φ_smul (y : ∀ j : J, 𝒜 j) (j : J) (r : ℕ) (a : 𝒜 j) :
       Φ (Function.update y j (r • a)) = r • Φ (Function.update y j a) := by
     rw [last y j (r • a), last y j a, AddSubgroupClass.coe_nsmul, mul_smul_comm]
-  let M : MultilinearMap ℕ (fun j : J ↦ 𝒜 j) R := .mk' Φ Φ_add Φ_smul
+  let M : ((j : J) → 𝒜 j) →ₘₗ[ℕ] R := .mk' Φ Φ_add Φ_smul
   exact M.map_sum x
 
 /-- The coefficient `∏_{j ∈ S} ∂ j ∏_{j ∉ S} Nm j` of `∏_{j ∈ S} α j` in the family
