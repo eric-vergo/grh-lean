@@ -46,6 +46,8 @@ lake build
 lake env lean scripts/PrintAxioms.lean
 ```
 
+To build and validate the full blueprint and source atlas, run `./scripts/check-blueprint.sh` in this directory. It checks the five challenge declarations against the solution mirror, checks the reported axioms, renders the site, and validates its output. Open `_out/site/html-multi/index.html` after a successful run. [Local verification script](scripts/check-blueprint.sh).
+
 ## Checks
 
 The upstream authors report a successful build of the Lean 4.35.0 original and a three-axiom report for each public theorem. They also report acceptance by nanoda, con-leche, con-ron and Comparator v4.35.0. The upstream README says no mathematician has read the proof through. [Original verification report](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/README.md#checks).
