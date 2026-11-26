@@ -137,8 +137,8 @@ lemma formAdjoint_inclMatrix [Fintype X] [DecidableEq X] {τ : X → n} (hτ : �
     formAdjoint ε 1 (inclMatrix ℂ τ) = (inclMatrix ℂ τ)ᴴ := by
   ext x i
   rcases eq_or_ne i (τ x) with rfl | hi
-  · simp [formAdjoint, signMatrix, inclMatrix, one_apply, hτ]
-  · simp [formAdjoint, signMatrix, inclMatrix, one_apply, hi, hi.symm]
+  · simp [formAdjoint, signMatrix, inclMatrix, Matrix.one_apply, hτ]
+  · simp [formAdjoint, signMatrix, inclMatrix, Matrix.one_apply, hi, hi.symm]
 
 end Adjoint
 
@@ -273,7 +273,7 @@ lemma trace_mul_eq_of_mul_initCols_eq_zero (hP : IsPosition ε η d v i₀) {M Y
         rw [Matrix.mul_assoc, trace_mul_comm, Matrix.mul_assoc]
     _ = (toRows₁ T * i₀ * Y').trace := by
         rw [h_blocks]
-        simp [trace, Fintype.sum_sum_type, mul_apply]
+        simp [trace, Fintype.sum_sum_type, Matrix.mul_apply]
     _ = (formAdjoint ε η i₀ * (fromCols i₀ v * T) * i₀ * Y').trace := by rw [hT_top]
 
 /-- Let `(v, i₀)` be a position (`IsPosition`): the columns `v₁, …, v_{j₀}` of `v`, where
