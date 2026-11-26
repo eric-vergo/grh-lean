@@ -270,7 +270,13 @@ lemma M_pow_mul_card_mul_exp_le {P : Parameters} {D : Data P} {d : ℕ} {𝔪 : 
     simp only [k, e, card_prod]
     norm_cast
     grw [le_abs_self P.constantBound, hd, hL, hN]
-    exact D.le_of_hasLogBound
+    refine D.le_of_hasLogBound ?_
+    clear * - D
+    obtain ⟨hC, hX, _, hB, _⟩ := D.coarse_scale_inequalities
+    obtain ⟨h64, hq, _, _⟩ := New.Data.le_constantBound (P := P)
+    have hX₁ : 1000 * D.logX ≤ D.logX₁ := by linarith [D.logX_le_logX₁]
+    norm_num
+    grind (splits := 99)
   grw [h_card, h_pow, ← exp_add, ← exp_add, h_log]
 
 /-- Let `L`, `N` have at most `D.gap = 2 * D.r ^ 8` elements and let `d ≤ D.M`. Let the automorphic

@@ -349,6 +349,7 @@ lemma IsChainDatum.gluedTensor_eq_sum_translates {ϑ : D.Twist} {Ψ : D.Translat
   rw [D.gluedVacuum_eq_sum_translates fun j k w hw ↦
     hx_zero j k w (ϑ.M_mul_normQ_notMem_of_N_mem hw)]
 
+set_option maxRecDepth 16384 in
 /-- Every chain datum `Ψ` has a weak chain datum `Ψ'`, obtained by expanding the gluing, such that
 on every source form `φ` (a form on `X_0` of level `D.levelX 0`) the two composite lifts agree:
 `compositeLift ϑ Ψ φ`, which lifts `φ` through the double lifts with the glued tensor of `Ψ` as data
