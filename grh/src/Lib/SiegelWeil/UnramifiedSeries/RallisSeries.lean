@@ -634,7 +634,7 @@ lemma vacuumSum_eq_of_hasProd (h_rank : 2 * card n < card m)
   have h_finite (R : Finset (FinPlace E)) :
       vacuumSum n (card m) b (A ∩ T R) = ∏ u ∈ T R, loc u := by
     induction R using Finset.induction with
-    | empty => simp [T, vacuumSum_empty]
+    | empty => simp [T, Set.inter_empty, vacuumSum_empty]
     | insert w R _ ih =>
       have h_insert : T (insert w R) = {w, star w} ∪ T R := by simp [T]
       have h_star : star w ∈ T R ↔ w ∈ T R := by simp [h_mem, or_comm]
