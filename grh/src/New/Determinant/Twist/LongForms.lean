@@ -95,7 +95,11 @@ theorem exists_span_isAuxiliaryForm_eq_top :
   refine eq_top_mono (span_mono ?_) h_onto
   rintro _ ⟨ψ, ⟨h_int, h_short⟩, rfl⟩
   have h_exponent_le : D.x ^ 99 + D.x ^ 202 * D.b ^ 2 ≤ 2 * D.x₁ ^ 2 * D.b ^ 2 :=
-    D.le_of_hasLogBound
+    D.le_of_hasLogBound (by
+      obtain ⟨hC, hX, hX₁, hB, _⟩ := D.scale_inequalities
+      obtain ⟨h64, hq, hd, ht⟩ := Data.le_constantBound (P := P)
+      simp [max_def]
+      (try split_ifs) <;> linarith)
   refine ⟨fun ι ϑ hϑ ↦ ?_, fun σ ↦ ?_⟩
   · exact goodProjTranslate_mem_integralForms ι.place (h_int ϑ ι.1 ι.place hϑ) 1
   · exact (normSqAt_goodProjTranslate_le (h_short σ)).trans (exp_le_exp.2 h_exponent_le)
