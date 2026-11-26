@@ -4,7 +4,7 @@ Authors: Eric Vergo, OpenAI Codex
 -/
 import VersoManual
 import VersoBlueprint
-import Comparator.Grh.Solution
+import New.Determinant.Twist.LongForms
 
 open Verso.Genre Verso.Genre.Manual Informal
 
