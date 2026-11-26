@@ -648,7 +648,7 @@ lemma branchExponent_eq_sum_columns (τ : D.Φ) :
 where `Φ_a = D.aPlaces` is the set of `a`-places and `Δ / 2 = D.halfGap`. -/
 lemma sum_branchExponent :
     (∑ τ : D.Φ, D.branchExponent τ : ℝ) = #D.aPlaces * D.a - D.f * (D.m * D.halfGap) := by
-  simp [branchExponent_eq, firstRowExcess, sum_sub_distrib]
+  simp [branchExponent_eq, firstRowExcess, sum_sub_distrib, Finset.univ_inter]
 
 end Data
 
