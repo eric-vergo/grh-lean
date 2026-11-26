@@ -312,8 +312,8 @@ lemma HasAmplitudeBlocks.adjoint_comp_rep_mul_right [HasPrimitiveRoot5040 E]
         if d' = e then S.unipotentCovolume * N j k else 0 := by
       rw [← Complex.star_def, ← amplitudeSum_besselS_inv, amplitudeSum_besselS_apply hδ hδ_over hN]
     by_cases h : d' = e
-    · simp [besselTranslate, h_block, h, S.unipotentCovolume_pos.ne', Pi.single_apply]
-    · simp [besselTranslate, h_block, h, Ne.symm h]
+    · simp [besselTranslate, Function.swap, h_block, h, S.unipotentCovolume_pos.ne', Pi.single_apply]
+    · simp [besselTranslate, Function.swap, h_block, h, Ne.symm h]
   -- The blocks of all terms transform in the same way, as the set of all terms is stable.
   have h_move : S.amplitudeSum .full .univ c (s * t) d (i, j) =
       ∑ k : S.BesselCoord, star (N j k) * S.amplitudeSum .full .univ c s d' (i, k) := by
@@ -413,7 +413,7 @@ lemma HasAmplitudeBlocks.hilbertSchmidtNorm_sub_besselTranslate_sq [HasPrimitive
     rw [LinearMap.sub_apply, inner_sub_left, LinearMap.comp_apply, LinearMap.adjoint_inner_left,
       LinearMap.comp_apply, hP s x y, amplitudeSum_eq_inter_compl_add_inter Set.univ
         (S.ratMiddle E).besselS]
-    simp [besselTranslate, inner_single_right, add_div]
+    simp [besselTranslate, inner_single_right, add_div, Set.univ_inter]
   calc hilbertSchmidtNorm (P.adjoint ∘ₗ ρ s ∘ₗ P - S.besselTranslate s) ^ 2
     _ = ∑ x : S.Classes × S.BesselCoord, ∑ y : S.Classes × S.BesselCoord,
         ‖S.amplitudeSum .full (S.ratMiddle E).besselSᶜ x.1 s y.1 (x.2, y.2) / S.unipotentCovolume‖ ^
@@ -714,8 +714,8 @@ lemma mem_besselU_of_reduction_eq_one {c : S.Classes} {γ : S.G E} {j : Fin 2}
   have h_red (w : S.chosenPlaces j) : S.reduction ⟨S.inclHFin y, hyK⟩ j w = 1 := by
     ext a b
     rcases besselH_apply_eq_or hy (inclHFin_mem_besselH y) a b with h_entry | h_entry
-    · rw [reduction_apply_congr k j w (by simpa using h_entry), hk_red, one_apply]
-    · rw [reduction_apply_congr 1 j w h_entry, map_one, one_apply, one_apply]
+    · rw [reduction_apply_congr k j w (by simpa using h_entry), hk_red, Pi.one_apply]
+    · rw [reduction_apply_congr 1 j w h_entry, map_one, Pi.one_apply, Pi.one_apply]
   -- Freeness: a rational `δ` whose conjugate `y` is integral and reduces to `1` is `1`.
   obtain rfl := eq_one_of_reduceAt_eq_one le_rfl j _ fun w ↦
     (S.reduction_inclHFin_eq_one_iff hyK j w).mp (h_red w)
@@ -853,6 +853,8 @@ lemma integral_extendedBesselChar_conj_eq {T : Finset (FinPlace E)} [T.StarStabl
     unitaryLevel hInt.integers 1 (S.latticeMiddle (LocProd T)).splitGram
   let φ (y : (S.latticeMiddle (LocProd T)).G) : ℂ :=
     extendedBesselChar F.levelUnit (y * S.toPlaces T l * y⁻¹)
+  have hφ : Continuous φ := continuous_extendedBesselChar.comp
+    ((continuous_id.mul_const (S.toPlaces T l)).mul continuous_inv)
   choose σ hσ using ok.reduction_surjective
   have h_translate (g : S.ResidueGL) :
       ∫ y in K, φ (S.toPlaces T (σ g) * y) ∂F.groupMeasure = ∫ y in K, φ y ∂F.groupMeasure := by
@@ -874,10 +876,15 @@ lemma integral_extendedBesselChar_conj_eq {T : Finset (FinPlace E)} [T.StarStabl
   refine mul_left_cancel₀ (a := (Fintype.card S.ResidueGL : ℂ)) (by simp) ?_
   calc Fintype.card S.ResidueGL * ∫ y in K, φ y ∂F.groupMeasure
       = ∑ g : S.ResidueGL, ∫ y in K, φ (S.toPlaces T (σ g) * y) ∂F.groupMeasure := by
-        simp only [h_translate, sum_const, card_univ, nsmul_eq_mul]
+        calc
+          _ = ∑ _g : S.ResidueGL, ∫ y in K, φ y ∂F.groupMeasure := by
+            rw [sum_const, card_univ, nsmul_eq_mul]
+          _ = _ := sum_congr rfl fun g _ ↦ (h_translate g).symm
     _ = ∫ y in K, ∑ g : S.ResidueGL, φ (S.toPlaces T (σ g) * y) ∂F.groupMeasure :=
-        (integral_finsetSum _ fun g _ ↦
-          ContinuousOn.integrableOn_compact unitaryLevel_open_compact.2 (by fun_prop)).symm
+        (integral_finsetSum (f := fun g y ↦ φ (S.toPlaces T (σ g) * y))
+          (μ := F.groupMeasure.restrict K) Finset.univ fun g _ ↦
+          (hφ.comp (continuous_const.mul continuous_id)).continuousOn.integrableOn_compact
+            unitaryLevel_open_compact.2).symm
     _ = Fintype.card S.ResidueGL * F.groupMeasure.real K • S.reducedCharMean (S.reduction l) := by
         rw [setIntegral_congr_fun measurableSet_unitaryLevel h_const, setIntegral_const,
           mul_smul_comm]
@@ -927,7 +934,9 @@ lemma sum_sq_norm_integral_extendedBesselChar_conjugate_le {T : Finset (FinPlace
   have hC_disj : Pairwise (Function.onFun Disjoint C) := by
     intro s t hst
     refine Set.disjoint_left.mpr fun z hs ht ↦ hst <| hσ <| ?_
-    simpa [← hF.reduction_eq_iff, eq_comm] using div_mem hs.out ht.out
+    apply (hF.reduction_eq_iff (σ s) (σ t)).mpr
+    simpa only [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_assoc, mul_inv_cancel_left]
+      using div_mem hs.out ht.out
   -- The integral of `|a|²` over these cosets is at most `massIntegral K = ∫ |a|²`; bound this by
   -- `IsLargeLatticeData.massIntegral_le_main_add_error` with `Q = 2`, and by
   -- `2⁻¹ ^ n ≤ groupMeasure(K)`.
@@ -937,9 +946,11 @@ lemma sum_sq_norm_integral_extendedBesselChar_conjugate_le {T : Finset (FinPlace
     have h_coset (s : ι) : ∫⁻ z in C s, ‖a z‖ₑ ^ 2 ∂F.groupMeasure =
         ‖a (S.toPlaces T (σ s))‖ₑ ^ 2 * F.groupMeasure F.congruenceSubgroup := by
       rw [setLIntegral_congr_fun (hC_meas s) fun z hz ↦ by rw [ha_const s z hz]]
-      simp [C]
+      simp [C, Set.univ_inter]
     have h_rank : 𝔰.n + 2 * 10 ^ 9 * 𝔰.n ^ 4 ≤ 𝔰.k := by
-      grind [S.pow_chain, Nat.le_self_pow (n := 4) (by norm_num) 𝔰.n]
+      obtain ⟨h₁, h₂, h₃⟩ := S.pow_chain
+      have h₄ := Nat.le_self_pow (n := 4) (by norm_num) 𝔰.n
+      omega
     calc (∑ s : ι, ‖a (S.toPlaces T (σ s))‖ₑ ^ 2) * F.groupMeasure F.congruenceSubgroup
         = ∑' s : ι, ∫⁻ z in C s, ‖a z‖ₑ ^ 2 ∂F.groupMeasure := by
           simp only [h_coset, sum_mul, tsum_fintype]
