@@ -392,7 +392,8 @@ lemma map_omega {g : G E s} {g₁ : G E s₁}
   refine ext fun x ↦ ?_
   show σ ((V₁.ω g₁ f).val (D.φ x)) = c * (V.ω g (D.map f)).val x
   -- write both values at `x` as `weilMultiplier` times an integral
-  repeat erw [Space.ω, weilRep, IsVacuum.smul_apply, integrated_apply_eq_integral]
+  erw [weilRep_apply_eq_integral adelicAction g₁ (D.φ x) f,
+    weilRep_apply_eq_integral adelicAction g x (D.map (V := V) f)]
   -- substitute `D.φ` in the integral on the left: `σ (∫ F) = ∫ σ ∘ F ∘ D.φ` for every `F`, and
   -- `σ (e (D.φ x)) = e x` for the vacuum `e`
   have h_val (y : n → 𝔸 E) : (D.map (V := V) f).val y = σ (f.val (D.φ y)) := transport_apply ..
