@@ -53,7 +53,7 @@ lemma New.exists_root_near_one {Ω : Type*} [Field Ω] [IsAlgClosed Ω] (A : Val
   have ha_ne : a ≠ 1 := by simpa using far 1
   -- The logarithmic derivative of `a - X ^ l` at `1` is `-l / (a - 1) = ∑ z, 1 / (1 - z)`, the sum
   -- over the roots. If all roots are far from `1`, every term has valuation `< r⁻¹`.
-  let P : Ω [X] := C a - X ^ l
+  let P : Polynomial Ω := C a - X ^ l
   have log_deriv : P.derivative.eval 1 / P.eval 1 = (P.roots.map fun z : Ω ↦ 1 / (1 - z)).sum :=
     (IsAlgClosed.splits P).eval_derivative_div_eval_of_ne_zero (by simp [P, sub_eq_zero, ha_ne])
   have small : P.derivative.eval 1 / P.eval 1 ∈ A.valuation.ltAddSubgroup (Units.mk0 r hr)⁻¹ := by

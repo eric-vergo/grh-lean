@@ -388,7 +388,7 @@ lemma star_zeta : star (P.ζ s) = (P.ζ s)⁻¹ := by
 `v`, that is, the image of `v` in `(ℤ/q₁)ˣ` under `New.Parameters.placeMulEquiv`. -/
 lemma galOfPlace_zeta (v : P.Φ s) :
     P.galOfPlace s v (P.ζ s) = P.ζ s ^ (P.placeMulEquiv s v : ZMod (P.q₁ s)).val := by
-  simp [placeMulEquiv, ζ]
+  exact autEquivPow_spec (P.E s) (P.irreducible_cyclotomic s) (P.galOfPlace s v)
 
 lemma two_pow_dvd_q₁ : 2 ^ (s + 1) ∣ P.q₁ s :=
   (dvd_of_eq (pow_succ' 2 s)).trans (mul_dvd_mul P.two_dvd_q₀ (dvd_mul_left _ _))
