@@ -743,7 +743,11 @@ lemma le_b_of_eq_dualResolutionFactor {h : ℕ}
           Complex.norm_natCast, Complex.norm_of_nonneg (by positivity)]
     _ ≤ D.q₁ * (1 + D.q₁ * (D.f * (P.d ^ j * (D.q₁ * 2 ^ P.q₀)) ^ 2)) + (P.d ^ j + P.d ^ j) := by
         grw [h_sum, norm_quadGen_le]
-    _ ≤ D.b := D.le_of_hasLogBound
+    _ ≤ D.b := D.le_of_hasLogBound (h_exp := by
+      obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+      obtain ⟨hC, hq, -, -⟩ := Data.le_constantBound (P := P)
+      simp [max_def]
+      split_ifs <;> linarith)
 
 /-- Let `D` be data for the parameters `P` (a `Data P`), with weight `b = D.b` and field
 `E = D.E = K(ζ)`. There are `h` prime to `q₁` with `1 ≤ h ≤ b` and a tight frame `v` of length `h`
