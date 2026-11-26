@@ -196,11 +196,11 @@ lemma exists_isClassOfInvariant :
     exact ((cyclicClass_spec χ).left _).mpr ⟨y.toMul, rfl⟩
   obtain ⟨j, hj⟩ : ∃ j : ℤ, j • cyclicClass _ χ π = cyclicClass _ χ w :=
     mem_zmultiples_of_resH2_eq_zero ⟨_, isOpen_ker χ⟩ (h_split π)
-      (fun n hn ↦ Int.ofNat_dvd.mp (index_dvd hχ (n • π) _ (by simp [hπ]) (by simpa using hn)))
+      (fun n hn ↦ Int.ofNat_dvd.mp (index_dvd hχ (n • π) _ (by simp [hπ]) (by simpa only [map_nsmul] using hn)))
       (h_split w)
   -- `j ≡ n` modulo the index, which kills `(χ, π)`.
   have h_ord_diff : ordRat k A (j • π - w).val = (j - n : ℤ) := by simp [hπ, hn]
-  have h_class_diff : cyclicClass _ χ (j • π - w) = 0 := by simp [hj]
+  have h_class_diff : cyclicClass _ χ (j • π - w) = 0 := by rw [map_sub, map_zsmul, hj, sub_self]
   obtain ⟨i, hi⟩ : ↑(ker χ).index ∣ j - n := index_dvd hχ (j • π - w) _ h_ord_diff h_class_diff
   have χ_eq : χ = c (χ.val φ) := c_unique _ χ
     ⟨hχ, (toHom χ).eq_iff.mpr (hχ _ (hφ.inv_mul_mem_inertiaGroup hφ₀))⟩
