@@ -422,13 +422,13 @@ lemma exists_blockDiagonal_lattice {ψ : AbsGal D →* PadicAlgCl ℓ} {R : GalR
       have h_all : LinearMap.mulLeftRight O (y none, y none) ∘ₗ
           (Algebra.linearMap O (PadicAlgCl ℓ)).mapMatrix = 0 :=
         LinearMap.ext_on_range h_span fun g ↦ congrFun (hy g) none
-      simpa [mul_apply, single_apply, ite_and] using
+      simpa [Matrix.mul_apply, single_apply, ite_and] using
         congrFun₂ (LinearMap.congr_fun h_all (.single b a 1)) a b
     · -- on a character, `y * y = 0` is an equation between numbers
       let y_e : Matrix Unit Unit (PadicAlgCl ℓ) := y (some e)
       have h_sq_all : y * y = 0 := by simpa using hy 1
       have h_sq : y_e * y_e = 0 := congrFun h_sq_all (some e)
-      have h_entry : y_e () () * y_e () () = 0 := by simpa [mul_apply] using congrFun₂ h_sq () ()
+      have h_entry : y_e () () * y_e () () = 0 := by simpa [Matrix.mul_apply] using congrFun₂ h_sq () ()
       exact mul_self_eq_zero.1 h_entry
   -- both traces are the sum of the traces of the summands
   have h_trace_main (g : AbsGal D) : (ρ g none).trace = ψ g * (R g).val.trace := by
