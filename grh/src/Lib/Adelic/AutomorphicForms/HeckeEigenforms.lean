@@ -488,7 +488,7 @@ lemma le_span_isSphericalOff (M : Submodule ℂ (V.forms κ))
     fun w ⟨hw, hS, hS_star⟩ ↦ ⟨hw.star, hS_star, by rwa [star_star]⟩
   have h_span : M ≤ span ℂ {f ∈ M | ∃ t : FinPlace E → ℕ → ℂ, ∀ w ∈ T, ∀ (hw : w.IsSplit) (j : ℕ),
       heckeSplit (V.formTranslation κ) hw j f = t w j • f} :=
-    hB.le_span_joint_eigenvectors (fun w hw ↦ hw.left) h_star
+    hB.le_span_joint_eigenvectors (S := T) (fun w hw ↦ hw.left) h_star
       (fun w ⟨_, hS, hS_star⟩ ↦ h_level.trans (levelSpace_le_sphericalAt hS hS_star))
       fun w ⟨_, hS, hS_star⟩ hw ↦ h_hecke w hw hS hS_star
   refine h_span.trans (span_le.2 ?_)
