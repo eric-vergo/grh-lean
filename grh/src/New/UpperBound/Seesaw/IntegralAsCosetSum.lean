@@ -171,7 +171,7 @@ lemma exists_finset_coverMultiplicity_dvd_pow {S A J : Subgroup (Gf E ι)} [hA :
   -- `T` is finite: it lies in the image of the compact set `A * D` modulo the open subgroup `J`.
   obtain ⟨T, mem_T⟩ : ∃ T : Finset (Gf E ι ⧸ J),
       ∀ t : Gf E ι ⧸ J, t ∈ T ↔ ∃ p : S, ↑p ∈ A ∧ p⁻¹ • t ∈ C := by
-    refine Finite.exists_finset
+    refine Finite.exists_finset (s := {t : Gf E ι ⧸ J | ∃ p : S, ↑p ∈ A ∧ p⁻¹ • t ∈ C})
       ((finite_quotient_image_of_isCompact hJ.isOpen (hA.isCompact.mul hD_compact)).subset ?_)
     intro t ⟨p, hp, hpt⟩
     obtain ⟨d, hd, hd_eq⟩ := hC hpt
