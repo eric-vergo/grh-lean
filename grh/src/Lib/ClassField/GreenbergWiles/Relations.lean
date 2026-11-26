@@ -359,7 +359,10 @@ lemma form_sum_eq_zero (hS : ∀ v ∈ D.localPrimes, ↑q ∈ v.asIdeal)
   -- Join the primes `p j` to the family `s` and move the ramification of `x` from `p j` to the
   -- primes of `s` at the coset of its Frobenius element and at `1`, where `ν` is zero.
   have φ_one : s.φ 1 ∈ O.toSubgroup := by simpa using φ_coset 1
-  let s' : SplitPlaces m q _ D.subgroup ((Gal(Ω/K) ⧸ O.toSubgroup) ⊕ J) :=
+  let I' : Set Gal(Ω/K) := {g | ∃ w : FinPlace K, ↑q ∉ w.asIdeal ∧
+    w ∉ Set.range (Sum.elim s.v fun j : J ↦ (p j).prime) ∧
+    ∃ B : ClosurePlace, IsPlaceOver B w ∧ g ∈ inertiaGroup Gal(Ω/K) B}
+  let s' : SplitPlaces m q I' D.subgroup ((Gal(Ω/K) ⧸ O.toSubgroup) ⊕ J) :=
     { s with
       v := Sum.elim s.v fun j ↦ (p j).prime
       v_injective := s.v_injective.sumElim p_inj p_ne
