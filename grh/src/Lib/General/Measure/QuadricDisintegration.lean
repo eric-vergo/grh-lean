@@ -174,7 +174,8 @@ lemma continuous_lintegral_of_compact_support {X Z : Type*} [TopologicalSpace X]
     lintegral_coe_eq_integral (F x) (HasCompactSupport.integrable (.intro hk (h_zero x)))
   simp only [h_eq]
   exact continuous_ofReal.comp <| continuousOn_univ.1 <|
-    continuousOn_integral_of_compact_support hk (by fun_prop) fun x y _ ↦ h_zero x y
+    continuousOn_integral_of_compact_support hk (NNReal.continuous_coe.comp hF).continuousOn
+      fun x y _ ↦ h_zero x y
 
 omit [MeasureSpace A] [Place A] in
 /-- Let F ≥ 0 be jointly continuous in a skew element x of A and y in Z, vanishing for y outside
@@ -513,7 +514,8 @@ lemma lintegral_iSup_fibre_lt_top {K : Set (Fin 2 ⊕ ι → A)} (hK : IsCompact
   let x (a : skewAdjoint A) : Fin 2 ⊕ ι → A := flatChart T b (p, a)
   by_cases hpK : p ∈ K₁ ×ˢ K₂
   · have h_vol : (P.modulus hp.unit)⁻¹ * volume C ≤ ‖g p.1 * √N‖ₑ ^ 2 := by
-      simpa [mul_pow, ← enorm_pow] using mul_le_mul' (hg hp.unit) hN.le
+      rw [eNorm_mul, mul_pow, ← eNorm_pow (Real.sqrt _), Real.sq_sqrt (Nat.cast_nonneg N)]
+      simpa only [IsUnit.unit_spec, Real.eNorm_natCast] using mul_le_mul' (hg hp.unit) hN.le
     rw [indicator_of_mem hpK]
     refine skewMeasure_le_of_sub_mem hp.unit (fun a ha a' ha' ↦ ?_) h_vol
     -- The first coordinate of the chart point is affine in `a`, with slope `p.1`.
