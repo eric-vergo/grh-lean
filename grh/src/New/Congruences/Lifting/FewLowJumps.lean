@@ -131,7 +131,16 @@ lemma exists_isOperatorOfCost_zero_mem_deepElements (hk : k.IsUnramified) {N : �
     obtain ⟨v, -, hn_mem⟩ := mem_biUnion.1 hn
     exact Nat.le_zero.1 (cost_le_of_isUnramified hk fun h ↦ absurd h (h_free v n hn_mem))
   refine ⟨A, by rwa [h_cost] at h_reach, fun w hw ↦ h_raise hw _ fun l v hv n hn_ge hn_lt ↦ ?_⟩
-  obtain ⟨rfl, hn⟩ : l = 0 ∧ n ∈ Ioo (c l v) (c l v + N) := by grind [raiseOrdersAt]
+  have h_l : l = 0 := by
+    by_contra h
+    simp only [raiseOrdersAt, if_neg h, add_zero] at hn_ge
+    simp only [if_neg (Ne.symm h), add_zero] at hn_lt
+    exact hn_lt.not_ge hn_ge
+  subst l
+  have hn : n ∈ Ioo (c 0 v) (c 0 v + N) := by
+    change c 0 v + 1 ≤ n at hn_ge
+    change n < c 0 v + N at hn_lt
+    exact mem_Ioo.2 ⟨by omega, hn_lt⟩
   exact mem_sigma.2 ⟨mem_singleton_self 0, mem_biUnion.2 ⟨v, hv, hn⟩⟩
 
 /-- Division by `p`. Suppose the chart is unramified, and no multiple of `p` lies strictly between
@@ -194,7 +203,7 @@ lemma exists_sub_mem_deepElements_of_smul_sub_mem (hk : k.IsUnramified) {a : ℕ
       locKisinPart_kerWithOrders_le_deepElements h_deep h_deep
     have h_le (l : ℕ) (v : ℤ) : raiseOrder c a u l v ≤ c l v + if a = l then 1 else 0 := by
       unfold raiseOrder
-      lia
+      split_ifs <;> omega
     rw [h_smul_eq, Submodule.coe_add, hAw_sub]
     exact add_mem h_deep_inv (smul_sub_mem_withOrders
       (frobEUnit_zpow_smul_mem_withOrders a 1 hw'_exp fun l v _ ↦ h_le l v))
@@ -215,7 +224,14 @@ lemma exists_isOperatorOfCost_mem_deepElements_raiseOrder (a : ℕ) (u : ℤ) :
       ∀ x ∈ S.deepElements i c, A x ∈ S.deepElements i (raiseOrder c a u) := by
   obtain ⟨A, h_reach, h_raise⟩ := S.exists_isOperatorOfCost_and_mem_deepElements {⟨a, c a u⟩}
   refine ⟨A, by simpa using h_reach, fun x hx ↦ h_raise hx _ fun l v _ n hn_ge hn_lt ↦ ?_⟩
-  obtain ⟨rfl, rfl, rfl⟩ : l = a ∧ v = u ∧ n = c l v := by grind [raiseOrder]
+  have h : l = a ∧ v = u := by
+    by_contra h
+    simp only [raiseOrder, if_neg h, add_zero] at hn_lt
+    exact hn_lt.not_ge hn_ge
+  obtain ⟨rfl, rfl⟩ := h
+  simp only [raiseOrder, and_self, if_pos rfl] at hn_lt
+  have hn : n = c l v := by omega
+  subst n
   exact mem_singleton_self _
 
 /-- A primitive relation for one step. Let `S` be a side on an unramified chart `k` and `i` a
@@ -579,7 +595,7 @@ cost of a step `n` at the level `0` is `v_p(n) + k.differentBound`. -/
 lemma sum_cost_zero_eq_padicValNat_factorial {k : KummerChart Γ} (hk : k.IsUnramified) (N : ℕ) :
     ∑ m ∈ Ico (0 : ℤ) (N + 1), k.cost 0 m = padicValNat p N.factorial := by
   have h_cost (m : ℤ) : k.cost 0 m = padicValInt p m := by simp [cost, hk.2]
-  simp only [h_cost]
+  simp only [h_cost, Nat.padicValNat_def]
   induction N with
   | zero => simp [show Ico (0 : ℤ) 1 = {0} from rfl]
   | succ N ih =>
@@ -591,9 +607,9 @@ lemma sum_cost_zero_eq_padicValNat_factorial {k : KummerChart Γ} (hk : k.IsUnra
 `N ≤ (p - 1) m`, by Legendre's formula. -/
 lemma sum_cost_zero_le {k : KummerChart Γ} (hk : k.IsUnramified) {N m : ℕ} (hN : N ≤ (p - 1) * m) :
     ∑ y ∈ Ico (0 : ℤ) (N + 1), k.cost 0 y ≤ m := by
-  rw [sum_cost_zero_eq_padicValNat_factorial hk]
+  rw [sum_cost_zero_eq_padicValNat_factorial hk, Nat.padicValNat_def]
   refine le_of_mul_le_mul_left ?_ (tsub_pos_of_lt (Fact.out : p.Prime).one_lt)
-  grw [sub_one_mul_padicValNat_factorial, Nat.sub_le, hN]
+  grw [(Fact.out : p.Prime).sub_one_mul_multiplicity_factorial, Nat.sub_le, hN]
 
 /-- Let the Kummer chart `k` of the prime `p ≥ 5` be unramified, so that the cost `k.cost 0 y` of
 the step `y` at the level `0` is `v_p(y)`, with `v_p(0) = 0`. Let `β + W + η ≤ (p - 3) a`, let `p`
