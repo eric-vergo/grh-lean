@@ -115,7 +115,7 @@ lemma exists_cyclotomicChar_pow_sub_one_dvd_pow_padicValNat {P : Parameters} (D 
     _ ∣ ℓ ^ padicValNat ℓ D.chosenGroupOrder := by
       -- a nonzero `ℓ`-adic integer is a unit times the power of `ℓ` given by its valuation
       have h_ne : (D.chosenGroupOrder : ℤ_[ℓ]) ≠ 0 := NeZero.out
-      simpa [PadicInt.valuation] using (unitCoeff_spec h_ne).dvd
+      simpa [PadicInt.valuation, Nat.padicValNat_def] using (unitCoeff_spec h_ne).dvd
 
 /-- There are `h`, at most the `ℓ`-adic valuation of `D.chosenGroupOrder` and zero unless
 `ℓ ≤ D.halfGap ^ 2`, and a topological generator `γ` of the Galois group of `D.E` modulo the kernel
@@ -671,7 +671,7 @@ lemma exists_heckePolyOnForms_eq_zero {P : Parameters} {D : Data P} {ℓ : ℕ} 
     isRoot_hecke_chain (mem_inf.1 hv).1 hv₀ h_weak hℓ h_hecke (by simp [O.rank_lt])
   obtain ⟨h_fix, t, h_poly, ht⟩ := h_hecke
   have h_root_ne : O.charW.frobValue r w * w.q ^ (O.rankDiff - 1) ≠ 0 := by
-    simp [AutChar.frobValue, HeckeChar.atUniformizer]
+    simp [AutChar.frobValue, HeckeChar.atUniformizer, w.ne_bot]
   have h_eval : heckePolyEval n w t (O.liftHeckeRoot w) = 0 := by
     rw [h_poly, IsRoot.def, eval_heckePoly w t h_root_ne] at h_root
     rw [DescentPair.liftHeckeRoot]
