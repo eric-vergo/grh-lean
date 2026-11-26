@@ -225,6 +225,7 @@ lemma exists_theta_flipCoords_map_eq_mul
   refine ⟨z⁻¹, by rw [norm_inv, hz, inv_one], fun f ↦ ?_⟩
   simpa [eq_inv_mul_iff_mul_eq₀ hz_ne] using (hθ f).symm
 
+open scoped Pointwise in
 /-- The adjoint moves a datum to the conjugate places. Let `A` be a set of finite places disjoint
 from its conjugate and `Ψ` a Schwartz–Bruhat function above `A`. Transport by `New.flipCoords`
 sends the vector named by `Ψ` at `A` on the vacuum of Hom(V, W) to the vector named by
@@ -453,7 +454,7 @@ private lemma Modulus.flipCoords_map_vacTranslate {c : (Ô E)ˣ}
   rw [vacTranslate, h_vec, ← apply_finVec, map_rho, map_vacElem, ← projOn_vacElem (S := 𝔪.places),
     ← 𝔪.schrodingerOp_char_eq_translate_projOn, projOn_vacElem]
   congr with x
-  simp [y, vecToMatrix, trace, mul_apply, dotProduct, sum_prod_type, mul_left_comm (x _),
+  simp [y, vecToMatrix, trace, Matrix.mul_apply, dotProduct, sum_prod_type, mul_left_comm (x _),
     ← Finset.mul_sum, matrixToVec]
 
 /-- Flip of a pair. Let c be a unit of Ô with c̄c = −1, T a space of rank m, V a space with the
