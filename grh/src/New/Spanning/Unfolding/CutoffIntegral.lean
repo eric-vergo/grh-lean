@@ -74,7 +74,7 @@ lemma enorm_besselKernel (y : InfinitePlace E → 𝔰.G₁) :
         ∏ v : InfinitePlace E, ‖(S.besselSystem v).besselFn side (((S.ratToInf γ)⁻¹ * y) v)‖ₑ := by
   -- Square both sides: the sum over pairs of tuples of indices of the squared coordinates factors
   -- as a product over the places, for each of the two tensor factors.
-  simp only [enorm]
+  simp only [eNorm_eq_nnNorm]
   norm_cast
   rw [← sq_eq_sq₀ zero_le zero_le]
   simp [EuclideanSpace.nnnorm_eq, besselKernel, besselFn, mul_pow, ← Finset.prod_pow, sum_prod_type,
@@ -313,6 +313,7 @@ lemma measurePreserving_rowCoords :
         (measurePreserving_arrowProdEquivProdArrow ..)).comp
     (measurePreserving_pi _ _ fun _ : InfinitePlace E ↦ measurePreserving_freeEntries_besselHaar)
 
+open scoped Pointwise in
 /-- Unfolding. Let `E` contain a primitive 5040th root of unity and let `S` be admissible. The
 cutoff `S.classCutoff c` is a measurable function G_∞ → [0, ∞], on tuples `y` of points of `G₁` at
 the infinite places, whose left translates under the congruence group `S.classUnipotent c` of
@@ -348,7 +349,7 @@ lemma lintegral_classCutoff_eq_measure [HasPrimitiveRoot5040 E] [S.IsAdmissible]
     ⟨fun γ s _ ↦ measure_preimage_mul _ γ.val s⟩
   -- The translates of the cutoff add up to 1, and the measure is inversion invariant.
   rw [h_fund.lintegral_eq_tsum'', ← lintegral_tsum (by fun_prop), lintegral_congr h_sum]
-  simp
+  simp [Set.univ_inter]
 
 /-- Let `γ ∈ S.classUnipotent c`. If, at an infinite place `v`, right multiplication by `γ` adds the
 (e_a, e*_a) entry of `γ` to that of every unipotent `x`, then the (e_a, e*_a) entry of `γ` divided
