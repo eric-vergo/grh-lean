@@ -31,9 +31,25 @@ Theorem A constructs integral generators whose normalized images have short lift
 * `q₀, d, K, E`. The fixed modulus and auxiliary prime determine the imaginary quadratic field `K = ℚ(√−d)`. Adjoining a root of unity of a data-dependent order gives the CM field `E`. Its number of infinite places is `f`.
 * `x, x₁, b, a`. The prime remainder is evaluated at `x` and at a much larger cutoff `x₁`. The weight parameter `b` is larger still. In the readable edition `a = x b`. The sets `aPlaces` and `bPlaces` carry these two distinguished weights.
 * `k, r, t, m`. The definite source has rank `k = r + 1 − m`, the initial target group rank `r`, and each step increases rank by `t = 5r`. The chain has `m` steps. These ranks belong to hermitian spaces. The dimension of the vector space of target forms is the separate quantity `targetDim`.
-* `X₀ → Xₘ → Yₘ`. The upper route takes a source form through definite theta lifts and restricts at the endpoint. The chain datum specifies a finite combination of such lifts.
-* `X₀ → Y₀ → Yₘ`. The first map is the Poincaré series. Translation and the idempotent `e₀` select target forms. On them `Θ ξ` is the lower chain at twist `ξ`.
-* `Wⱼ → Vⱼ`. These individual lifts of ranks `r → r + t` enter the determinant factorization. The j-th uses the j-th power of the twist. They let the proof estimate the full chain by examining one lift at a time.
+
+:::table +header
+*
+  * Map
+  * Group ranks at the endpoints
+  * Role in the proof
+*
+  * `X₀ → Xₘ → Yₘ`
+  * `k → r + mt + 1 → r + mt`
+  * Lift on definite spaces, then restrict. A chain datum specifies a finite combination of upper chains.
+*
+  * `X₀ → Y₀ → Yₘ`
+  * `k → r → r + mt`
+  * Form the Poincaré series. Translates of its good projection lie in the target, where the lower chain is `Θ ξ`.
+*
+  * `Wⱼ → Vⱼ`
+  * `r → r + t`
+  * Use the j-th power of the twist. The determinant factorization reduces a question about the whole chain to these individual lifts.
+:::
 
 [Field and rank data](https://eric-vergo.github.io/grh-lean/source/New.Reduction.Data.AdmissibleData.html), [lower chain](https://eric-vergo.github.io/grh-lean/source/New.UpperBound.Objects.RowChain.html), and [single-lift determinants](https://eric-vergo.github.io/grh-lean/source/New.Determinant.Chain.NormOfChain.html).
 
