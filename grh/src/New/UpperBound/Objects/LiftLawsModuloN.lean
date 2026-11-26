@@ -163,7 +163,7 @@ lemma exists_GL_last_col_and_row {R : Type*} [CommRing R] :
   refine ⟨fun y ↦ if h : IsUnit (y (.inr ())) then mk'' _ (det_unit y h) else 1, fun y h ↦ ?_⟩
   -- The second factor has the last basis vector as its last column, and the last row of the first
   -- factor is `u` times that vector.
-  constructor <;> ext a <;> simp [h, mul_apply, ← mul_assoc]
+  constructor <;> ext a <;> simp [h, Matrix.mul_apply, ← mul_assoc]
 
 /-- For `y` with unit last entry, an integral invertible matrix whose last column and last row are
 both `y` modulo `N`. -/
@@ -283,8 +283,13 @@ the indicator `lastColDatum y` at `T` times the character `charDatum y` at `R`. 
 lemma gluedDatum_eq_sum (T : Matrix n' (n ⊕ Unit) (LocProd P))
     (R : Matrix (n'' ⊕ Unit) n' (LocProd P)) :
     Λ.gluedDatum T R = ∑ y : n' → P → ZMod N, Λ.lastColDatum y T * Λ.charDatum y R := by
+  have h_sum (a : n' → P → ZMod N) : Λ.charDatum a R =
+      ∑ x, (if a = x then 1 else 0) * Λ.charDatum x R := by
+    rw [Fintype.sum_eq_single a (fun x hx ↦ by simp [Ne.symm hx])]
+    simp
   simp only [gluedDatum, lastColDatum, liftFn_apply]
   split_ifs <;> simp
+  exact h_sum _
 
 open scoped Classical in
 /-- The vectors modulo `N` that are non-zero at every place of `P`. -/
