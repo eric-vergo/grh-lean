@@ -562,13 +562,13 @@ lemma algebraMap_ResField_surjective : Function.Surjective (algebraMap (𝓞 E) 
 /-- The residue field at w has `w.q` elements, the absolute norm of w. -/
 lemma card_ResField : Nat.card (ResField w) = w.q := by
   have h_ker : w.asIdeal = RingHom.ker (algebraMap (𝓞 E) (ResField w)) := Ideal.ext (by simp)
-  rw [FinPlace.q, h_ker]
+  rw [FinPlace.q, Ideal.absNorm_eq_natCard, h_ker]
   exact (card_congr
     (RingHom.quotientKerEquivOfSurjective (algebraMap_ResField_surjective w)).toEquiv).symm
 
 /-- The residue field at a finite place is finite. -/
 instance instFiniteResField : Finite (ResField w) :=
-  finite_of_card_ne_zero (by simp [card_ResField])
+  finite_of_card_ne_zero (by simp [card_ResField, w.ne_bot])
 
 instance : ProperSpace (LocField w) :=
   properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField.mpr
@@ -964,9 +964,10 @@ lemma v_star_apply : v (star x w) = v (x (star w)) := by simp
 
 /-- Conjugate places have residue fields of the same order. -/
 @[simp]
-lemma q_star : (star w).q = w.q :=
+lemma q_star : (star w).q = w.q := by
+  simp only [FinPlace.q, Ideal.absNorm_eq_natCard]
   -- conjugation of `𝓞 E` induces a bijection of the quotients by the two prime ideals
-  Nat.card_eq_of_bijective _ ⟨quotientMap_injective, quotientMap_surjective starRingAut.surjective⟩
+  exact Nat.card_eq_of_bijective _ ⟨quotientMap_injective, quotientMap_surjective starRingAut.surjective⟩
 
 /-- Complex conjugation carries the idempotent of a set of places to that of its conjugate. -/
 lemma star_idem (S : Set (FinPlace E)) : star (idem S : 𝔸f E) = idem (star ⁻¹' S) := by aesop

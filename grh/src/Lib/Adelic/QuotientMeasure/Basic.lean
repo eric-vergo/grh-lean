@@ -600,6 +600,7 @@ instance [CompactSpace G] : IsMulRightInvariant μ := by
   rw [quotMeasure_bot]
   infer_instance
 
+open scoped Pointwise in
 instance [IsMulRightInvariant μ] : IsInvInvariant μ := by
   -- `μ.inv` and `μ` are left invariant, so both are multiples of the Haar measure normalized on
   -- `K = K₀ ∪ K₀⁻¹`; the factors agree because `K` is symmetric.
