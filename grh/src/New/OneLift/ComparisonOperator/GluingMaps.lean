@@ -599,7 +599,13 @@ lemma sum_mul_colsMinus_le :
 lemma hookNumberMinus_le : (hookNumberMinus j : ℝ) ≤ exp (D.x ^ 999) := by
   set L : ℕ := card D.Φ * (D.t * (D.t * D.gap)) with hL
   have h_hook : hookNumberMinus j ≤ ((L : ℤ) ^ L) ^ 3 := hookNumber_le (sum_mul_colsMinus_le j)
-  have h_size : (3 : ℝ) * (L * L) ≤ D.x ^ 999 := by simpa [hL] using D.le_of_hasLogBound
+  have h_size : (3 : ℝ) * (L * L) ≤ D.x ^ 999 := by
+    simp [hL]
+    refine D.le_of_hasLogBound ?_
+    obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+    obtain ⟨hC, hq, hd, ht⟩ := Data.le_constantBound (P := P)
+    simp
+    linarith
   calc (hookNumberMinus j : ℝ) ≤ ((L : ℝ) ^ L) ^ 3 := mod_cast h_hook
     _ ≤ exp (3 * (L * L)) := by
         refine le_exp_of_log_le ?_
@@ -617,7 +623,13 @@ lemma card_columnFilling_colsMinus_le :
       (untwistedDescentPair j).colsMinus) ≤ (D.t + 1) ^ L :=
     GL.card_columnFilling_le (by omega)
       (fun _ ↦ (card_secondFactorIndex_le D).trans D.t.le_succ) (sum_mul_colsMinus_le j)
-  have h_size : (L : ℝ) * (D.t + 1 : ℕ) ≤ D.x ^ 999 := by simpa [hL] using D.le_of_hasLogBound
+  have h_size : (L : ℝ) * (D.t + 1 : ℕ) ≤ D.x ^ 999 := by
+    simp [hL]
+    refine D.le_of_hasLogBound ?_
+    obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+    obtain ⟨hC, hq, hd, ht⟩ := Data.le_constantBound (P := P)
+    simp [max_def]
+    split_ifs <;> linarith
   grw [h_card]
   refine le_exp_of_log_le ?_
   grw [← h_size, Nat.cast_pow, log_pow,
