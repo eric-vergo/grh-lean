@@ -4,12 +4,14 @@ import sys
 from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import unquote, urljoin, urlsplit
 
 
 class Page(HTMLParser):
     def __init__(self, file):
         super().__init__()
+        self.base = None
+        self.navigation = set()
         self.ids = set()
         self.hrefs = set()
         self.classes = Counter()
@@ -37,9 +39,13 @@ class Page(HTMLParser):
             self.verdicts[attrs['data-bp-theorem']] = attrs['data-bp-verdict']
         if 'id' in attrs:
             self.ids.add(attrs['id'])
-        if 'href' in attrs:
+        if tag == 'base' and self.base is None and attrs.get('href') is not None:
+            self.base = attrs['href']
+        if tag == 'a' and attrs.get('href') is not None:
+            self.navigation.add(attrs['href'])
+        if attrs.get('href') is not None:
             self.hrefs.add(unquote(attrs['href']))
-        self.classes.update(attrs.get('class', '').split())
+        self.classes.update((attrs.get('class') or '').split())
 
     def handle_data(self, data):
         if self.line_depth and not self.line_number:
@@ -59,7 +65,46 @@ def check(condition, text):
         raise SystemExit(text)
 
 
+def check_navigation(site):
+    project_url = 'https://eric-vergo.github.io/grh-lean/'
+    root = urlsplit(project_url)
+    ids = {}
+    static = dynamic = 0
+    for file in site.rglob('*.html'):
+        relative = file.relative_to(site)
+        if relative.parts[0] == 'source':
+            continue
+        page = Page(file)
+        page_url = urljoin(project_url, relative.as_posix())
+        base = urljoin(page_url, page.base or page_url)
+        for href in page.navigation:
+            target = urlsplit(urljoin(base, href))
+            if target.scheme not in ('http', 'https') or target.netloc != root.netloc:
+                continue
+            path = unquote(target.path)
+            check(path.startswith(root.path), f'{relative}: link escapes project path: {href}')
+            dest = site / path.removeprefix(root.path)
+            if dest.is_dir():
+                dest = dest / 'index.html'
+            check(dest.is_file(), f'{relative}: missing target {href} ({dest})')
+            fragment = unquote(target.fragment)
+            if fragment.startswith(('--informal-preview-', '--informal-external-decl-')):
+                # VersoBlueprint opens these preview/declaration targets in its client runtime.
+                dynamic += 1
+                continue
+            if fragment and dest.suffix == '.html':
+                if dest not in ids:
+                    ids[dest] = Page(dest).ids
+                check(fragment in ids[dest], f'{relative}: missing fragment {href} ({dest})')
+            static += 1
+    print(f'Checked {static} local navigation links under {root.path} and '
+          f'{dynamic} client-managed preview links for destination pages')
+
+
 site = Path(sys.argv[1])
+check_navigation(site)
+if sys.argv[2:] == ['--links-only']:
+    sys.exit(0)
 atlas = site / 'source'
 index = Page(atlas / 'index.html')
 catalog = dict(json.loads((atlas / 'catalog.json').read_text()))
