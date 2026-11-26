@@ -340,7 +340,9 @@ lemma map_symm_centralizer_singleton {M N : Type*} [Group M] [Group N] (f : M �
     (centralizer {f a}).map f.symm.toMonoidHom = centralizer {a} := by
   ext b
   rw [Subgroup.mem_map_equiv, mem_centralizer_singleton_iff, mem_centralizer_singleton_iff,
-    MulEquiv.symm_symm, ← map_mul, ← map_mul, f.apply_eq_iff_eq]
+    MulEquiv.symm_symm]
+  change f b * f a = f a * f b ↔ b * a = a * b
+  rw [← map_mul, ← map_mul, f.apply_eq_iff_eq]
 
 /-- Let `E` contain the 5040th roots of unity. Let `y` be an elliptic isometry of a positive form
 with orthonormal finite frame `u` (`HasSignType 1 1 y {1} u`), and let `z w` list the roots of its
@@ -640,7 +642,7 @@ theorem exists_geometricSide_singleton_eq [Nonempty n] (hB : 13 * card n ^ 3 ≤
       exact V.card_mem_signedClasses h_ell
     simp only [Set.indicator, ← sum_filter, sum_const, nsmul_eq_mul, h_card]
   have h_parts : HasSum (fun a ↦ ∑ σ, (S σ).indicator I a) (∑ σ, ∑' a : S σ, I a) :=
-    hasSum_sum fun σ _ ↦ hasSum_subtype_iff_indicator.1 (h_sum.summable.subtype (S σ)).hasSum
+    hasSum_sum fun σ _ ↦ hasSum_subtype_iff_indicator.1 (h_sum.summable.subtype (· ∈ S σ)).hasSum
   refine mul_left_cancel₀ hN ?_
   calc N * V.geometricSide hB he {R} φ
       = ∑ σ, ∑' a : S σ, I a := (h_sum.mul_left _).unique (by simpa only [h_count] using h_parts)
