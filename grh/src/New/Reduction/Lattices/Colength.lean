@@ -53,7 +53,8 @@ lemma ColengthDvd.trans (hMN : ColengthDvd M N z) (hNP : ColengthDvd N P a) :
   obtain ⟨m, hm_det, hm_mem⟩ := hMN n Φ hΦ
   obtain ⟨m', hm'_det, hm'_mem⟩ := hNP n (fun i : Fin n ↦ ∑ k, m i k • Φ k) hm_mem
   have h_assoc (i : Fin n) : ∑ k, (m' * m) i k • Φ k = ∑ j, m' i j • ∑ k, m j k • Φ k := by
-    simpa [mul_apply, Finset.sum_smul, Finset.smul_sum, mul_smul] using Finset.sum_comm
+    simp only [Matrix.mul_apply, Finset.sum_smul, Finset.smul_sum, mul_smul]
+    exact Finset.sum_comm
   refine ⟨m' * m, ?_, fun i ↦ by simpa only [h_assoc] using hm'_mem i⟩
   simpa [mul_comm z] using mul_dvd_mul hm'_det hm_det
 
