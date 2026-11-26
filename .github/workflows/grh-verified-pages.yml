@@ -1,0 +1,75 @@
+name: Publish verified GRH site archive
+on:
+  push:
+    branches: [codex/grh-blueprint]
+    paths: ['.github/workflows/grh-verified-pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_COMMIT: 01dedc03319451ed8761bf3f318d612ef2e9c4bc
+  RELEASE_TAG: grh-blueprint-01dedc0
+  ARCHIVE: grh-pages-01dedc0.tar.gz
+  SHA256: 3eeafec244ba5331563e2be7c7a7c60e08846b709cbbbe0e0e893645d7552ead
+
+jobs:
+  site:
+    if: github.repository == 'eric-vergo/grh-lean' && github.ref == 'refs/heads/codex/grh-blueprint'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify the release source and archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          repo=eric-vergo/grh-lean
+          test "$(gh api "repos/$repo/git/ref/tags/$RELEASE_TAG" --jq '.object.sha')" = "$SOURCE_COMMIT"
+          gh release download "$RELEASE_TAG" --repo "$repo" --pattern "$ARCHIVE"
+          echo "$SHA256  $ARCHIVE" | sha256sum --check --strict
+          python3 - <<'PY'
+          import os
+          import tarfile
+          from pathlib import Path
+
+          with tarfile.open(os.environ['ARCHIVE']) as archive:
+              for member in archive:
+                  path = Path(member.name)
+                  if not member.isfile() or path.is_absolute() or '..' in path.parts:
+                      raise SystemExit(f'Unexpected archive entry: {member.name}')
+              archive.extractall('site', filter='data')
+          for page in ['index.html', 'source/Main.html', 'Project-Stats/index.html']:
+              assert (Path('site') / page).is_file(), page
+          PY
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: site
+  deploy:
+    needs: site
+    runs-on: ubuntu-latest
+    concurrency:
+      group: grh-pages-deployment
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Verify the branch still selects this archive and source tree
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          api=repos/eric-vergo/grh-lean
+          head=$(gh api "$api/git/ref/heads/codex/grh-blueprint" --jq '.object.sha')
+          test "$head" = "$GITHUB_SHA"
+          tree() { gh api "$api/git/trees/$1" --jq '.tree[] | select(.path == "grh") | .sha'; }
+          source_tree=$(tree "$SOURCE_COMMIT")
+          test -n "$source_tree" && test "$source_tree" = "$(tree "$head")"
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+      - id: deploy
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
