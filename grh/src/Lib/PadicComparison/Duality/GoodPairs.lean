@@ -351,9 +351,9 @@ def rootPairs :
       ((testUnitLocus (A := A) (AdjoinRoot.mk P.f P.g)).toFunctor ⊗
         (testUnitLocus P.g).toFunctor) where
   obj _ :=
-    fun (w, ψ) ↦
-      Associated (asAlgHom ψ.val P.f) (asAlgHom ψ.val X - asAlgHom w.val (root P.f)) ∧
-      ∀ r : R, asAlgHom w.val (AdjoinRoot.of P.f r) = asAlgHom ψ.val (C r)
+    {q | let (w, ψ) := q
+         Associated (asAlgHom ψ.val P.f) (asAlgHom ψ.val X - asAlgHom w.val (root P.f)) ∧
+           ∀ r : R, asAlgHom w.val (AdjoinRoot.of P.f r) = asAlgHom ψ.val (C r)}
   map f := by
     rintro ⟨w, ψ⟩ ⟨h_assoc, h_const⟩
     refine ⟨?_, fun r ↦ congrArg f.hom.hom (h_const r)⟩
@@ -369,17 +369,27 @@ private lemma exists_eq_add_mul_and_sub_derivative_mem {P : StandardEtalePair R}
     {t : c.obj} {m : Ideal c.obj} (w : AdjoinRoot P.f →ₐ[A] c.obj) (ψ : R[X] →ₐ[A] c.obj)
     (ht : t ∈ m) (hX : ψ X = w (root P.f) + t) (hC : ∀ r : R, w r = ψ (C r)) (p : R[X]) :
     ∃ s : c.obj, ψ p = w (AdjoinRoot.mk P.f p) + s * t ∧ s - ψ (derivative p) ∈ m := by
+  have hψ_zero : ψ 0 = 0 := ψ.toRingHom.map_zero
+  have hw_zero : w 0 = 0 := w.toRingHom.map_zero
+  have hψ_add (a b : R[X]) : ψ (a + b) = ψ a + ψ b := ψ.toRingHom.map_add a b
+  have hw_add (a b : AdjoinRoot P.f) : w (a + b) = w a + w b := w.toRingHom.map_add a b
+  have hψ_mul (a b : R[X]) : ψ (a * b) = ψ a * ψ b := ψ.toRingHom.map_mul a b
+  have hw_mul (a b : AdjoinRoot P.f) : w (a * b) = w a * w b := w.toRingHom.map_mul a b
   induction p using Polynomial.recOnHorner with
-  | M0 => exact ⟨0, by simp⟩
-  | MC p a _h_coeff _h_ne ih => simpa [hC, add_right_comm _ (ψ (C a))] using ih
+  | M0 =>
+    refine ⟨0, ?_, ?_⟩
+    · rw [hψ_zero, (AdjoinRoot.mk P.f).map_zero, hw_zero, zero_mul, add_zero]
+    · rw [Polynomial.derivative_zero, hψ_zero, sub_zero]
+      exact m.zero_mem
+  | MC p a _h_coeff _h_ne ih => simpa [hψ_add, hw_add, -map_add, RingHom.map_add, hC, add_right_comm _ (ψ (C a))] using ih
   | MX p _h_ne ih =>
     obtain ⟨s, h_eq, h_slope⟩ := ih
     refine ⟨s * w (root P.f) + ψ p, ?_, ?_⟩
-    · simp only [map_mul, AdjoinRoot.mk_X, hX, h_eq]
+    · simp only [hψ_mul, hw_mul, RingHom.map_mul, AdjoinRoot.mk_X, hX, h_eq]
       ring
     · have h_diff : s * w (root P.f) + ψ p - ψ (derivative (p * X)) =
           (s - ψ (derivative p)) * w (root P.f) - ψ (derivative p) * t := by
-        rw [derivative_mul, derivative_X, mul_one, map_add, map_mul, hX]
+        rw [derivative_mul, derivative_X, mul_one, hψ_add, hψ_mul, hX]
         ring
       rw [h_diff]
       exact sub_mem (m.mul_mem_right _ h_slope) (m.mul_mem_left _ ht)
@@ -418,7 +428,11 @@ lemma exists_notMem_of_rootPairs {P : StandardEtalePair R} {c : TestOver A} {t :
     have h_r : r ∉ m := fun h_r ↦ h_ψg <| IsPrime.mem_of_pow_mem inferInstance N <| by
       have h_deriv : ψ (derivative P.f) ∈ m := (m.sub_mem_iff_right h_r).mp h_r_slope
       have h_f : ψ P.f ∈ m := by simpa [h_f_taylor] using m.mul_mem_left r ht
-      rw [← map_pow, ← h_etale, map_add, map_mul, map_mul]
+      have h := congrArg (fun p : R[X] ↦ ψ p) h_etale
+      change ψ.toRingHom (derivative P.f * p₁ + P.f * p₂) = ψ.toRingHom (P.g ^ N) at h
+      rw [ψ.toRingHom.map_add, ψ.toRingHom.map_mul, ψ.toRingHom.map_mul, map_pow ψ.toRingHom] at h
+      change ψ.toRingHom P.g ^ N ∈ m
+      rw [← h]
       exact m.add_mem (m.mul_mem_right _ h_deriv) (m.mul_mem_right _ h_f)
     have h_prime : m.IsPrime := inferInstance
     exact h_prime.mul_notMem (h_prime.mul_notMem (h_prime.mul_notMem h_wg h_ψg) hε) h_r h_mem
