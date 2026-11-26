@@ -83,6 +83,17 @@ lemma scale_inequalities :
   ⟨D.constantBound_le, D.mul_log_logB_le_logX, D.logX_le_logX₁, D.logX₁_le_logB,
     D.log_logX₁_le_log_logB⟩
 
+/-- Coarser scale inequalities for arithmetic with small ranks and exponents. -/
+lemma coarse_scale_inequalities :
+    100 * P.constantBound ≤ log D.logB ∧
+    100 * log D.logB ≤ D.logX ∧
+    100 * D.logX ≤ D.logX₁ ∧
+    100 * D.logX₁ ≤ D.logB ∧
+    6 * log D.logX₁ ≤ log D.logB := by
+  obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+  have hC := (le_constantBound (P := P)).1
+  exact ⟨by linarith, h₂, by linarith, by linarith, h₅⟩
+
 /-- As a real number, `D.a` is the product of the scales `D.x` and `D.b`. -/
 lemma cast_a : (D.a : ℝ) = D.x * D.b := by
   rw [a, cast_mul, ← D.exp_logX, ← D.exp_logB]
@@ -307,7 +318,8 @@ instance [D.HasLogUpper F l] [D.HasLogLower F l'] : D.HasLogLower F⁻¹ (-l) :=
   exact inv_anti₀ (HasLogBound.pos D) ((le_abs_self F).trans (D.hasLogUpper_iff.1 inferInstance))
 
 /-- An exponent of `F` plus one of `G⁻¹` is one of `F / G`. -/
-instance [HasLogBound D u G⁻¹ l'] : HasLogBound D u (F / G) (l + l') := hasLogBound_mul
+instance [HasLogBound D u G⁻¹ l'] : HasLogBound D u (F / G) (l + l') := by
+  simpa only [div_eq_mul_inv] using (hasLogBound_mul (D := D) (u := u) (F := F) (G := G⁻¹) (l := l) (l' := l'))
 
 /-- An exponent of the real product of `A` and `B` is one of the cast of `A * B`. -/
 instance [HasLogBound D u (A * B) l] : HasLogBound D u ↑(A * B) l := by simpa
@@ -326,16 +338,16 @@ instance [D.HasLogUpper (|F| + 1) c] : HasLogBound D u ⌈F⌉₊ (if u then c e
 
 /-- `log b` has the exponent `log log b`, in both directions. -/
 instance : HasLogBound D u D.logB (Real.log D.logB) := by
-  grind [D.scale_inequalities, HasLogBound, exp_log]
+  grind [D.coarse_scale_inequalities, HasLogBound, exp_log]
 
 /-- `log x₁` has the exponent `log log x₁`, in both directions. -/
 instance : HasLogBound D u D.logX₁ (Real.log D.logX₁) := by
-  grind [D.scale_inequalities, HasLogBound, exp_log]
+  grind [D.coarse_scale_inequalities, HasLogBound, exp_log]
 
 /-- The exponent `s = D.towerExp`, which satisfies `2 ^ s = m ^ 22`, is at most `log x₁`, since
 `s ≤ 32 log x` and `10⁶ log x ≤ log x₁`. -/
 instance : D.HasLogUpper D.towerExp (Real.log D.logX₁) := by
-  grind [D.scale_inequalities, HasLogBound, exp_log, towerExp_le]
+  grind [D.coarse_scale_inequalities, HasLogBound, exp_log, towerExp_le]
 
 /-- If `|F| ≤ exp l` and `|G| ≤ F`, then `|G| ≤ exp l`: an upper exponent of `F` is one of `G`. -/
 lemma hasLogUpper_of_abs_le [D.HasLogUpper F l] (hGF : |G| ≤ F) : D.HasLogUpper G l :=
@@ -391,7 +403,9 @@ variable [D.HasLogUpper F l] [D.HasLogLower G l'] [D.HasLogUpper A l] [D.HasLogL
     clear_aux_decl
     clear * - D
     repeat clear ‹_›
-    grind (splits := 99) [D.scale_inequalities])
+    first
+    | grind (splits := 99) [D.coarse_scale_inequalities]
+    | grind (splits := 99) [D.scale_inequalities])
 
 include D h_exp
 /-- If `|F| ≤ exp l`, `exp l' ≤ G` and `l < l'`, then `F < G`. -/
@@ -419,21 +433,26 @@ instance : HasLogBound D u π (if u then 4 else 0) := by
 /-- The number `m` of lifts lies between `x^(1/2)` and `2 x^(1/2)`. -/
 instance : HasLogBound D u D.m (D.logX / 2 + (if u then 2 else 0)) :=
   .of_mem_Icc (exp (D.logX / 2)) (2 * exp (D.logX / 2)) D.m_mem
-    (by cases u <;> grind [D.scale_inequalities])
+    (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The rank `r` lies between `x⁵` and `3 x⁵`. -/
 instance : HasLogBound D u D.r (5 * D.logX + (if u then 3 else 0)) :=
   .of_mem_Icc (exp (5 * D.logX)) (3 * exp (5 * D.logX)) D.r_mem
-    (by cases u <;> grind [D.scale_inequalities])
+    (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The constant `P.constantBound` is at most `log b`, since `10¹² P.constantBound ≤ log log b`. -/
 instance : D.HasLogUpper P.constantBound (Real.log D.logB) := by
-  grind [scale_inequalities, HasLogBound, exp_log]
+  grind [coarse_scale_inequalities, HasLogBound, exp_log]
 
 /-! ### Sizes of the derived parameters -/
 
 /-- The rank `m` is at least `10000`. -/
-lemma ten_thousand_le_m : 10000 ≤ D.m := D.nat_le_of_hasLogBound
+lemma ten_thousand_le_m : 10000 ≤ D.m := by
+  obtain ⟨h₁, h₂, -⟩ := D.coarse_scale_inequalities
+  have hC := (le_constantBound (P := P)).1
+  have hm := D.m_mem.1
+  have h : (10000 : ℝ) ≤ D.m := by linarith [add_one_le_exp (D.logX / 2)]
+  exact_mod_cast h
 
 /-- `r + 1 = k + m`, as the subtraction in `k = r + 1 - m` is exact. -/
 @[grind! .]
@@ -450,12 +469,12 @@ instance : HasLogBound D u D.k (5 * D.logX + (if u then 3 else -2)) := by
   have m_le : D.m ≤ (D.r / 2 : ℝ) := D.le_of_hasLogBound
   have h_mem : (D.k : ℝ) ∈ Set.Icc (D.r / 2 : ℝ) D.r := by
     grind [ten_thousand_le_m, k, cast_sub, one_le_cast]
-  exact .of_mem_Icc (D.r / 2) D.r h_mem (by cases u <;> grind [D.scale_inequalities])
+  exact .of_mem_Icc (D.r / 2) D.r h_mem (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The number `t = 5 r` lies between `x⁵` and `e⁸ x⁵`. -/
 instance : HasLogBound D u D.t (5 * D.logX + (if u then 8 else 0)) := by
   rw [t]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The exponents of `m ^ 22` are those of `2 ^ s`, for the exponent `s = D.towerExp` of the data,
 which satisfies `2 ^ s = m ^ 22`. -/
@@ -475,19 +494,19 @@ instance :
   -- the power of `3` in `towerDeg D.towerExp` is controlled by
   -- `3 ^ Nat.log 3 D.towerExp ≤ D.towerExp + 1`
   have h_succ : D.HasLogUpper (D.towerExp + 1 : ℕ) (max (Real.log D.logX₁) 1 + 1) :=
-    .of_lower_of_upper (by grind [D.scale_inequalities])
+    .of_lower_of_upper (by grind [D.coarse_scale_inequalities])
   have h_pow : D.HasLogUpper (3 ^ Nat.log 3 D.towerExp : ℕ) (max (Real.log D.logX₁) 1 + 1) :=
     D.hasLogUpper_of_le (pow_log_le_add_one 3 D.towerExp)
   -- so instance search has an exponent for each factor of `3 ^ (Nat.log 3 s + 5) * 2 ^ s`
   rw [towerDeg, pow_add]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- `x¹¹ ≤ f ≤ exp P.constantBound * x¹¹ (log b)^{1/5}` for the number `f` of infinite places of
 the number field `E = P.E D.towerExp` of the data. -/
 instance hasLogBound_f :
     HasLogBound D u D.f (11 * D.logX + if u then Real.log D.logB / 5 + P.constantBound else 0) := by
   rw [f, P.numInfPlaces_E]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- An upper exponent of the number `f` of infinite places of `E` is one of `#S` for every set `S`
 of such places. -/
@@ -497,12 +516,12 @@ instance {S : Finset D.Φ} [D.HasLogUpper D.f l] : D.HasLogUpper #S l :=
 /-- The last rank `n m = k + m (t + 1)` lies between `x^{5.5}` and `e^{12} x^{5.5}`. -/
 instance : HasLogBound D u (D.n D.m) (5.5 * D.logX + (if u then 12 else 0)) := by
   rw [n]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The primes `p₀`, `p₁` lie between `b¹⁰` and `b¹¹`. -/
 instance (i : Fin 2) : HasLogBound D u (D.levelPrime i) ((if u then 11 else 10) * D.logB) :=
   .of_mem_Icc (D.b ^ 10) (D.b ^ 11) (D.levelPrime_mem i)
-    (by cases u <;> grind [D.scale_inequalities])
+    (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- `b²⁰ ≤ M ≤ b²²` for `M = p₀ p₁`. -/
 lemma M_mem_Icc : (D.M : ℝ) ∈ Set.Icc (D.b ^ 20) (D.b ^ 22) := by
@@ -514,32 +533,32 @@ lemma M_mem_Icc : (D.M : ℝ) ∈ Set.Icc (D.b ^ 20) (D.b ^ 22) := by
 /-- `D.M`, the product `p₀ p₁` of the two primes `D.levelPrime i`, lies between `b²⁰` and `b²²`. -/
 instance : HasLogBound D u D.M ((if u then 22 else 20) * D.logB) := by
   rw [M]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The half-gap `halfGap = r ^ 8` lies between `x⁴⁰` and `e²⁵ x⁴⁰`. -/
 instance : HasLogBound D u D.halfGap (40 * D.logX + (if u then 25 else 0)) := by
   rw [halfGap]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The gap `Δ = 2 r ^ 8` lies between `x⁴⁰` and `e²⁷ x⁴⁰`. -/
 instance : HasLogBound D u D.gap (40 * D.logX + (if u then 27 else 0)) := by
   rw [gap]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- `a = x b` has the exponent `log b + log x`. -/
 instance : HasLogBound D u D.a (D.logB + D.logX) := by
   rw [cast_a]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The weight `D.natB` at the `b`-places, which is the scale `b`, has the exponent `log b`. -/
 instance : HasLogBound D u D.natB D.logB := by
   rw [cast_natB]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- `offWeight = a / x₁` has the exponent `log b - log x₁ + log x`. -/
 instance : HasLogBound D u D.offWeight (D.logB - D.logX₁ + D.logX) := by
   rw [cast_offWeight]
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- If `l` is an upper exponent of `#S` and `l'` one of every term `v y`, then `l + l'` is an upper
 exponent of `∑ y ∈ S, v y`. -/
