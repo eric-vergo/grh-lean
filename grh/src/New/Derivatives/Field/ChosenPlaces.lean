@@ -183,7 +183,7 @@ lemma chiMLocal_apply_eq_one_of_pow_q₁_eq_one {x : ResField w} (hx : x ^ D.q�
           rw [D.chiMLocal_of_isChosen hw, pow_apply' _ (NeZero.ne _), map_pow]
       _ = 1 := by rw [hx_pow, map_one]
   · have hx_unit : IsUnit x := .of_pow_eq_one hx (NeZero.ne _)
-    rw [D.chiMLocal_eq_one_of_not_isChosen hw, one_apply hx_unit]
+    rw [D.chiMLocal_eq_one_of_not_isChosen hw, MulChar.one_apply hx_unit]
 
 /-- Let `ψ` give, for each finite place w of E, a complex multiplicative character of the residue
 field at w. If `ψ w = 1`, then for every integer n the w-component of ωⁿψ, where ω = `D.chiMLocal`,
@@ -427,7 +427,7 @@ instance hasLogBound_deltaE (v : D.Φ) (u : Bool) :
   -- Instance search bounds the product `exp (log A) * towerDeg s * √d` factor by factor. The
   -- sum of the exponents is compared with `10 log x` and `12 log x` by `h_log` and
   -- `D.scale_inequalities`.
-  exact .of_lower_of_upper (by cases u <;> grind [D.scale_inequalities])
+  exact .of_lower_of_upper (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The root discriminant `rd_E = D.rootDisc` of the field `E = D.E` lies in `[x ^ 10, x ^ 12]`. -/
 lemma rootDisc_mem_Icc : D.rootDisc ∈ Set.Icc (D.x ^ 10) (D.x ^ 12) := by
