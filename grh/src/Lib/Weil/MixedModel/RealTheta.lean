@@ -180,7 +180,8 @@ lemma entireTheta_eq_integral (hs : s = 1) (h_projReal : V.projReal f = f)
     simp [hs, beta_mul_realVac, holomorphicCoord_eq, dotProduct]
   have h_ne : realVac y ≠ 0 := exp_ne_zero _
   simp_rw [entireTheta, h_value, h_translate, ← integral_div]
-  congr with w
+  apply integral_congr_ae
+  filter_upwards [] with w
   field_simp
 
 /-- Suppose all signs `s` are +1 and `f` is fixed by the real vacuum projection
@@ -384,7 +385,7 @@ lemma IsAdapted.omega_projReal_of_isMixedLaw (hT : D.IsMixedLaw T) {g : G E s}
   have h_frame : MeasurePreserving (realMatrix (D.frameAt g t) *ᵥ ·) (normalizedVolume _)
       (normalizedVolume _) :=
     measurePreserving_equiv (realHeisenberg 1) (realHeisenberg 1)
-      (φ := {toLin'OfInv h_orth h_orth' with}) h_vac
+      (φ := (toLin'OfInv h_orth h_orth').toContinuousLinearEquiv.toContinuousAddEquiv) h_vac
   -- Splitting the coordinates as ((c, b), w), and then as (c, b), preserves the measure too.
   let outer : (realHeisenberg (realSigns E ((1 : p ⊕ p → ℤˣ) ⊕ᵥ s₀))).OrthogonalSum
       (realHeisenberg (realSigns E (1 : p ⊕ p → ℤˣ))) (realHeisenberg (realSigns E s₀)) realVac :=
@@ -416,7 +417,9 @@ lemma IsAdapted.omega_projReal_of_isMixedLaw (hT : D.IsMixedLaw T) {g : G E s}
     rw [← h_char]
     simp [hT, N, coord, outer, inner, realVec_realMatrix_mulVec, frameAt, ← g.adeleMatrix.mul_assoc,
       adelicHeisenberg, ← G.adeleMatrix_mul, star_mulVec_dotProduct, ← conjTranspose_mul, mul_add,
-      realVec_realCoordSum, omega_rho, mulVec_add, AddChar.map_add_eq_mul]
+      realVec_realCoordSum (s := 1) (s₀ := s₀), realVec_realCoordSum (s := 1) (s₀ := 1),
+      omega_rho, mulVec_add, AddChar.map_add_eq_mul]
+    rfl
   have h_vac_coord (c b : InfinitePlace E × p → ℂ) (w : InfinitePlace E × n₀ → ℂ) :
       realVac (coord c b w) = realVac c * realVac b * realVac w := by
     simp only [coord, h_vac, OrthogonalSum.vac_equiv]
