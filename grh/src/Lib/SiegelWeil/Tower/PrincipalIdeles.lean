@@ -62,7 +62,7 @@ lemma integrable_prod_inv_one_add_log_sq [Fintype ι] :
     exact h_eval.norm.log
   have h_polar : Continuous polar.uncurry := by
     rw [Units.isOpenEmbedding_val.isInducing.continuous_iff]
-    simp only [polar]
+    change Continuous (fun q : (ι → ℝ) × (ι → Circle) ↦ fun x ↦ exp (q.1 x : ℝ) * (q.2 x : ℂ))
     fun_prop
   -- `L` turns multiplication by `polar t 1` into translation by `t`
   have h_conj (t : ι → ℝ) : Function.Semiconj L (polar t 1 * ·) (t + ·) := by
@@ -87,7 +87,8 @@ lemma integrable_prod_inv_one_add_log_sq [Fintype ι] :
   have h_int : Integrable (fun t : ι → ℝ ↦ ∏ x : ι, (1 + t x ^ 2)⁻¹) (haar.map L) := by
     rw [(haar.map L).isAddLeftInvariant_eq_smul volume]
     have h_volume : Integrable (fun t : ι → ℝ ↦ ∏ x : ι, (1 + t x ^ 2)⁻¹) :=
-      Integrable.fintype_prod fun _ ↦ integrable_inv_one_add_sq
+      Integrable.fintype_prod (μ := fun _ : ι ↦ (volume : Measure ℝ))
+        (f := fun _ t ↦ (1 + t ^ 2)⁻¹) fun _ ↦ integrable_inv_one_add_sq
     exact h_volume.smul_measure_nnreal
   exact h_int.comp_measurable hL
 
