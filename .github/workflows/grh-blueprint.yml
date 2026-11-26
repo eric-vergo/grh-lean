@@ -44,7 +44,6 @@ jobs:
         id: build
         timeout-minutes: 300
         env:
-          VERSO_BLUEPRINT_KERNEL_REPLAY_SECONDS: '7200'
           VERSO_BLUEPRINT_KERNEL_REPLAY_MEMORY_MB: '12000'
         run: ./scripts/check-blueprint.sh
       - name: Save complete or partial Lean compilation
