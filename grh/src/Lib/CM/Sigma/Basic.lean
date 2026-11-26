@@ -630,14 +630,14 @@ lemma New.deriv_derivWeierstrassP (L : PeriodPair) {z : ℂ} (hz : z ∉ L.latti
   -- Differentiate `℘' ^ 2 = 4 ℘ ^ 3 - g₂ ℘ - g₃`; where `℘'` is not zero, divide by `2 ℘'`.
   have h_first (w : ℂ) (hw : w ∉ L.lattice) :
       2 * ℘'[L] w * deriv ℘'[L] w = 4 * (3 * ℘[L] w ^ 2 * ℘'[L] w) - L.g₂ * ℘'[L] w := by
-    simpa (disch := fun_prop) using EqOn.deriv L.derivWeierstrassP_sq h_open hw
+    simpa (disch := fun_prop) using EqOn.deriv (fun w hw ↦ L.derivWeierstrassP_sq w hw) h_open hw
   rcases ne_or_eq (℘'[L] z) 0 with h_ne | h_zero
   · apply mul_left_cancel₀ (mul_ne_zero two_ne_zero h_ne)
     linear_combination h_first z hz
   -- At a zero of `℘'`, differentiate once more; only the terms free of `℘'` remain.
   have h_second : 2 * deriv ℘'[L] z * deriv ℘'[L] z =
       4 * (3 * ℘[L] z ^ 2 * deriv ℘'[L] z) - L.g₂ * deriv ℘'[L] z := by
-    simpa (disch := fun_prop) [h_zero] using EqOn.deriv h_first h_open hz
+    simpa (disch := fun_prop) [h_zero] using EqOn.deriv (fun w hw ↦ h_first w hw) h_open hz
   -- There `℘''` is not zero: `2 z` is a lattice point, a simple zero of `σ`, and the derivative of
   -- the duplication formula reads `2 σ' (2 z) = -℘'' z σ z ^ 4`.
   have h_simple : deriv L.σ (2 * z) ≠ 0 :=
