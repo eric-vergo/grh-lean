@@ -163,7 +163,7 @@ lemma span_columnLattice {E : Type} [Field E] [CMType E] {𝔰 : Shape} {ι : Ty
       exists_natCast_smul_mem_of_isCompact E (Set.finite_range _).isCompact
         (isOpen_Ô.mem_nhds (zero_mem _))
     have h_int : IsIntMatrix (Ô E) (S.classCoordX₀ c * finAdeleMatrix (N • q)) := fun a l ↦ by
-      simpa [Function.uncurry, mul_apply, Finset.mul_sum, mul_left_comm] using
+      simpa [Function.uncurry, Matrix.mul_apply, Finset.mul_sum, mul_left_comm] using
         h_mem _ ⟨(a, l), rfl⟩
     have h_point : conjColumnsAtInfinity E 𝔰 ι (N • q) ∈ S.columnLattice ι c :=
       mem_columnLattice.2 ⟨N • q, h_int, rfl⟩
@@ -270,6 +270,6 @@ theorem exists_isAddFundamentalDomain_columnLattice {E : Type} [Field E] [CMType
   obtain ⟨n, hn⟩ : ∃ n : ℤ, ∑ v : InfinitePlace E, (Φ v (∑ l : ι, (qᴴ * q') l l)).re = n :=
     exists_int_eq_sum_re h_int
   refine ⟨n, .trans ?_ hn⟩
-  simp [e, Fintype.sum_sigma, mul_apply, Finset.sum_add_distrib]
+  simp [e, Fintype.sum_sigma, Matrix.mul_apply, Finset.sum_add_distrib]
 
 end New.Filling
