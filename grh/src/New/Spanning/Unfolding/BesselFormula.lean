@@ -132,11 +132,11 @@ lemma mem_unipotent_of_snd_eq_one (h : S.Fits V l kw Y η) {g : New.G E ε} (h_f
       simpa only [S.adelicToInf_apply] using mem_besselU.1 (h_inf v) a b hab
     rcases eq_or_ne a b with rfl | h_ne
     · simpa using h_entry
-    · simpa [one_apply, h_ne] using h_entry
+    · simpa [Matrix.one_apply, h_ne] using h_entry
   · -- The entries at the finite places.
     have h_matrix : ((h.adelicEquiv g).val a b).2 = V.ratCoordMatrixFin g.2 a b :=
       (congrFun₂ (V.ratCoordMatrixFin_snd g) a b).symm
-    simp [h_matrix, h_fin, Space.ratCoordMatrixFin, one_apply, apply_ite]
+    simp [h_matrix, h_fin, Space.ratCoordMatrixFin, Matrix.one_apply, apply_ite]
 
 /-- Let `s` be a real point of the group of `V`, and `a` an adelic point of the unitary group `H` of
 the definite form on `𝔰.κ`, embedded by `Y.inclX`. The component in `G₁` at `v` of the adelic point
