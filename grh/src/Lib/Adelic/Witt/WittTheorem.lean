@@ -156,7 +156,7 @@ lemma HasLeftInv.exists_dotProduct_mulVec_col_eq_ite (hX : HasLeftInv X) {A : Ma
   refine ⟨a, fun i ↦ ?_⟩
   calc a ⬝ᵥ A *ᵥ X.col i = L j ⬝ᵥ X.col i := by rw [dotProduct_mulVec, ha]
     _ = (L * X) j i := rfl
-    _ = if j = i then 1 else 0 := by rw [hL, one_apply]
+    _ = if j = i then 1 else 0 := by rw [hL, Matrix.one_apply]
 
 /-- A subspace `L` of `n → R` has a basis written as the columns of an `n × d` matrix `x`, where `d`
 is the dimension of `L`: `x` has a left inverse and its column space is `L`. -/
@@ -514,7 +514,7 @@ lemma witt_Ô [HasPrimitiveRoot5040 E] {X Y : Matrix n k (𝔸f E)}
   -- so does its orthonormal frame `T`, and `a * T` is unitary and sends `X` to `Y`.
   obtain ⟨X, hX_inv : HasLeftInv X, rfl⟩ := hX.exists_map_subtype_eq
   obtain ⟨Y, hY_inv : HasLeftInv Y, rfl⟩ := hY.exists_map_subtype_eq
-  have h_gram' : Xᴴ * X = Yᴴ * Y := by simpa [← ext_iff, mul_apply, Subtype.ext_iff] using h_gram
+  have h_gram' : Xᴴ * X = Yᴴ * Y := by simpa [← Matrix.ext_iff, Matrix.mul_apply, Subtype.ext_iff] using h_gram
   obtain ⟨a, ha_unit, ha_X, ha_Y⟩ :=
     exists_isUnit_mul_eq_and_conjTranspose_mul_eq hX_inv hY_inv h_gram'
   -- the frame `T` of the hermitian unit `aᴴ * a` is `1` modulo `aᴴ * a - 1`, which kills `X`
