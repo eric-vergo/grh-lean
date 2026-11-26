@@ -145,15 +145,15 @@ def weylOn (P : ℕ → Prop) (p : ℕ → A) : T.G :=
         inv := M (star p)
         val_inv := by
           ext
-          simp [M, mul_apply, Matrix.one_apply]
+          simp [M, Matrix.mul_apply, Matrix.one_apply]
           grind [oppositeIndex_involutive_and_floorOf_level, inverse_mul_cancel]
         inv_val := by
           ext
-          simp [M, mul_apply, Matrix.one_apply]
+          simp [M, Matrix.mul_apply, Matrix.one_apply]
           grind [oppositeIndex_involutive_and_floorOf_level, inverse_mul_cancel] }
     property := by
       ext
-      simp [M, mul_apply, apply_ite star, inverse_star]
+      simp [M, Matrix.mul_apply, apply_ite star, inverse_star]
       grind [splitGram_eq_ite_oppositeIndex, oppositeIndex_involutive_and_floorOf_level,
         inverse_mul_cancel] }
 
@@ -665,7 +665,7 @@ lemma leadingMinor_submatrix_mul_of_mem_partialUnitriangularGroup {l : ℕ} {s :
     exact hi ⟨⟨level i, h_lt.trans b.is_lt⟩, (eq_besselFrame_of_floorOf_eq h_floor le_rfl).symm⟩
   have h_block : (M * s.val.val).submatrix f f = M.submatrix f f * s.val.val.submatrix f f := by
     ext a b
-    rw [submatrix_apply, mul_apply, mul_apply]
+    rw [submatrix_apply, Matrix.mul_apply, Matrix.mul_apply]
     refine (sum_of_injective f f_injective _ _ (fun i hi ↦ ?_) fun _ ↦ rfl).symm
     rw [h_column i b (h_level i hi b), one_apply_ne fun h_eq ↦ hi ⟨b, h_eq.symm⟩, mul_zero]
   have h_det : (s.val.val.submatrix f f).det = 1 := by
