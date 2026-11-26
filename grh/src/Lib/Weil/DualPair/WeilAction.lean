@@ -349,7 +349,8 @@ lemma continuous_realPairWeil :
     Continuous fun q : (GInf E s × GInf E s') × PairFock E s s' ↦ realPairWeil γ γ' q.1 q.2 := by
   have h_pairHomInf : Continuous (pairHomInf : GInf E s × GInf E s' →
       USign fun (p : NumberField.InfinitePlace E × n' × n) ↦ homSigns s s' p.2) := by
-    simp [continuous_U_iff_matrix, pairHomInf]
+    simp [continuous_U_iff_matrix, pairHomInf, Prod.map, coe_pairHom]
+    simp only [← GeneralLinearGroup.coe_inv, ← Subgroup.coe_inv]
     fun_prop [kroneckerMap]
   simp [realPairWeil]
   fun_prop (disch := simp [GeneralLinearGroup.det_ne_zero, zpow_ne_zero])
@@ -786,7 +787,7 @@ lemma finCoord_homAtPoint :
     finCoord (V.homAtPoint V' x) =
       matrixToVec (A.α⁻¹.val • (V'.xFin⁻¹.val * x.map snd * V.xFin.val)) := by
   funext c
-  simp [homAtPoint, matrixToVec, xFin, mul_apply, snd_sum, ← map_inv]
+  simp [homAtPoint, matrixToVec, xFin, Matrix.mul_apply, snd_sum, ← map_inv]
 
 /-- The Heisenberg operator ϱ on 𝒮(Hom(V, V′)) at `New.Space.homAtPoint` of an adelic matrix x :
 V → V′ given in rational coordinates. -/

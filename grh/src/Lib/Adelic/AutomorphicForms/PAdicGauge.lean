@@ -782,7 +782,7 @@ lemma map_valueMetric :
     ((valueMetric H κ).map (↑) : Matrix (ValueIndex H κ) (ValueIndex H κ) ℂ) =
       1 ⊗ₖ weylGramOver := by
   ext i k
-  simp [valueMetric, one_apply, apply_ite (Rat.cast : ℚ → ℂ)]
+  simp [valueMetric, Matrix.one_apply, apply_ite (Rat.cast : ℚ → ℂ)]
 
 lemma posDef_valueMetric :
     ((valueMetric H κ).map (↑) : Matrix (ValueIndex H κ) (ValueIndex H κ) ℂ).PosDef := by
@@ -802,7 +802,7 @@ lemma stdClassSum_gramForm_eq
     Fintype.sum_prod_type]
   refine sum_congr rfl fun c _ ↦ ?_
   have h_apply (ψ : S.LevelForm H χ κ e) (i) : valueCoord ψ (c, i) = ψ c.out i := rfl
-  simp [h_free, Fintype.sum_prod_type, h_apply, one_apply, gramForm_apply, dotProduct, mulVec]
+  simp [h_free, Fintype.sum_prod_type, h_apply, Matrix.one_apply, gramForm_apply, dotProduct, mulVec]
 
 /-- If the classes have no nontrivial automorphisms, then the inner product of forms has the block
 Gram matrix `valueMetric` in the coordinates `valueCoord` (the values at representatives of the
