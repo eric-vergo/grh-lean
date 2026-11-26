@@ -94,7 +94,10 @@ def divStar : Rˣ →ₜ* unitary R where
         ⟨x * star ↑x⁻¹, (x.mul_inv_mem_unitary (star x)).2 (by simp [mul_comm])⟩) <| by
       simp
       grind
-  continuous_toFun := by fun_prop
+  continuous_toFun := by
+    apply Continuous.subtype_mk
+    change Continuous fun x : Rˣ ↦ (x : R) * star (↑x⁻¹ : R)
+    fun_prop
 
 lemma coe_divStar (x : Rˣ) : (divStar x).val = x * star ↑x⁻¹ := rfl
 
