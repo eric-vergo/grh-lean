@@ -231,7 +231,11 @@ lemma isConjKernelPair_gridKernel (h_le : i ≤ D.m ∧ j ≤ D.m) :
   refine isConjKernelPair_kernelPair (d := false) fun τ ↦ (D.hasGap_gridParam τ z 0 i j).mono ?_
   -- the parameter has gap `D.gap`, and the rank is at most `2 * D.n D.m`
   grw [gapThreshold, D.card_gridIndex_le h_le.1 h_le.2]
-  simpa using D.nat_le_of_hasLogBound
+  simpa using D.nat_le_of_hasLogBound (h_exp := by
+    obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+    obtain ⟨hC, hq, hd, ht⟩ := Data.le_constantBound (P := P)
+    simp [max_def]
+    (try split_ifs) <;> linarith)
 
 /-- The character `New.Data.gridChar` has weight `D.gridWeight c l n`, which is the exponent of `υ`
 in it (`⌊card n / 2⌋` or `⌈card n / 2⌉`) minus `D.liftWeight (l + 1)`. Its tame part

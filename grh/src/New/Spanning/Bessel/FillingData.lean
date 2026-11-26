@@ -452,7 +452,11 @@ instance : D.HasLogLower (ofNat(2) ^ D.ϱ) (10 * D.logB) where
     suffices h : 10 * D.logB ≤ D.ϱ * Real.log 2 by simpa [← le_log_iff_exp_le] using h
     grw [← log_two_gt_d9]
     norm_num
-    exact D.le_of_hasLogBound
+    exact D.le_of_hasLogBound (h_exp := by
+      obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+      obtain ⟨hC, hq, hd, ht⟩ := Data.le_constantBound (P := P)
+      simp [max_def]
+      (try split_ifs) <;> linarith)
 
 /-- The filling data `New.Filling` attached to the admissible data D. They record the prime N, the
 idele of π (in the field `piN`), the primes p₀, p₁ with chosen places, `deltaE`, and Bessel systems
@@ -464,7 +468,7 @@ noncomputable def filling : Filling D.E D.shape where
   piN := D.piNIdele
   deltaE := P.deltaE D.towerExp
   b := D.b
-  chosenPlaces i := fun w ↦ D.piM ∈ w.1 ∧ ↑(D.levelPrime i) ∈ w.1
+  chosenPlaces i := {w | D.piM ∈ w.1 ∧ ↑(D.levelPrime i) ∈ w.1}
   fintypeChosen i := inferInstanceAs (Fintype (D.ChosenPlace i))
   sourceLevel := D.levelX 0
   classAut_eq_bot := D.classAut_levelX_zero_eq_bot
@@ -509,9 +513,17 @@ noncomputable def filling : Filling D.E D.shape where
   thousand_mul_le_k := D.nat_le_of_hasLogBound.trans D.card_X₀.ge
   k_le_f := D.card_X₀.trans_le D.nat_le_of_hasLogBound
   mul_rootDiscr_pow_le := by
-                 rify [Shape.k, card_X₀]
-                 exact D.le_of_hasLogBound
-  numInfPlaces_le_div := D.le_of_hasLogBound
+    rify [Shape.k, card_X₀]
+    exact D.le_of_hasLogBound (h_exp := by
+      obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+      obtain ⟨hC, hq, hd, ht⟩ := Data.le_constantBound (P := P)
+      simp [max_def]
+      (try split_ifs) <;> linarith)
+  numInfPlaces_le_div := D.le_of_hasLogBound (h_exp := by
+      obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+      obtain ⟨hC, hq, hd, ht⟩ := Data.le_constantBound (P := P)
+      simp [max_def]
+      (try split_ifs) <;> linarith)
   k_le_b := (Nat.cast_le.2 D.card_X₀.le).trans D.le_of_hasLogBound
   rootDiscr_le_b := D.le_of_hasLogBound
   succ_le_b := D.le_of_hasLogBound
