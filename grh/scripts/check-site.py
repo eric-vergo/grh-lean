@@ -5,7 +5,7 @@ import sys
 from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import unquote, urljoin, urlsplit
+from urllib.parse import parse_qs, unquote, urljoin, urlsplit
 
 
 class Page(HTMLParser):
@@ -14,6 +14,7 @@ class Page(HTMLParser):
         self.base = None
         self.navigation = set()
         self.ids = set()
+        self.graph_nodes = set()
         self.hrefs = set()
         self.classes = Counter()
         self.tags = Counter()
@@ -40,6 +41,8 @@ class Page(HTMLParser):
             self.source_links.append(unquote(attrs['href']))
         if 'data-bp-theorem' in attrs and 'data-bp-verdict' in attrs:
             self.verdicts[attrs['data-bp-theorem']] = attrs['data-bp-verdict']
+        if 'data-bp-node-name' in attrs:
+            self.graph_nodes.add(attrs['data-bp-node-name'])
         if 'id' in attrs:
             self.ids.add(attrs['id'])
         if tag == 'base' and self.base is None and attrs.get('href') is not None:
@@ -72,6 +75,7 @@ def check_navigation(site):
     project_url = 'https://eric-vergo.github.io/grh-lean/'
     root = urlsplit(project_url)
     ids = {}
+    graphs = {}
     static = dynamic = 0
     for file in site.rglob('*.html'):
         relative = file.relative_to(site)
@@ -91,6 +95,16 @@ def check_navigation(site):
                 dest = dest / 'index.html'
             check(dest.is_file(), f'{relative}: missing target {href} ({dest})')
             fragment = unquote(target.fragment)
+            if fragment.startswith(('ego=', 'node=')):
+                if dest not in graphs:
+                    graphs[dest] = Page(dest).graph_nodes
+                fields = parse_qs(target.fragment)
+                mode = 'ego' if fragment.startswith('ego=') else 'node'
+                labels = fields.get(mode, [])
+                check(len(labels) == 1 and labels[0] in graphs[dest],
+                      f'{relative}: missing graph node in {href}')
+                dynamic += 1
+                continue
             if fragment.startswith(('--informal-preview-', '--informal-external-decl-')):
                 # VersoBlueprint opens these preview/declaration targets in its client runtime.
                 dynamic += 1
@@ -101,7 +115,7 @@ def check_navigation(site):
                 check(fragment in ids[dest], f'{relative}: missing fragment {href} ({dest})')
             static += 1
     print(f'Checked {static} local navigation links under {root.path} and '
-          f'{dynamic} client-managed preview links for destination pages')
+          f'{dynamic} client-managed graph or preview links')
 
 
 def check_reading_pages(site):
