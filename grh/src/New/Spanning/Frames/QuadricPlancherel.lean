@@ -105,7 +105,7 @@ lemma floorMassLe_one_of_le (b : Fin 𝔰.n) {M : ℝ≥0∞}
   refine Γ.floorMassLe_of_chart (by simp) fun _ _ ↦ ⟨1, ?_, measurable_one, by simp⟩
   -- vectors of size `7` have coordinates of size `7 + 4`
   refine (setLIntegral_map_floorBasis_le (j := 7) 1).trans ?_
-  simpa using h_mass _
+  simpa [Set.univ_inter] using h_mass _
 
 /-- For every g, the σ on floor b with σ g near at b + 1 (`F.IsNear`) have mass at most
 Λ^(99 · 13 n) times the volume of the vectors of size 11 in X'. Here Λ = `Γ.loss` is the constant of
