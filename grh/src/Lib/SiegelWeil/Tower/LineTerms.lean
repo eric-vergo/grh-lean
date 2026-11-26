@@ -98,11 +98,16 @@ section
 
 omit [WeilData E]
 
+private lemma adeleMatrix_levi (m : GL Unit (𝔸 E)) (g : G E s) :
+    (A.levi (m, g)).adeleMatrix =
+      A.kAdelic * m.val * A.kCoord + A.iAdelic * g.adeleMatrix * A.iCoord +
+        A.lAdelic * (m⁻¹).valᴴ * A.lCoord := rfl
+
 /-- The block on `W` of the Levi element of `A` attached to an invertible `m` and a unitary `g`
 is `g`. -/
 lemma iCoord_levi_iAdelic (m : GL Unit (𝔸 E)) (g : G E s) :
     A.iCoord * ((A.levi (m, g)).adeleMatrix * A.iAdelic) = g.adeleMatrix := by
-  simp [Splitting.levi, Matrix.mul_assoc, G.adeleMatrix_ofMatrix, Matrix.add_mul, coord_mul_frame,
+  simp [adeleMatrix_levi, Matrix.mul_assoc, Matrix.add_mul, coord_mul_frame,
     coord_mul_frame_mul]
 
 /-- The Levi element of `A` acting by the scalar `u` on its line, on the right, and the inverse of
@@ -111,7 +116,7 @@ lemma lineLevi_inv_mul_kAdelic_mul_levi (u c : (𝔸 E)ˣ) (g : G E s) (h : G E 
     (lineLevi X (c, h))⁻¹.adeleMatrix *
         (X.kAdelic * (A.kCoord * (A.levi (GeneralLinearGroup.scalar Unit u, g)).adeleMatrix)) =
       (↑(c * u) : 𝔸 E) • (X.kAdelic * A.kCoord) := by
-  simp [lineLevi, Splitting.levi, G.adeleMatrix_inv, G.adeleMatrix_ofMatrix, conjTranspose_coord,
+  simp [lineLevi, adeleMatrix_levi, G.adeleMatrix_inv, conjTranspose_coord,
     Pi.star_def, ← smul_eq_diagonal_mul, smul_smul, Matrix.mul_assoc, Matrix.mul_add,
     Matrix.add_mul, stdForm_mul_stdForm_mul, coord_mul_frame_mul, mul_comm]
 
@@ -122,7 +127,7 @@ lemma lineLevi_inv_mul_lAdelic_mul_levi (u c : (𝔸 E)ˣ) (g : G E s) (h : G E 
     (lineLevi X (c, h))⁻¹.adeleMatrix *
         (X.lAdelic * (A.lCoord * (A.levi (GeneralLinearGroup.scalar Unit u, g)).adeleMatrix)) =
       star (↑(c * u)⁻¹ : 𝔸 E) • (X.lAdelic * A.lCoord) := by
-  simp [lineLevi, Splitting.levi, G.adeleMatrix_inv, G.adeleMatrix_ofMatrix, conjTranspose_coord,
+  simp [lineLevi, adeleMatrix_levi, G.adeleMatrix_inv, conjTranspose_coord,
     Pi.star_def, ← smul_eq_diagonal_mul, smul_smul, Matrix.mul_assoc, Matrix.mul_add,
     Matrix.add_mul, stdForm_mul_stdForm_mul, coord_mul_frame_mul, mul_comm]
 
