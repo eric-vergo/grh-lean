@@ -587,7 +587,7 @@ lemma rankInner_greenTau (hP : Irreducible P) (h0 : P.coeff 0 ≠ 0) (hm : P.Mon
     have h_mean : finMean (fun z : Lˣ ↦ conj (χ z)) = 0 := by simpa [h_ne] using h_orth 1
     have h_left :
         rankInner (finrank k L) (greenCuspidal k (θ χ)) (constOne.mulMoebius * constOne) = 0 := by
-      simp [mulMoebius.eq_unfold, moebius_mul_constOne, rankInner, one_apply, finrank_pos.ne']
+      simp [mulMoebius.eq_unfold, moebius_mul_constOne, rankInner, Hall.one_apply, finrank_pos.ne']
     have h_first :
         finMean (fun z : Lˣ ↦ conj (θ χ (algebraMap L K z)) *
             (constOne : Hall k) (simClassOf (mulLeft k z.val))) = 0 := by
