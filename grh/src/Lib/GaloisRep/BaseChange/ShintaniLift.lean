@@ -220,7 +220,8 @@ private lemma exists_ne_one_and_frobeniusAlgEquivOfAlgebraic_apply_eq
   obtain ⟨σ, h_frob⟩ := IsArithFrobAt.exists_of_isInvariant (𝓞 E) Gal(E'/E) u.1
   have hσ (x : 𝓞 E') : φ (algebraMap _ _ x) = algebraMap _ _ (σ • x) := by
     rw [hφ, eq_comm]
-    simpa [card_ResField, ← Nat.card_eq_fintype_card, ← algebraMap_ResField_eq_zero,
+    simpa [card_ResField, FinPlace.q, Ideal.absNorm_eq_natCard, ← Nat.card_eq_fintype_card,
+      ← algebraMap_ResField_eq_zero,
       sub_eq_zero] using! h_frob x
   -- `φ ≠ 1`, so `σ` moves some residue class
   have h_moves : ∃ x : 𝓞 E', algebraMap _ (ResField u) (σ • x) ≠ algebraMap _ _ x := by

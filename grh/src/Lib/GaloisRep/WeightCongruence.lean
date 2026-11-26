@@ -287,7 +287,16 @@ lemma New.hasNoSmallRelations_of_lacunary {n : ℕ} (y : Fin n → ℕ)
   -- each of the `α i` summands `y i + 1` is at most `y j / (n + 1) ^ 2`.
   have h_term (i : Fin n) : α i * y i + α i + (if i = j then y j + 1 else 0) ≤
       β i * y i + β i + α i * (y j / (n + 1) ^ 2) := by
-    grind [mt (Nat.mul_le_mul_left (α i) ∘ h_gap j i), mul_le_mul_left h_lt (y j)]
+    rcases lt_trichotomy i j with hij | rfl | hji
+    · simp [hij.ne, h_eq i hij]
+    · have h := Nat.mul_le_mul_right (y i) h_lt
+      simp only [Nat.succ_mul] at h
+      simp only [ite_true, eq_self]
+      omega
+    · have h := Nat.mul_le_mul_left (α i) (h_gap j i hji)
+      simp only [Nat.mul_succ] at h
+      simp only [if_neg hji.ne', add_zero]
+      omega
   have h_sum : ∑ i : Fin n, α i * y i + d + (y j + 1) ≤
       ∑ i : Fin n, β i * y i + d + d * (y j / (n + 1) ^ 2) := by
     have hα_sum : ∑ i, α i = d := by simpa [Finsupp.degree_eq_sum] using hα
