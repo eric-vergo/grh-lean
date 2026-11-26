@@ -218,7 +218,17 @@ lemma isAnalyticFamily_of_continuousAt_of_differentiableAt [R1Space K] {f : E �
       have hy : ((q.2 : ℂ), x) ∈ closedBall (e p) r := max_le q.2.prop.le hx
       have h_cont : ContinuousAt f.uncurry (e.symm (q.2, x), q.1) := h_cont_at _ hy q.1
       have h_diff : DifferentiableAt ℂ (fun z : E ↦ f z q.1) _ := h_diff_at _ hy q.1
-      exact ⟨by fun_prop, by fun_prop⟩
+      constructor
+      · have h_inner : ContinuousAt (fun z : (ULift (Fin n) → ℂ) × (K × sphere (e p).1 r) ↦
+            (e.symm (z.2.2, z.1), z.2.1)) (x, q) := by fun_prop
+        have h_f := h_cont.comp (f := fun z : (ULift (Fin n) → ℂ) × (K × sphere (e p).1 r) ↦
+          (e.symm (z.2.2, z.1), z.2.1)) h_inner
+        exact ((((u (e p).1).continuous.comp continuous_snd).continuousAt.mul h_f).div_const
+          (π : ℂ)).div_const 2
+      · have h_inner : DifferentiableAt ℂ (fun z : ULift (Fin n) → ℂ ↦ e.symm (q.2, z)) x :=
+          e.symm.differentiableAt.comp x ((differentiableAt_const (q.2 : ℂ)).prodMk differentiableAt_id)
+        simpa only [G, div_eq_mul_inv, Function.comp_apply] using!
+          (((h_diff.comp x h_inner).const_mul (u (e p).1 q)).mul_const (π : ℂ)⁻¹).mul_const 2⁻¹
     obtain ⟨H, hH_an, hH_eq⟩ : DiscreteSeries.IsAnalyticFamily G (e p).2 :=
       ih (hG.mono fun _ hx q ↦ (hx q).1) (hG.mono fun _ hx q ↦ (hx q).2) (by simp)
     -- The Cauchy integrand `(u w)⁻¹ * H x` is analytic in `(w, x)`, because inversion is
@@ -638,7 +648,7 @@ lemma New.lintegral_comp_mul_add {ι κ : Type} [Fintype ι] [DecidableEq ι] [F
     e.toLinearMap ∘ₗ (kroneckerMap (· * ·) S (1 : Matrix κ κ ℂ)).toLin' ∘ₗ e.symm.toLinearMap
   have hf (A : ι → κ → ℂ) : f A = S * of A := by
     ext a b
-    simp [f, e, mulVec, dotProduct, mul_apply, sum_prod_type, one_apply]
+    simp [f, e, mulVec, dotProduct, Matrix.mul_apply, sum_prod_type, Matrix.one_apply]
   have h_det : LinearMap.det (f.restrictScalars ℝ) = ‖S.det‖ ^ (2 * card κ) := by
     rw [LinearMap.det_restrictScalars, LinearMap.det_conj]
     simp [det_kronecker, Algebra.norm_complex_apply, Complex.normSq_eq_norm_sq, ← pow_mul, mul_comm]
@@ -676,7 +686,7 @@ lemma New.lintegral_norm_det_add_inv_pow_le {ι κ : Type} [Fintype ι] [Decidab
   have hg : Measurable g := by fun_prop
   have h_rows (v : ι → κ → ℂ) : (of v)ᴴ * of v = ∑ i, vecMulVec (star (v i)) (v i) := by
     ext a b
-    simp [mul_apply, Matrix.sum_apply, vecMulVec_apply]
+    simp [Matrix.mul_apply, Matrix.sum_apply, vecMulVec_apply]
   -- `hua_integral_le`, applied with the identity matrix and no shift, over all the rows
   have h_hua : ∫⁻ v, g v ≤ .ofReal (C * ‖G.det‖⁻¹ ^ card κ) := calc
     _ = (∫⋯∫⁻_Finset.univ, g) 0 := lintegral_eq_lmarginal_univ 0
