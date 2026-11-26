@@ -86,7 +86,7 @@ lemma ellAdicPull_frobEnd (hU_char : ∀ B : CommRingCat, U B → (p : B) = 0) (
   have h_coef : Functor.whiskerRight η (ellAdicCoeff (ℓ := ℓ)) ≫ 𝟙 _ = 𝟙 _ := by
     ext A ⟨⟨y⟩⟩
     -- the coefficients at `A` are functions on `Spec A`, moved along `comap` of `η`
-    congrm ⟨⟨fun i ↦ ⟨_ ∘ ?_, _⟩⟩⟩
+    congrm ⟨WittVector.mk _ (fun i ↦ ⟨_ ∘ ?_, _⟩)⟩
     show PrimeSpectrum.comap (Hom.hom (testIncl.map (η.app A))) = fun q ↦ q
     ext q
     simp [η, q.isPrime.pow_mem_iff_mem, NeZero.pos]
@@ -155,12 +155,12 @@ lemma congruence_relation [IsProper W.hom] {g : Γ} (hg : IsFrob A (p ^ f) g) {I
   -- the special fibre: the points that kill the maximal ideal of `A`; they have characteristic `p`
   let s₀ : geomPoints R A W ⟶ reprBy (of A) :=
     fibreProd.snd (pointsToBase W.hom) (reprMap (ofHom (algebraMap R A)))
-  let U₀ : Subfunctor (geomPoints R A W) := zeroPoints s₀ (A.valuation · < 1)
+  let U₀ : Subfunctor (geomPoints R A W) := zeroPoints s₀ {a : A | A.valuation a < 1}
   have h_char (B : CommRingCat) (x : U₀.toFunctor.obj B) : (p : B) = 0 := by
     simpa using x.property p hp
   -- restriction to `U₀` is injective by proper base change
   have h_res : IsCohomEquiv (locConstCoeff ⟨ZMod ℓ⟩) (freeAb.map (mapOnTests U₀.ι)) := by
-    have h_max : (IsLocalRing.maximalIdeal A : Set A) = fun a : A ↦ A.valuation a < 1 :=
+    have h_max : (IsLocalRing.maximalIdeal A : Set A) = {a : A | A.valuation a < 1} :=
       Set.ext A.valuation_lt_one_iff
     unfold U₀
     rw [← h_max]
