@@ -207,7 +207,8 @@ lemma exists_norm_fourier_coherent_le {d : EuclideanSpace ℂ p → ℂ} (d_smoo
       ‖s‖ ≤ 1 → ‖a‖ ≤ 1 → a ≠ 0 → (∀ x ∈ tsupport d, ‖cexp (q (s, x) / a)‖ ≤ D) →
         (‖a‖ * (1 + ‖b‖)) ^ M *
           ‖FourierTransform.fourier (fun x ↦ d x * cexp (q (s, x) / a)) b‖ ≤ C * D :=
-    exists_pow_mul_norm_fourier_le d_supp M (d_smooth.comp contDiff_snd) q_smooth
+    exists_pow_mul_norm_fourier_le (n := p) (T := (ι → ℂ) × (ι' → ℂ))
+      (c := fun z ↦ d z.2) (q := q) d_supp M (d_smooth.comp contDiff_snd) q_smooth
       fun _ _ ↦ image_eq_zero_of_notMem_tsupport
   set m : ℕ := 2 * M + n
   refine ⟨C * (rexp (m ^ 2) * (1 + B) ^ m), fun y w b ↦ ?_⟩
