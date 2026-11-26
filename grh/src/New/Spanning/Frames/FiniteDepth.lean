@@ -102,7 +102,7 @@ theorem exists_stableProducts_eq_unit_mul_integers (a : Fin 𝔰.ϱ) (x y : T.G)
       (∀ l : 𝔰.BesselIndex ⊕ 𝔰.BesselIndex, wt (.inl (eStar a)) < wt l → (w ⊕ᵥ d) l = 0) ↔
         IsOrthogonalBelow a w ∧ CongrBelow a w (w + d) := by
     simp only [wt, IsOrthogonalBelow, CongrBelow, BesselIndex.level, Sum.forall, Sum.elim_inl,
-      Sum.elim_inr, Pi.add_apply]
+      Sum.elim_inr, Pi.add_apply, add_eq_left]
     grind
   have h_alone : ∀ l : 𝔰.BesselIndex ⊕ 𝔰.BesselIndex,
       wt l = wt (.inl (eStar a)) → l = .inl (eStar a) := by
