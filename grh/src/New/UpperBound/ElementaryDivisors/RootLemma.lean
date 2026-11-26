@@ -411,9 +411,9 @@ lemma swapTransvection_mem_rootSL {T : FrobeniusCycle N W R} (D : T.RootAt k) (r
     D.swapTransvection r ∈ rootSL W D.fst D.snd := by
   refine ⟨mul_mem (mul_mem (fun i j hij ↦ ?_) fun i j hij ↦ ?_) fun i j hij ↦ ?_, Units.ext ?_⟩
   · have h_swap : Equiv.swap D.fst D.snd i = j ↔ i = j := by grind
-    simp [swap, one_apply, h_swap]
+    simp [swap, Matrix.one_apply, h_swap]
   · have h_off : ¬(D.fst = i ∧ D.snd = j) := by grind
-    simp [transvection, one_apply, Matrix.single, h_off]
+    simp [transvection, Matrix.one_apply, Matrix.single, h_off]
   · obtain rfl | h_ne := eq_or_ne i j
     · simp [show i ≠ D.fst by tauto]
     · simp [h_ne]
@@ -455,7 +455,7 @@ lemma polyAction_swapTransvection_X [NeZero N] {T : FrobeniusCycle N W R} (D : T
   have h_entry (b : Fin k) : M b z.1 =
       (if b = z.1 then 1 else 0) + if (b, z.2) = D.varX z.2 then D.sign z * r else 0 := by
     cases h_letter : T.isEven D.letter <;> cases h_z : T.isEven z.2 <;>
-      simp [M, hx, h_letter, h_z, sign, varX, varY, rootVar, transvection, one_apply,
+      simp [M, hx, h_letter, h_z, sign, varX, varY, rootVar, transvection, Matrix.one_apply, Function.swap,
         Matrix.single, Prod.ext_iff, ← ite_and, and_comm, eq_comm]
   rw [swapTransvection, map_mul, AlgHom.mul_apply, h_diag, map_zsmul, h_column, ← swapVar_varX,
     swapVar,
