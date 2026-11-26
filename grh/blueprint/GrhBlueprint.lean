@@ -36,6 +36,14 @@ with Claude. The upstream readable edition credits Claude with writing the Lean 
 and its accompanying guides. The site reproduces that source under its
 [license](source/LICENSE), [notice](source/NOTICE), and [attributions](source/ATTRIBUTION.md).
 
+The five conclusions are stated in the following declarations.
+
+- [`riemannHypothesis`](source/Main.html#d-riemannHypothesis) proves Mathlib's Riemann hypothesis.
+- [`riemannZeta_eq_zero_re`](source/Main.html#d-riemannZeta_eq_zero_re) puts every zeta zero other than the negative even integers, with the point one excluded, on the critical line.
+- [`LFunction_ne_zero_of_half_lt_re`](source/Main.html#d-LFunction_ne_zero_of_half_lt_re) gives nonvanishing to the right of the critical line for every character of every positive modulus, with the principal character at one excluded.
+- [`LFunction_eq_zero_re`](source/Main.html#d-LFunction_eq_zero_re) puts the zeros in the open critical strip of every such character on the critical line.
+- [`LFunction_eq_zero_re_of_isPrimitive`](source/Main.html#d-LFunction_eq_zero_re_of_isPrimitive) specializes the strip result to primitive characters.
+
 {include 0 GrhBlueprint.Parts.Orientation}
 
 {include 0 GrhBlueprint.Parts.ShortForms}
