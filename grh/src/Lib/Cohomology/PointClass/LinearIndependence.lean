@@ -543,7 +543,7 @@ lemma New.Variety.exists_map_separating_class {p : ℕ} {k : Type} [Field k] [Em
   let Q : (projSpace k n).obj (of k k) := projSpace.affinePoint 0 q
   -- `Γ` is the graph of the projection; its first projection `π` is injective.
   let Γ : Subfunctor (algPointsOf k R Y ⊗ projSpace k n) :=
-    ⟨fun _ x ↦ ∃ v h, IsCoordsWithUnit L x.1 v ∧ x.2 = projSpace.mk (evalForms Λ v) h,
+    ⟨fun _ ↦ {x | ∃ v h, IsCoordsWithUnit L x.1 v ∧ x.2 = projSpace.mk (evalForms Λ v) h},
       fun φ _ ⟨v, _, hv, e⟩ ↦ ⟨φ ∘ v, evalForms_map Λ φ.hom' _ ▸ ⟨_, hv.comp φ, congrArg _ e⟩⟩⟩
   let π : Γ.toFunctor ⟶ algPointsOf k R Y := Γ.ι ≫ fst (algPointsOf k R Y) (projSpace k n)
   have h_mono : Mono π := mono_of_app_injective <| by
@@ -556,7 +556,7 @@ lemma New.Variety.exists_map_separating_class {p : ℕ} {k : Type} [Field k] [Em
       fieldLocus fun K x ↦ (constMap Q).app K x = x.val.2 → x.val.1 ∈ U.locus.obj K
   let j : O.toFunctor ⟶ algPointsOf k R Y := O.ι ≫ π
   have hj (A : CommAlg k) : Function.Injective (j.app A) := injective_of_mono _
-  have hΓ : IsChartCovered n Γ.toFunctor := isChartCovered_graph_projection fun _ _ ↦ .rfl
+  have hΓ : IsChartCovered n Γ.toFunctor := isChartCovered_graph_projection (L := L) (Λ := Λ) fun _ _ ↦ .rfl
   -- `O` is open in `Γ`, as `T` is finite, projective space is separated and `U` is open.
   have h_open : IsOpenSubfunctor (Subfunctor.range O.ι) := by
     rw [O.range_ι]
