@@ -48,10 +48,13 @@ variable {T : Type} [Add T] [One T] (v : T → Bool) (P : ℝ)
 /-- The step map. For permutations `σ j` of `Fin k`, one for each letter `j`, it is the linear map
 `ν ↦ β` with `β (b, j) = ± (P * ν (b, j + 1) - ν (σ j b, j))`, the sign being `+` if `v j` is true
 and `-` otherwise. The entries of `β` are the steps of `ν`. -/
-@[simps!]
 def permStep (σ : T → Equiv.Perm (Fin k)) : Module.End ℝ (Fin k × T → ℝ) :=
   LinearMap.pi fun x : Fin k × T ↦
     (if v x.2 then (1 : ℝ) else -1) • (P • .proj (x.1, x.2 + 1) - .proj (σ x.2 x.1, x.2))
+
+@[simp] lemma permStep_apply (σ : T → Equiv.Perm (Fin k)) (ν : Fin k × T → ℝ)
+    (x : Fin k × T) : permStep v P σ ν x =
+      (if v x.2 then (1 : ℝ) else -1) * (P * ν (x.1, x.2 + 1) - ν (σ x.2 x.1, x.2)) := rfl
 
 /-- The slab: the vectors `β ≥ 0` whose degree `∑ b, β (b, j)` lies in `[D j - 1, D j]` for every
 letter `j`. -/
@@ -407,7 +410,7 @@ lemma volume_real_inter_degreeSlab_eq_signed_sum {v : Fin (m + 1) → Bool} (hP 
   have h_eq : (k.factorial : ℝ) ^ (m + 1) * ((|c| * Δ 1)⁻¹ * volume.real (Ω ∩ degreeSlab k D)) =
       k.factorial ^ m * ∑ τ : Perm (Fin k),
         (|c| * Δ τ)⁻¹ * volume.real (degreeSlab k D) * sign τ := by
-    simpa [← sum_comp_prod_ofFn, h_vol, card_perm] using h_int
+    simpa [← sum_comp_prod_ofFn, h_vol, card_perm, Set.univ_inter] using h_int
   have h_sum : ∑ τ : Perm (Fin k), (|c| * Δ τ)⁻¹ * volume.real (degreeSlab k D) * sign τ =
       |c|⁻¹ * (∑ τ : Perm (Fin k), τ.sign / Δ τ) * volume.real (degreeSlab k D) := by
     rw [mul_sum, sum_mul]
