@@ -330,8 +330,9 @@ lemma New.Selmer.two_mul_tame_exponent_le_defectBound {P : Parameters} (D : Data
     2 * ((3 * (D.r ^ 2 * ((D.r + D.t) * D.r + 1) ^ 2) +
       150 * (D.halfGap ^ 2 + 1 + 4 * D.t + 1) : ℕ) : NNReal) ≤
       defectBound D (D.levelPrime n) / x := by
-  have h_val : 1 ≤ padicValNat (D.levelPrime n) D.M :=
-    one_le_padicValNat_of_dvd out (by fin_cases n <;> simp [M])
+  have h_val : 1 ≤ padicValNat (D.levelPrime n) D.M := by
+    rw [Nat.padicValNat_def]
+    exact one_le_multiplicity_of_dvd out (by fin_cases n <;> simp [M])
   calc _ ≤ (10 ^ 6 * (D.m / D.k * (D.natB * 1)) / D.t : NNReal) := by
          -- A comparison of sizes, read off the logarithmic scales of the data.
          rify
@@ -410,8 +411,17 @@ lemma New.Selmer.crystallineSizes_data {P : Parameters} (D : Data P) {i : ℕ} (
   have h_shift : i * D.gap + D.halfGap - 2 * D.t < D.halfGap ^ 2 + 1 := by
     grw [sub_le, hi]
     exact D.nat_lt_of_hasLogBound
-  exact ⟨D.nat_le_of_hasLogBound, D.nat_le_of_hasLogBound, D.nat_le_of_hasLogBound,
-    D.nat_le_of_hasLogBound, D.lt_of_hasLogBound, h_shift, D.nat_le_of_hasLogBound⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_, h_shift, ?_⟩
+  · exact D.nat_le_of_hasLogBound
+  · exact D.nat_le_of_hasLogBound
+  · exact D.nat_le_of_hasLogBound
+  · exact D.nat_le_of_hasLogBound (h_exp := by
+      obtain ⟨h₁, h₂, h₃, h₄, h₅⟩ := D.scale_inequalities
+      obtain ⟨hC, hq, hd, ht⟩ := Data.le_constantBound (P := P)
+      simp [max_def]
+      split_ifs <;> linarith)
+  · exact D.lt_of_hasLogBound
+  · exact D.nat_le_of_hasLogBound
 
 /-- Put `h₂ = D.halfGap`, `m = D.m` and `k = D.k = D.r + 1 - m`. Let the multisets `J σ`, for the
 complex embeddings `σ` of `D.E`, be the weights of a main summand. Let `L` be a potentially

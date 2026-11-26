@@ -200,7 +200,7 @@ lemma polyMatrixCoeff_paddedMinorProd_ne_zero_and_bounded (γ e : D.Φ → ℤ) 
   let ε := realSigns D.E (homSigns (n := D.CarrierIndex) (1 ⊕ᵥ -1) (padSigns j))
   let v := polyVector ε (paddedMinorProd j)
   obtain ⟨_, _, _, l, h_inner, h_unitary⟩ :=
-    (isUnitaryRep_detTwist (ε := ε) (f := .id _) (γ := 0) (one_mul _).ge).exists_innerProductSpace
+    (isUnitaryRep_detTwist (ε := ε) (f := .id _) (γ := 0) (one_mul _).ge continuous_id).exists_innerProductSpace
   refine ⟨?_, ‖l v‖ * ‖l v‖, fun h h' ↦ ?_⟩
   · -- Each minor in `paddedMinorProd` has distinct rows and distinct columns.
     simp [polyMatrixCoeff, ε, ← h_inner, paddedMinorProd, prod_eq_zero_iff,
@@ -893,7 +893,7 @@ theorem eq_zero_of_integral_choiceFn_thetaKernelPairing (F : D.goodForms (D.spac
     obtain ⟨c, close⟩ := near x (peak_min hx)
     refine ⟨fun h ↦ ∑ i, c i * choiceFn j i (x * (h, 1)),
       .sum _ fun i ↦ isAdelicHol_choiceFn i x, close, ?_⟩
-    simpa only [star_star] using integral_mul_sum_choiceFn_eq_zero F h_orth
+    simpa only [Pi.star_apply, star_star] using integral_mul_sum_choiceFn_eq_zero F h_orth
       (integrable_holMinorsPi h_rank isPosFirstOrder_orderW (isKDominant_kernelWeight j)
         (hasHolGap_kernelWeight j)) c x
   -- This is absurd: with `B = b ^ n_* > 10` we have `(4 B + 1) 2 < B ^ 2 ≤ B ^ 19`.
