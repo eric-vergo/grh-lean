@@ -26,6 +26,17 @@ The data choose a CM field (a totally imaginary quadratic extension of a totally
 
 Theorem A constructs integral generators whose normalized images have short lifts. Theorem B supplies enough independent images to approach the full target dimension. Theorem C limits how small the volume of so many lifted vectors can be if their finite-place denominators are controlled. Both estimates contain a large deterministic contribution. Subtraction leaves a multiple of the arithmetic remainder. The number of lifts lies between the square root of $`x` and twice that square root, producing the exponent needed in the analytic criterion.
 
+# A dictionary for the comparison
+
+* `q₀, d, K, E`. The fixed modulus and auxiliary prime determine the imaginary quadratic field `K = ℚ(√−d)`. Adjoining a root of unity of a data-dependent order gives the CM field `E`. Its number of infinite places is `f`.
+* `x, x₁, b, a`. The prime remainder is evaluated at `x` and at a much larger cutoff `x₁`. The weight parameter `b` is larger still. In the readable edition `a = x b`. The sets `aPlaces` and `bPlaces` carry these two distinguished weights.
+* `k, r, t, m`. The definite source has rank `k = r + 1 − m`, the initial target group rank `r`, and each step increases rank by `t = 5r`. The chain has `m` steps. These ranks belong to hermitian spaces. The dimension of the vector space of target forms is the separate quantity `targetDim`.
+* `X₀ → Xₘ → Yₘ`. The upper route takes a source form through definite theta lifts and restricts at the endpoint. The chain datum specifies a finite combination of such lifts.
+* `X₀ → Y₀ → Yₘ`. The first map is the Poincaré series. Translation and the idempotent `e₀` select target forms. On them `Θ ξ` is the lower chain at twist `ξ`.
+* `Wⱼ → Vⱼ`. These individual lifts of ranks `r → r + t` enter the determinant factorization. The j-th uses the j-th power of the twist. They let the proof estimate the full chain by examining one lift at a time.
+
+[Field and rank data](https://eric-vergo.github.io/grh-lean/source/New.Reduction.Data.AdmissibleData.html), [lower chain](https://eric-vergo.github.io/grh-lean/source/New.UpperBound.Objects.RowChain.html), and [single-lift determinants](https://eric-vergo.github.io/grh-lean/source/New.Determinant.Chain.NormOfChain.html).
+
 # What the text checks
 
 The Lean declarations attached to theorem panels are the formal statements. The surrounding explanations, including the interpretation of their mathematics, are editorial prose by Eric Vergo and OpenAI Codex. The upstream project credits the original proof to Levent Alpöge with Claude. Luke Sernau describes the shorter rewriting as a collaboration with his Anthropic colleagues and Claude. The edition README credits Claude with writing its Lean text and documents. The upstream notice credits Anthropic, PBC and identifies adaptations from Mathlib. The upstream README reports machine checks and says that no mathematician has read the proof through. [Upstream account](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/README.md) and [edition credits](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/README.md).

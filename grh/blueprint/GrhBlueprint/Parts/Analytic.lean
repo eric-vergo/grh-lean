@@ -30,6 +30,12 @@ For a positive modulus, every Dirichlet L-function is nonzero at every point wit
 
 For a character of modulus $`q`, the proof induces it to modulus `18480 q` and takes the auxiliary class `9240 q − 1`. At one, the nonprincipal case uses the known nonvanishing theorem. Elsewhere in the half-plane the finite Euler-factor relation descends nonvanishing from the induced character.
 
+# A test case for the contradiction
+
+Consider the hypothetical point `ρ = 3/4 + 10i` and the nonprincipal quadratic character modulo five. Assume its L-function vanishes at this point. Induction to modulus `q₀ = 18480 × 5 = 92400` preserves the vanishing because it multiplies the value by finitely many Euler factors. Choose `β = 5/8`. The geometric estimate with `ε = 1/8` gives an upper bound `x^(−3/8)` for the remainder for every auxiliary prime congruent to 46199 modulo 92400. The zero-density lemma chooses one such prime for which none of the quadratic twists vanish where the real part is at least `5/8` and the absolute imaginary part is at most ten.
+
+At the point in question the residue is `n(ρ)/(φ(92400) ρ (1−ρ))`. The denominator is nonzero. The integer numerator sums the orders of all untwisted characters at this point, so the assumed vanishing would make it at least one. On the real axis to the right of `5/8` the residues have nonnegative real part, using nonvanishing at and beyond one. The upper bound and Landau’s lemma force the residue at the proposed point to be zero. This contradicts its positive numerator. The specific point illustrates the quantifiers in the formal argument. [Polar transform](https://eric-vergo.github.io/grh-lean/source/New.Reduction.Zeros.PrimeError.html) and [residue criterion](https://eric-vergo.github.io/grh-lean/source/New.Reduction.Zeros.Criterion.html).
+
 # Reflection and specialization
 
 :::theorem "grh-guide-strip" (lean := "LFunction_eq_zero_re, LFunction_eq_zero_re_of_isPrimitive") (uses := "grh-guide-half")
