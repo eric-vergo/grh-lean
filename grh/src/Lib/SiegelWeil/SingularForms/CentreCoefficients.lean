@@ -196,7 +196,7 @@ structure IsEquivariantLift (X : Space E m r)
   (M : Submodule ℂ (Matrix m b (LocProd 𝔠.ramifiedPlaces) → ℂ))
     (𝒟 : (Matrix m b (LocProd 𝔠.ramifiedPlaces) → ℂ) →ₗ[ℂ] G E r → ℂ) : Prop where
   /-- The data in `M` are locally constant, with compact support in the left invertible matrices. -/
-  le_schwartzBruhat : M ≤ schwartzBruhat HasLeftInv
+  le_schwartzBruhat : M ≤ schwartzBruhat {y | HasLeftInv y}
   /-- `𝒟 Ψ` is continuous and left invariant under the rational points of `U(X)`. -/
   isAutFunction {Ψ : Matrix m b (LocProd 𝔠.ramifiedPlaces) → ℂ} (hΨ : Ψ ∈ M) : IsAutFunction X (𝒟 Ψ)
   /-- For `g` supported on `S ∪ S̄`, the translate `Φ y = Ψ (g_S y)` lies in `M`, and `𝒟 Φ`,
@@ -234,7 +234,7 @@ form with signs s. -/
 lemma gram_atRealPlace (v : InfinitePlace E) :
     (atRealPlace x v)ᴴ * signMatrix s * atRealPlace x v = atRealPlace (xᴴ * stdForm E s * x) v := by
   ext i j
-  simp [mul_apply, stdForm, signMatrix, diagonal, Prod.fst_sum]
+  simp [Matrix.mul_apply, stdForm, signMatrix, diagonal, Prod.fst_sum]
 
 end New.Exchange
 
@@ -689,7 +689,9 @@ lemma borderedCentreCoeff_eq_quotMean (hD : D.kAdelic = A.iAdelic * B.kAdelic) {
             D.centreCoeff T f (A.symm.lineShift B (π M) * (A.radicalCentre z * g)) := by
         simp [φ₁, φ₂, π, hΦ_eq, centreCoeff]
       _ = A.partialMean B D T f (A.radicalCentre z * g) := by
-        refine quotMean_comp _ π (isContPeriodic_centreCoeff_lineShift (A := A.symm) hD hf _) ?_
+        refine quotMean_comp (F := fun x ↦
+          D.centreCoeff T f (A.symm.lineShift B x * (A.radicalCentre z * g))) _ π
+          (isContPeriodic_centreCoeff_lineShift (A := A.symm) hD hf _) ?_
           (fun b ↦ ⟨fromBlocks 0 b 0 0, by simp [π]⟩) hπ
         rintro _ ⟨M, rfl⟩
         exact ⟨M.toBlocks₁₂ - M.toBlocks₂₁ᴴ, by ext1; simp [π, toBlocks₁₂, toBlocks₂₁]⟩
