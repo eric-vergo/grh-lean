@@ -52,6 +52,8 @@ namespace New.Variety
 open CategoryTheory TensorProduct Functor Period AlgebraTensorModule AlgebraicGeometry TotalH
   Function PadicTest Abelian.Ext ConcreteCategory Comparison DirectSum ULift CommRingCat Over
 
+section
+
 variable {p : ℕ} [ThePrime p]
   {M : ModuleCat OFlat} {R : CommRingCat}
   (Ω : Type) [Field.{0} Ω] [Algebra R Ω] [Algebra Ω ℂ_[p]]
@@ -216,20 +218,15 @@ noncomputable def oFlatLocConstOfSelfIso [IsAbsIntegrallyClosedLocal Ω] :
   CommAlgCat.isoMk (.ofBijective _ (Algebra.TensorProduct.includeLeft_bijective
     ((bijective_const_of_isDomain (B := .of Ω)).of_comp_left up_injective)))
 
-/-- Primitive comparison. Let `Ω` be algebraically closed with a map to `ℂ_p`, `Y` proper over `R`
-and charted over `Ω` (`IsCharted`), and `M` an `O^♭`-module. Assume `ac`: for each perfect
-`O^♭`-algebra `b`, the functor `S ↦ Hom(b, S^♭)` on p-adic tests, with coefficients `S ↦ S^♭ ⊗ M`,
-has cohomology `b ⊗ M` in degree 0. Write `X` for the points of `Y_Ω` on test rings. Then (a) the
-cohomology of `Y_Ω` commutes with flat extension of coefficients; (b) each `Hⁿ(Y_Ω, 𝔽_p)` is finite;
-(c) if moreover `R` maps to `O_C` compatibly (`he`), then `primitiveMap ⊗ M` induces a bijection in
-every degree, along `toGenericPoints` followed by `algToBaseChange` (points of `Y` over tests over
-`Ω` taken as points of `Y_Ω`). Here `primitiveMap` is the natural map `O^♭ ⊗ LC(Spec S[1/p]) → S^♭`,
-with `LC` the locally constant `𝔽_p`-valued functions. The bijection goes from the cohomology of
-`Y_Ω` with coefficients `A ↦ O^♭ ⊗ LC(Spec A) ⊗ M` to that of `S ↦ Y(S)` on p-adic tests with
-coefficients `S^♭ ⊗ M`. Only (c) uses the map `R → O_C`. -/
-lemma finite_and_primitive_comparison [IsAlgClosed Ω]
-    (ac : IsAcyclicOnPerfect (moduleCoeff (tensorCoeff M))) (Y : Over (Spec R)) [IsCharted Y Ω]
-    [IsProper Y.hom] :
+end
+
+set_option backward.isDefEq.respectTransparency false
+
+private def PrimitiveComparison (p : ℕ) [ThePrime p] (R : CommRingCat) (Ω : Type)
+    [Field Ω] [Algebra R Ω] : Prop :=
+  ∀ [Algebra Ω ℂ_[p]] {M : ModuleCat OFlat}
+    (_ : IsAcyclicOnPerfect (moduleCoeff (tensorCoeff M))) (Y : Over (Spec R)) [IsCharted Y Ω]
+    [IsProper Y.hom],
     let X := testIncl ⋙ geomPoints R Ω Y
     -- (a)
     HasFlatBaseChange (freeAb X) ∧
@@ -241,12 +238,15 @@ lemma finite_and_primitive_comparison [IsAlgClosed Ω]
         (freeAbMap (Y := X)
           (toGenericPoints Ω he Y ≫
             whiskerLeft (genericTestOver Ω) (whiskerLeft _ (algToBaseChange Ω Y))))
-        (tensorCoeff M) := by
+        (tensorCoeff M)
+
+private theorem primitiveComparison_of_invertsPrime {p : ℕ} (R : CommRingCat) (Ω : Type)
+    [Field Ω] [Algebra R Ω] [IsAlgClosed Ω] [InvertsPrime Ω p] :
+    PrimitiveComparison p R Ω := by
+  intro _ M ac Y _ _
   -- The comparison `c` induced by `primitiveMap` is bijective iff a basis of `M` over `ZMod p`
   -- gives a bijective Leray–Hirsch map. This holds at the point `Ω`, so at `Y` by
   -- `ComparedTheory.mem_of_isClosedClass_of_isCharting`.
-  have h_inverts : InvertsPrime Ω p :=
-    InvertsPrime.mk (NeZero.nat_of_neZero (algebraMap Ω ℂ_[p])).out.isUnit
   let module_ZMod : Module (ZMod p) M := Module.restrictScalars (ZMod p) OFlat M
   -- `M ⊗[ZMod p] L ≅ (OFlat ⊗[ZMod p] L) ⊗[OFlat] M` for `L` the locally constant functions.
   let γ₀ : asModules (TestOver.toTest Ω ⋙ testIncl ⋙ locConstAlg) ⋙ tensorWith OFlat M ≅
@@ -338,6 +338,47 @@ lemma finite_and_primitive_comparison [IsAlgClosed Ω]
       ((lh_iff (hasFlatBaseChange_algPointsOf Ω Y)
         (isoOfAppBijective (toGenericPoints Ω he Y) (·.bijective_generic_points))).1 h_lh)
       (freeAb.hom_ext fun _ _ ↦ rfl)
+
+
+variable {p : ℕ} [hp : ThePrime p]
+  {M : ModuleCat OFlat} {R : CommRingCat}
+  (Ω : Type) [Field.{0} Ω] [Algebra R Ω] [Algebra Ω ℂ_[p]]
+
+/-- Primitive comparison. Let `Ω` be algebraically closed with a map to `ℂ_p`, `Y` proper over `R`
+and charted over `Ω` (`IsCharted`), and `M` an `O^♭`-module. Assume `ac`: for each perfect
+`O^♭`-algebra `b`, the functor `S ↦ Hom(b, S^♭)` on p-adic tests, with coefficients `S ↦ S^♭ ⊗ M`,
+has cohomology `b ⊗ M` in degree 0. Write `X` for the points of `Y_Ω` on test rings. Then (a) the
+cohomology of `Y_Ω` commutes with flat extension of coefficients; (b) each `Hⁿ(Y_Ω, 𝔽_p)` is finite;
+(c) if moreover `R` maps to `O_C` compatibly (`he`), then `primitiveMap ⊗ M` induces a bijection in
+every degree, along `toGenericPoints` followed by `algToBaseChange` (points of `Y` over tests over
+`Ω` taken as points of `Y_Ω`). Here `primitiveMap` is the natural map `O^♭ ⊗ LC(Spec S[1/p]) → S^♭`,
+with `LC` the locally constant `𝔽_p`-valued functions. The bijection goes from the cohomology of
+`Y_Ω` with coefficients `A ↦ O^♭ ⊗ LC(Spec A) ⊗ M` to that of `S ↦ Y(S)` on p-adic tests with
+coefficients `S^♭ ⊗ M`. Only (c) uses the map `R → O_C`. -/
+lemma finite_and_primitive_comparison [IsAlgClosed Ω]
+    (ac : IsAcyclicOnPerfect (moduleCoeff (tensorCoeff M))) (Y : Over (Spec R)) [IsCharted Y Ω]
+    [IsProper Y.hom] :
+    let X := testIncl ⋙ geomPoints R Ω Y
+    -- (a)
+    HasFlatBaseChange (freeAb X) ∧
+    -- (b)
+    (∀ n : ℕ, Finite (H (freeAb X) (locConstCoeff ⟨ZMod p⟩) n)) ∧
+    -- (c)
+    ∀ [Algebra R OC] (he : ∀ r : R, algebraMap Ω ℂ_[p] (algebraMap R Ω r) = algebraMap R OC r),
+      CoeffCompBijective primitiveMap
+        (freeAbMap (Y := X)
+          (toGenericPoints Ω he Y ≫
+            whiskerLeft (genericTestOver Ω) (whiskerLeft _ (algToBaseChange Ω Y))))
+        (tensorCoeff M) := by
+  let h_inverts : InvertsPrime Ω p :=
+    InvertsPrime.mk (NeZero.nat_of_neZero (algebraMap Ω ℂ_[p])).out.isUnit
+  -- Transport the comparison along the equality of the two proofs that `p` is prime.
+  have h : @PrimitiveComparison p hp R Ω _ _ := by
+    exact (congrArg (fun h ↦ @PrimitiveComparison p h R Ω _ _)
+      (Subsingleton.elim h_inverts.toThePrime hp)).mp
+        (primitiveComparison_of_invertsPrime R Ω)
+  exact h ac Y
+
 
 end New.Variety
 
