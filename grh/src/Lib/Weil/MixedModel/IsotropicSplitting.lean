@@ -730,6 +730,7 @@ lemma levi_conj_radicalElement (a : GL p (𝔸 E)) (g : G E s₀) :
     Matrix.add_mul, Matrix.mul_sub, Matrix.sub_mul, conjTranspose_nonsing_inv]
   abel
 
+seal Finset.sum in
 /-- Every `radicalElement c b` is a commutator of a Levi element `m = levi (a, 1)` with a unipotent
 element `u = radicalElement c b'`: `m * u = u * radicalElement c b * m`. -/
 lemma exists_levi_mul_radicalElement_eq :
@@ -744,7 +745,7 @@ lemma exists_levi_mul_radicalElement_eq :
   refine ⟨two, toAdele (3⁻¹ : E) • b, ?_⟩
   rw [levi_conj_radicalElement, radicalElement_mul]
   -- Both sides are a unipotent element times `levi (two, 1)`; compare the unipotent factors.
-  congr 1
+  apply congrArg (fun u : G E s ↦ u * D.levi (two, 1))
   refine ext_adeleMatrix ?_
   -- Expand both matrices and compare the scalar coefficients of each term.
   simp [Matrix.mul_add, Matrix.add_mul, Matrix.mul_assoc, two]
