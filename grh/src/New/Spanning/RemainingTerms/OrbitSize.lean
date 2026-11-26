@@ -190,6 +190,7 @@ lemma prod_frameScaleSq_bounds [S.IsAdmissible] (v : NumberField.InfinitePlace E
     grw [prod_le_prod₀ (fun a _ ↦ pow_nonneg (h_pos a) _) fun a _ ↦ h_factor a]
     simp [← pow_mul, mul_assoc, ← pow_succ]
 
+set_option maxRecDepth 4000 in
 /-- For admissible data, `pairingBoundConst ≤ 2 ^ (k f) τ d² / (deg c_G ^ f Λ²)`. The left side is
 the factor of the product over the infinite places of the open-cell bounds `pairingBoundSq` that
 does not depend on the rational element at which they are taken. The numbers `d = card BesselCoord`
