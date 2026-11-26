@@ -488,6 +488,11 @@ drops the modulus by Nakayama's lemma
 
 namespace New.Lift.KummerChart
 
+private lemma padicValNat_factorial_succ {p : ℕ} [Fact p.Prime] (n : ℕ) :
+    padicValNat p (n + 1).factorial = padicValNat p (n + 1) + padicValNat p n.factorial := by
+  simp only [Nat.factorial_succ, Nat.padicValNat_def,
+    Nat.multiplicity_mul n.add_one_ne_zero n.factorial_ne_zero]
+
 open Period Submodule FrobGroup Ideal JumpLattice
 
 /-- The count of factors `p` in the cokernel bound with weights, for a prime `p`. Let
@@ -505,11 +510,14 @@ lemma PairingSide.add_add_padicValNat_factorial_le {p : ℕ} [Fact p.Prime]
   have hp_two : 2 ≤ p := (Fact.out : p.Prime).two_le
   have h_legendre : (padicValNat p ω'.factorial : ℝ) ≤ ω' / (p - 1) := by
     rw [le_div_iff₀' (sub_pos.2 (mod_cast hp_two)), ← Nat.cast_pred (by omega)]
-    exact_mod_cast (sub_one_mul_padicValNat_factorial ω').trans_le (Nat.sub_le _ _)
+    rw [Nat.padicValNat_def]
+    exact_mod_cast ((Fact.out : p.Prime).sub_one_mul_multiplicity_factorial (n := ω')).trans_le (Nat.sub_le _ _)
   have h_steps : (c : ℝ) ≤ J * (d * ω' + ω' / (p - 1)) := by
     grw [← h_legendre]
     exact_mod_cast hc_le
-  have h_removal : (padicValNat p n.factorial : ℝ) ≤ n := mod_cast padicValNat_factorial_le p n
+  have h_removal : (padicValNat p n.factorial : ℝ) ≤ n := by
+    rw [Nat.padicValNat_def]
+    exact_mod_cast multiplicity_factorial_le p n
   have h_double : p * a ≤ 2 * e * (ω + κ) :=
     calc p * a ≤ 2 * (p - 1) * a := Nat.mul_le_mul_right a (by omega)
       _ ≤ 2 * e * (ω + κ) := by linarith
@@ -927,7 +935,7 @@ lemma mem_liftIdeal_zero_of_mem_liftIdeal_one_letterFrob {S : PairingSide O} {r 
       push_cast
       linear_combination ↑p ^ c * k.z.1 ^ (n + 1) * h_lift
     -- The cost of the step is `v(n + 1)`, and `v((n + 1)!) = v(n + 1) + v(n!)`.
-    rw [Nat.factorial_succ, padicValNat.mul n.add_one_ne_zero n.factorial_ne_zero] at h_cost
+    rw [padicValNat_factorial_succ] at h_cost
     exact ih _ (mem_liftIdeal_of_eq_mul_smul_sub α β ⟨_, t, rfl⟩ h_mem h_der) (by omega)
 
 /-- Trading `E` for `z` at level one, on a Kummer chart `k` with ring `k.S ⊂ A_inf`, coordinate
@@ -983,9 +991,10 @@ lemma mem_liftIdeal_of_mul_E_pow {S : PairingSide O} {r : ℕ} {i : Letter} {a c
         ↑(p ^ (c + cost 0 (n + 1)) * k.z ^ (a + 1) * k.E ^ n : k.S) ∈ S.liftIdeal r 1 i :=
       mem_liftIdeal_of_eq_mul_smul_sub _ β g h_mem h_der
     -- The cost of the step is `v(n + 1) + d`, and `v((n + 1)!) = v(n + 1) + v(n!)`.
-    have h_step_cost : cost 0 (n + 1) = padicValNat p (n + 1) + k.differentBound := by norm_cast
-    rw [mul_add, mul_one, Nat.factorial_succ,
-      padicValNat.mul n.add_one_ne_zero n.factorial_ne_zero] at h_cost
+    have h_step_cost : cost 0 (n + 1) = padicValNat p (n + 1) + k.differentBound := by
+      change cost 0 ((n + 1 : ℕ) : ℤ) = _
+      simp only [cost, padicValInt, Int.natAbs_natCast, Nat.padicValNat_def, mul_zero, add_zero]
+    rw [mul_add, mul_one, padicValNat_factorial_succ] at h_cost
     exact ih h_step (by omega) (by omega)
 
 /-- Lowering by one the power of the coordinate `z = k.z` of the Kummer chart `k`: for a side `S`
@@ -1036,7 +1045,7 @@ lemma p_pow_mul_z_pow_mem_liftIdeal_of_le {S : PairingSide O} {r c κ m n : ℕ}
     have h_pred : (p : Ainf) ^ (c + padicValNat p (n + 1) + 1) * k.z.val ^ n ∈
         S.liftIdeal r 0 i :=
       p_pow_mul_z_pow_pred_mem_liftIdeal n.succ_pos h_mem
-    rw [Nat.factorial_succ, padicValNat.mul n.add_one_ne_zero n.factorial_ne_zero] at h_cost
+    rw [padicValNat_factorial_succ] at h_cost
     exact ih h_pred (by omega)
 
 /-- Passing to the letter before, on a Kummer chart `k` with coordinate `z = k.z` in `Ainf`, the
@@ -1059,7 +1068,7 @@ lemma p_pow_mul_z_pow_div_mem_liftIdeal {S : PairingSide O} {r c n ω : ℕ} {j 
     mem_liftIdeal_of_mul_E_pow h_one le_rfl le_rfl
   exact mem_liftIdeal_zero_of_mem_liftIdeal_one_letterFrob _ _ (Nat.mul_div_le (n + ω) p)
     (by simpa using h_traded)
-    (by rw [padicValNat_mul_div_factorial])
+    (by simp only [Nat.padicValNat_def, multiplicity_mul_div_factorial, le_refl])
 
 /-- Let `k` be a Kummer chart with coordinate `z = k.z`, an element of `Ainf`, the ring A_inf. Let
 `S` be a pairing side (`PairingSide O`). For each `κ`, some power of `z` lies in
@@ -1115,7 +1124,7 @@ lemma exists_z_pow_mem_liftIdeal {S : PairingSide O} {ω : ℕ}
       S.liftIdeal (p ^ (κ + 1)) 0 i := by
     simpa using mem_liftIdeal_zero_of_mem_liftIdeal_one_letterFrob 0 0 (Nat.mul_div_le _ p)
       (by simpa using h_up i)
-      (by rw [padicValNat_mul_div_factorial])
+      (by simp only [Nat.padicValNat_def, multiplicity_mul_div_factorial, le_refl])
   have h_mul_le : a * p ≤ a + k.e * (ω + κ) := Nat.mul_le_of_le_div p _ _ (h_min.le h_down)
   refine ⟨a, h_min.prop, ?_⟩
   rw [Nat.sub_one_mul, Nat.mul_comm p a]
@@ -1153,8 +1162,9 @@ lemma killsCokernel_of_isUnramified {S : PairingSide O} {i : Letter} (s t : ℕ)
     exists_z_pow_mem_liftIdeal h_jumps (s + t)
   obtain ⟨hE : k.E = k.z + p, he : k.e = 1, -⟩ := h_unram
   -- Legendre's formula gives `(p - 1) v_p(b!) ≤ b`.
-  have legendre : (p - 1) * padicValNat p b.factorial ≤ b :=
-    (sub_one_mul_padicValNat_factorial b).trans_le (Nat.sub_le _ _)
+  have legendre : (p - 1) * padicValNat p b.factorial ≤ b := by
+    rw [Nat.padicValNat_def]
+    exact ((Fact.out : p.Prime).sub_one_mul_multiplicity_factorial (n := b)).trans_le (Nat.sub_le _ _)
   have val_le : b + padicValNat p b.factorial ≤ s + t := by
     refine Nat.le_of_mul_le_mul_left (c := p - 2) ?_ (by omega)
     calc (p - 2) * (b + padicValNat p b.factorial)
