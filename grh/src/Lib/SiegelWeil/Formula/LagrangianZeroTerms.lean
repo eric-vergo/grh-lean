@@ -396,7 +396,7 @@ lemma theta_normalisedTorus_le (hm : 2 * card p < card m) :
     (hB.isClosed.preimage_of_continuous
       (f := fun h : G E t ↦ T.x.val * (h⁻¹.adeleMatrix * T.x⁻¹.val) * ξ.map toAdele)).measurableSet
   have meas : Measurable fun h : G E t ↦ ((near h).encard : ℝ≥0∞) :=
-    .comp .of_discrete (measurable_encard.comp (measurable_pi_iff.2 fun ξ ↦ (meas_mem ξ).mem))
+    .comp .of_discrete (measurable_encard.comp (measurable_set_iff.2 fun ξ ↦ (meas_mem ξ).mem))
   refine ⟨fun h ↦ (near h).encard * (‖θ ((stdSpace E Empty).hom T)‖ₑ * M), meas.mul_const _, ?_,
     fun h x f ↦ ?_⟩
   · -- The count has a finite integral by reduction theory; here the rank condition is used.
@@ -491,9 +491,10 @@ lemma _root_.New.Space.Splitting.exists_slice_omega_vacElem_of_isEmpty {n₀ : T
   have hz : zᴴ = z := by simp [z, add_comm]
   have h_sum : z + zᴴ = b + bᴴ := by
     rw [hz, ← add_smul, ← map_add, ← two_mul, mul_inv_cancel₀ two_ne_zero, map_one, one_smul]
-  have h_centre : D.radicalElement c₀ b = D.radicalElement 0 z :=
-    G.ext_adeleMatrix (by simp only [radicalElement, G.adeleMatrix_ofMatrix, h_sum,
-      Subsingleton.elim c₀ 0])
+  have h_centre : D.radicalElement c₀ b = D.radicalElement 0 z := by
+    rw [Subsingleton.elim c₀ 0]
+    apply G.ext_adeleMatrix
+    simp only [radicalElement, G.adeleMatrix_ofMatrix, h_sum]
   obtain rfl : g₀ = 1 := G.ext_adeleMatrix (Subsingleton.elim _ _)
   refine ⟨(chiAdelic γ.det)⁻¹ * c, z, γ,
     mul_ne_zero (inv_ne_zero (chiAdelic.toHomUnits γ.det).ne_zero) hc_ne, hz, fun x ↦ ?_⟩
