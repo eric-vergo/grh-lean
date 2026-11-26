@@ -203,7 +203,7 @@ lemma exists_projOn_eq_pairTheta_ne_zero {s : r → ℤˣ} {t : n → ℤˣ} (W 
   let x' : n × r → 𝔸 E := matrixToVec (p.2⁻¹.adeleMatrix * vecToMatrix (realVec x) *
     p.1.adeleMatrix)
   have hx' (i : n × r) (v : FinPlace E) : (x' i).2 v = 0 := by
-    simp [x', matrixToVec, vecToMatrix, realVec, mul_apply, snd_sum]
+    simp [x', matrixToVec, vecToMatrix, realVec, Matrix.mul_apply, snd_sum]
   refine ⟨(W.hom V).ϱ x' (vacElem _), ?_, ?_⟩
   · rw [projOn_rho _ fun i v _ ↦ hx' i v, projOn_vacElem]
   · rwa [pairTheta, ← rho_pairWeil, theta_rho]
