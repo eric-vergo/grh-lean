@@ -83,10 +83,30 @@ for module, source in sources.items():
               'Unknown source reference in ' + module + ': ' + href)
     check(all('L' + str(n) in page.ids for n in range(1,len(lines)+1)), 'Missing line: ' + module)
     check(all(not h.startswith('#') or h[1:] in page.ids for h in page.hrefs), 'Broken local link: ' + module)
+landing = Page(site / 'index.html')
+check('source/index.html' in landing.hrefs, 'Landing page has no source atlas link')
 stats = Page(site / 'Project-Stats/index.html')
 judged = json.loads(Path('Comparator/Grh/comparator.json').read_text())['theorem_names']
+check(all('source/Main.html#d-' + name in landing.hrefs for name in judged),
+      'Landing page does not link to each canonical theorem')
 check(stats.verdicts == dict.fromkeys(judged, 'proved'), 'Comparator theorem verdicts mismatch')
 check(stats.classes['bp_stats_replay_accepted'] > 0, 'Kernel replay has not accepted the export')
-size = sum(p.stat().st_size for p in site.rglob('*') if p.is_file())
+sizes = Counter()
+for file in site.rglob('*'):
+    if not file.is_file():
+        continue
+    relative = file.relative_to(site)
+    if relative.parts[0] == 'source':
+        group = 'indexed source atlas'
+    elif file.suffix == '.html':
+        group = 'blueprint HTML pages'
+    elif relative.parts[0] == '-verso-data' and file.suffix == '.json':
+        group = 'blueprint JSON data'
+    else:
+        group = 'shared assets and other files'
+    sizes[group] += file.stat().st_size
+size = sizes.total()
+for group, value in sorted(sizes.items()):
+    print(f'{group}: {value:,} bytes')
 check(size < 1_000_000_000, f'Published site exceeds the 1 GB budget ({size:,} bytes)')
 print(f'Verified {len(sources)} modules, {sum(map(len,catalog.values())):,} declaration anchors, and {size:,} published bytes')
