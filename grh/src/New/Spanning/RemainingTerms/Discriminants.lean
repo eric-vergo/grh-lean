@@ -246,12 +246,12 @@ lemma _root_.New.IsValuationPair.exists_square_colLattice_eq (hR : IsValuationPa
   let D : Matrix m m A := (X * V.1).toCols₁
   have hD : Y * V.1.toBlocks₂₁ = D := by
     ext i j
-    simp [D, X, toCols₁, toBlocks₂₁, mul_apply]
+    simp [D, X, toCols₁, toBlocks₂₁, Matrix.mul_apply]
   have hY : D * V⁻¹.1.toBlocks₁₂ = Y := by
     ext i j
     have h_cancel : (X * V.1 * V⁻¹.1) i (.inr j) = Y i j := by simp [X, Matrix.mul_assoc]
     have h_zero (b : n) : (X * V.1) i (.inr b) = 0 := h_clear i (.inr b) (by simp)
-    rw [← h_cancel, mul_apply, mul_apply, Fintype.sum_sum_type]
+    rw [← h_cancel, Matrix.mul_apply, Matrix.mul_apply, Fintype.sum_sum_type]
     simp [h_zero, D, toCols₁, toBlocks₁₂]
   obtain ⟨hV_int, hV_inv_int⟩ := mem_intGL.1 hV
   refine ⟨D, le_antisymm ?_ ?_⟩
@@ -440,7 +440,7 @@ lemma exists_colLattice_eq_of_submoduleIndex_ne_zero {n : Type} [Fintype n] [Dec
   have hC_le : colLattice (Ô E) C.val ≤ M := colLattice_le fun j ↦ by
     have h_col : C.val.col j = N • (Pi.single j 1 : n → 𝔸f E) := by
       ext i
-      simp [C, Units.smul_def, one_apply, Pi.single_apply, hc]
+      simp [C, Units.smul_def, Matrix.one_apply, Pi.single_apply, hc]
     rw [h_col]
     exact M.toAddSubgroup.nsmul_relIndex_mem (K := (intVectors (Ô E) n).toAddSubgroup)
       (single_mem_intVectors j)
