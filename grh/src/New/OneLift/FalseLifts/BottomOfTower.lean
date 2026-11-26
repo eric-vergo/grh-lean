@@ -71,7 +71,7 @@ lemma inclMatrix_apply_of_notMem_range {a : n} (ha : a ∉ Set.range ι) (b : r)
 /-- The vector `inclMatrix R ι *ᵥ μ = (μ, 0)` has the entry `μ b` at the index `ι b`. -/
 lemma inclMatrix_mulVec_apply_embedding [DecidableEq r] (μ : r → R) (b : r) :
     (inclMatrix R ι *ᵥ μ) (ι b) = μ b := by
-  simp [inclMatrix, mulVec, dotProduct, one_apply]
+  simp [inclMatrix, mulVec, dotProduct, Matrix.one_apply]
 
 lemma inclMatrix_mulVec_apply_of_notMem_range (μ : r → R) {a : n} (ha : a ∉ Set.range ι) :
     (inclMatrix R ι *ᵥ μ) a = 0 := by
@@ -106,19 +106,19 @@ lemma completeColumns_apply_of_notMem [DecidableEq r]
     (u : Matrix n r R) (a : r) {b : n} (hb : b ∉ Set.range ι) :
     completeColumns ι u (ι a) b = 0 := by
   have h_ne (c : r) : ι c ≠ b := fun h ↦ hb ⟨c, h⟩
-  simp [completeColumns, inclMatrix, mul_apply, one_apply, h_ne]
+  simp [completeColumns, inclMatrix, Matrix.mul_apply, Matrix.one_apply, h_ne]
 
 lemma map_completeColumns (f : R →+* R') (u : Matrix n r R) :
     (completeColumns ι u).map f = completeColumns ι (u.map f) := by
   ext a b
-  simp [completeColumns, inclMatrix, mul_apply, one_apply, apply_ite f]
+  simp [completeColumns, inclMatrix, Matrix.mul_apply, Matrix.one_apply, apply_ite f]
 
 variable [Fintype n]
 
 omit [Fintype r] in
 lemma vecMul_inclMatrix (l : n → R) : l ᵥ* inclMatrix R ι = l ∘ ι := by
   ext b
-  simp [inclMatrix, vecMul, dotProduct, one_apply]
+  simp [inclMatrix, vecMul, dotProduct, Matrix.one_apply]
 
 /-- The matrix `h_v = (1 + v λ, v λ'; 0, 1)` of a column `v` and a row `l = (λ, λ')`, where `λ` has
 the entries of `l` indexed by `ι` and `λ'` has the other entries. -/
@@ -163,7 +163,7 @@ omit [Fintype n] in
 lemma map_rowShear (f : R →+* R') (v : r → R) (l : n → R) :
     (rowShear ι v l).map f = rowShear ι (f ∘ v) (f ∘ l) := by
   ext a b
-  simp [rowShear, inclMatrix, mulVec, dotProduct, vecMulVec_apply, one_apply, apply_ite f]
+  simp [rowShear, inclMatrix, mulVec, dotProduct, vecMulVec_apply, Matrix.one_apply, apply_ite f]
 
 /-- If `tᵀ e = e sᵀ` for `e = inclMatrix R ι = (1, 0)ᵀ`, the first block of `t` is `s`. -/
 lemma submatrix_eq_of_transpose_mul_inclMatrix [DecidableEq r]
@@ -178,7 +178,7 @@ lemma apply_eq_zero_of_transpose_mul_inclMatrix {ι : r ↪ n} {t : Matrix n n R
     (hts : tᵀ * inclMatrix R ι = inclMatrix R ι * sᵀ) (a : r) {b : n} (hb : b ∉ Set.range ι) :
     t (ι a) b = 0 :=
   calc t (ι a) b = (inclMatrix R ι * sᵀ) b a := by simp [← hts, mul_inclMatrix]
-    _ = 0 := by simp [mul_apply, inclMatrix_apply_of_notMem_range ι hb]
+    _ = 0 := by simp [Matrix.mul_apply, inclMatrix_apply_of_notMem_range ι hb]
 
 end Blocks
 
@@ -613,7 +613,7 @@ lemma leftMul_mem_integralBox_iff {S : Set (FinPlace E)} (k : stdLevel E n) {x :
     rintro ⟨a, b⟩
     have h_entry : idem S * leftMul E r n k x (a, b) =
         ∑ c : n, (k.val : Matrix n n (𝔸f E)) a c * (idem S * x (c, b)) := by
-      simp [leftMul_apply, matrixToVec, vecToMatrix, mul_apply, mul_sum, mul_left_comm]
+      simp [leftMul_apply, matrixToVec, vecToMatrix, Matrix.mul_apply, mul_sum, mul_left_comm]
     refine Set.mem_of_eq_of_mem h_entry (sum_mem (S := Ô E) fun c _ ↦ ?_)
     exact mul_mem (mem_stdLevel.1 k.prop a c) (hx (c, b))
   exact ⟨fun h ↦ by simpa using h_le k⁻¹ h, h_le k⟩
@@ -902,7 +902,7 @@ lemma finite_range_levelTranslate (i : ℕ) (z : n × r → 𝔸f E) :
   let C (q : n × r → 𝔸f E) : (n × r → 𝔸f E) → ℂ := cosetIndicator O.places (factorialIdele E i) q
   have h_cont : Continuous fun k : stdLevel E n ↦ leftMul E r n k z := by
     refine continuous_pi fun p ↦ ?_
-    simp only [leftMul_apply, matrixToVec, mul_apply]
+    simp only [leftMul_apply, matrixToVec, Matrix.mul_apply]
     fun_prop
   have : CompactSpace (stdLevel E n) := isCompact_iff_compactSpace.1 isCompact_stdLevel
   have h_class : (Set.range fun k : stdLevel E n ↦ C (leftMul E r n k z)).Finite :=

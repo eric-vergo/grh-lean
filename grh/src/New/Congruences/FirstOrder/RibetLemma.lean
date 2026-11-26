@@ -193,8 +193,8 @@ lemma det_linearCombination_sub_one_eq_zero {r : Type} {t : ℕ} [NeZero t]
   have h_column (g : G) (i : σ) :
       u x g i (blockEquiv (inr 0)) = (1 : Matrix σ σ O) i (blockEquiv (inr 0)) := by
     obtain ⟨i | i, rfl⟩ := blockEquiv.surjective i
-    · simp [hu, one_apply]
-    · simp +contextual [hu, hξ₀, one_apply, diagonal_apply]
+    · simp [hu, Matrix.one_apply]
+    · simp +contextual [hu, hξ₀, Matrix.one_apply, diagonal_apply]
   refine det_eq_zero_of_column_eq_zero (blockEquiv (inr 0)) fun i ↦ ?_
   simp [Finsupp.linearCombination_apply, Finsupp.sum, Matrix.sum_apply, h_column]
 
@@ -277,7 +277,7 @@ lemma exists_traceIdeal_multiplier_eq_sum_det [Fintype J] {r : Type} [Fintype r]
       exact sum_mem fun j _ ↦ smul_mem _ _ (subset_span ⟨j, rfl⟩)
     rw [← det_polyAction_rowValue u hz, ← smul_eq_mul, ← Subalgebra.smul_def, Finset.sum_smul]
     refine sum_mem fun i _ ↦ ?_
-    rw [mul_smul, Subalgebra.smul_def (f i), smul_eq_mul]
+    rw [Subalgebra.smul_def, Subalgebra.coe_mul, mul_smul, smul_eq_mul]
     exact 𝒥.smul_mem _ (hf_mem i w hw)
   · -- On `𝓧`, `(1 - k) • B₀ + k • M i` is `B₀` on the block and `M i` on the characters.
     have hκS_apply (c : Λ) : (κS c).1 x = algebraMap Λ (MvPolynomial J L) c :=
