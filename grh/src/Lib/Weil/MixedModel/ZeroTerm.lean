@@ -569,7 +569,7 @@ lemma IsAdapted.exists_omega_vacElem_of_isMixedLaw {E : Type u_1} {n : Type u_3}
   -- integrality.
   have h_fin : T (t.1⁻¹ᴴ *ᵥ finVec z) u =
       boxIndicator p (⊤ : Set (FinPlace E)).conjClosure z • V₀.projOn ⊤ (T 0 u) := by
-    simpa [u, ↓idem_compl] using h_adapted.omega_projOn_of_isMixedLaw hT z V.vacElem (S := ⊤)
+    simpa [u, Set.conjClosure, ↓idem_compl] using h_adapted.omega_projOn_of_isMixedLaw hT z V.vacElem (S := ⊤)
   -- The two projections together land on the line of the vacuum; the vacuum function at
   -- `t.1ᴴ *ᵥ x` is the product of its real and finite factors.
   have h_line : V₀.projReal (V₀.projOn Set.univ (T 0 u)) =
@@ -579,8 +579,8 @@ lemma IsAdapted.exists_omega_vacElem_of_isMixedLaw {E : Type u_1} {n : Type u_3}
   by_cases hz : z ∈ stdLattice E p
   · simp [hz, stdLattice.finVac, sq, star_dotProduct_self_eq_sum, realVac, mul_comm (exp _),
     mul_assoc,
-      integralBox, h_line, smul_smul, norm_exp, ← exp_add]
-  · simp [hz, stdLattice.finVac, integralBox]
+      Set.conjClosure, integralBox, h_line, smul_smul, norm_exp, ← exp_add]
+  · simp [hz, stdLattice.finVac, Set.conjClosure, integralBox]
 
 /-- Let `S` be disjoint from its conjugate `S̄`, `Ψ` Schwartz–Bruhat above `S` and `g` adapted to
 `t`. The value of `ω(g) (Ψ ⊗ f)` at the finite point `x` is `Ψ_x ⊗` applied to the value of
