@@ -375,7 +375,7 @@ private lemma isPrimitiveRoot_map_of_isRoot_cyclotomic {ℓ : ℕ} (hℓ : IsUni
     IsPrimitiveRoot (ψ ζ) ℓ := by
   have h_neZero : NeZero (ℓ : S) := ⟨by simpa using (hℓ.map ψ).ne_zero⟩
   rw [← isRoot_cyclotomic_iff, ← map_cyclotomic ℓ ψ]
-  exact hζ.map
+  exact hζ.map ψ
 
 /-- Logarithms of roots of unity on a spectrum. Let `ℓ` be a unit of `A` and `ζ ∈ A` a root of the
 `ℓ`-th cyclotomic polynomial. If `y ^ ℓ = 1` in an `A`-algebra `S`, then there is a locally constant

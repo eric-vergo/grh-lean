@@ -271,7 +271,7 @@ lemma exists_bordering (h : J → ℕ) (hγ : γ ∈ interlacing ((columnWeight 
     ext i
     have h_chosen (j : J) : (if j ∈ S i then 1 else 0) = Finsupp.single (k j) (e j) i := by
       grind [Pi.add_apply]
-    simp [Finsupp.finsetSum_apply, ← h_chosen, card_S]
+    simp [Finsupp.finsetSum_apply, ← h_chosen, Finset.univ_inter, card_S]
   subst h_γ_eq
   refine ⟨k, ?weights, fun I ↦
     ⟨fun j s ↦ ⟨if hs : s < k j then I j ⟨s, hs⟩ else x, ?colour⟩, fun R _ ↦ ?lead, ?entries⟩⟩
@@ -511,8 +511,12 @@ lemma degree_rowExpansion_mem_interlacing (hf : f ∈ nabla R c l) :
           (if i + 1 = a then n i else 0) + ((if i = a then n (i + 1) else 0) + n a) =
             (if i + 1 = a then γ i else 0) + ((if i = a then γ (i + 1) else 0) + γ a)) →
           n i ≤ γ i → ((θ ((rowExpansion x f).coeff n)).coeff (γ i - n i)).coeff 0 = 0 by
-        simpa [P, δ, X_pow_eq_monomial, Polynomial.coeff_mul_X_pow', Finsupp.ext_iff,
-          apply_ite Polynomial.coeff, DFunLike.ite_apply, single_apply, ite_apply] using h_vanish
+        simp [P, δ, X_pow_eq_monomial, Finsupp.ext_iff, single_apply, ite_apply]
+        split_ifs with hshape
+        · by_cases hle : n i ≤ γ i
+          · simpa [Polynomial.coeff_mul_X_pow', hle] using h_vanish hshape hle
+          · simp [Polynomial.coeff_mul_X_pow', hle]
+        · simp
       intro h_shape h_le
       exact absurd (columnOrder_lt_of_forall_add_ite_eq h_shape h_le hne) h_not_lt
     · intro hγ

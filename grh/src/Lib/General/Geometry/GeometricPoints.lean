@@ -260,7 +260,7 @@ instance {k : Type} [Field k] [IsAlgClosed k] (A : Over (Spec ⟨k⟩)) [hA : Is
   let P : Type := MonoidalCategoryStruct.tensorUnit (Over (Spec ⟨k⟩)) ⟶ A
   let act : AddAction P (irreducibleComponents A.left) :=
     { vadd g C := ⟨(translation g).left ⁻¹' C, preimage_mem_irreducibleComponents C.prop
-        (translation g).left.isOpenEmbedding (by simp [C.prop.1.nonempty])⟩
+        (translation g).left.isOpenEmbedding (by simp [Set.inter_univ, C.prop.1.nonempty])⟩
       zero_vadd := by simp [HVAdd.hVAdd, preimage]
       add_vadd := by simp [P, HVAdd.hVAdd, preimage, ← Scheme.Hom.comp_apply, ← Over.comp_left,
         add_assoc, comp_add] }
