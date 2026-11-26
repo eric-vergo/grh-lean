@@ -92,7 +92,7 @@ lemma classSum_stdRatPoints_eq_mass :
   have h_count : (1 : Gf E κ → ℝ) = fun g : Gf E κ ↦
       ((MulAction.orbit (stdRatPoints : Subgroup (Gf E κ)) () ∩
         g • MulAction.orbit (stdLevel E κ) ()).ncard : ℝ) := by
-    simp [funext_iff, MulAction.orbit, Set.range_const]
+    simp [funext_iff, MulAction.orbit, Set.range_const, Set.inter_self]
   rw [mass, h_count]
   exact classSum_card_orbit _ _ () ι.toMonoidHom ι.injective h_stab h_rat h_int
 
@@ -257,7 +257,7 @@ lemma lintegral_le_idealZeta_mul (hμ : idealZeta R μ ≤ 2) {α : Type*} [Meas
       ∫⁻ x : α in T I, f x ∂ρ ≤ (I.val.cardQuot : ℝ≥0∞)⁻¹ ^ μ * V := by
     have sup_bound : ∫⁻ x : α in T I, f x ∂ρ ≤ (⨆ x ∈ T I, f x) * ρ (S I) := by
       grw [setLIntegral_mono measurable_const fun _ ↦ le_biSup f, setLIntegral_const,
-        measure_mono fun _ hx ↦ hx.1]
+        measure_mono (show T I ⊆ S I from fun _ hx ↦ hx.1)]
     grw [sup_bound]
     simp_rw [ENNReal.iSup_mul, iSup_le_iff, ← ENNReal.inv_pow]
     exact fun x hx ↦ (ENNReal.mul_le_iff_le_inv (by simp [I.2]) (by simp)).1 hx.2
@@ -353,7 +353,7 @@ lemma gauss_sum_sq_le [Fintype n] (b : selfAdjoint (𝔸f E)) (Γ : 𝔸f E) :
           (lintegral_mono fun _ ↦ enorm_integral_le_lintegral_enorm _)
       _ = volume (Kn ∩ L) * volume L := by
         simp [Kn, F, ← ofReal_norm, Circle.norm_coe, MeasurableSet.univ_pi, K_open.measurableSet,
-          mul_comm]
+          mul_comm, Set.univ_inter]
       _ = _ := by simp [Kn, L, coe_stdLattice, ← pi_inter_distrib, volume_pi_pi, mul_pow]
   grw [h_sq, ← mul_pow, ← mul_assoc, vol_K, ← sq, pow_right_comm]
 
@@ -435,9 +435,11 @@ lemma idealZeta_intAdeles_pow_le (u : ℕ) {v n : ℕ} (h_le : n * Module.finran
       (ofReal_re (term J)).symm.trans (by simp [term, cpow_neg])
   let contract (I : {I : Ideal (Ô E) // I.cardQuot ≠ 0}) : Ideal (𝓞 E) := I.val.under (𝓞 E)
   have inj : contract.Injective :=
-    (LeftInvOn.injOn fun I hI ↦ map_under_Ô (by simpa) (index_mem I)).injective
-  have same_index (I) : absNorm (contract I) = I.val.cardQuot :=
-    card_eq_of_bijective _ (bijective_quot_Ô (by aesop) rfl (index_mem I))
+    fun I J h ↦ Subtype.ext <| (map_under_Ô (Nat.cast_ne_zero.2 I.2) (index_mem I.val)).symm.trans <|
+      (congrArg (Ideal.map (algebraMap (𝓞 E) (Ô E))) h).trans (map_under_Ô (Nat.cast_ne_zero.2 J.2) (index_mem J.val))
+  have same_index (I) : absNorm (contract I) = I.val.cardQuot := by
+    rw [Ideal.absNorm_eq_natCard, Submodule.cardQuot_apply]
+    exact card_eq_of_bijective _ (bijective_quot_Ô (Nat.cast_ne_zero.2 I.2) rfl (index_mem I))
   have zeta_le_euler : idealZeta (Ô E) σ ≤ ENNReal.ofReal P.re := calc
       _ = ∑' I, ENNReal.ofReal (term (contract I)) := tsum_congr fun I ↦ by
         simp [term, same_index, ofReal_inv_of_pos, I.2.pos, ENNReal.inv_pow]

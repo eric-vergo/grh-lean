@@ -208,7 +208,9 @@ lemma torusEval_alternant (x : n → Circle) :
       simp [alternant, torusEval, apply_ite (lift ℂ ℂ (n → ℤ) _)]
     _ = ∑ w : Perm n, (w.sign : ℂ) * ∏ a : n, if ε a = ε (w a) then (x a : ℂ) ^ ν (w a) else 0 := by
       simp [prod_ite_zero, funext_iff, eq_comm]
-    _ = _ := by simp [← det_transpose (Matrix.of _), det_apply']
+    _ = _ := by
+      rw [← det_transpose]
+      simp [det_apply', Function.swap]
 
 section
 
@@ -684,7 +686,7 @@ lemma exists_kTypeChar_diagTorusK_eq_trace_schur (hl : l.Injective) (hν : IsKDo
   let m (τ : ℤˣ) : Type := {i // ε i = τ}
   have h_enum (τ : ℤˣ) : ∃ q : Fin (Fintype.card (m τ)) ≃ m τ,
       ∀ a b : Fin (Fintype.card (m τ)), l (q a).1 < l (q b).1 ↔ a < b :=
-    exists_equiv_fin_lt_iff (n := m τ) hl.injOn.injective
+    exists_equiv_fin_lt_iff (l := fun i : m τ ↦ l i.1) (hl.comp Subtype.val_injective)
   choose q hq using h_enum
   obtain ⟨κ, e, h_partition⟩ := exists_eq_const_add_partition hν q hq
   have hν_q (τ : ℤˣ) (j : Fin (Fintype.card (m τ))) :
