@@ -54,3 +54,8 @@ srcDir = "../blueprint"
 [lean_lib.leanOptions]
 experimental.module = true
 weak.verso.blueprint.externalCode.strictResolve = true
+
+[[lean_exe]]
+name = "grhReadingPages"
+srcDir = "../scripts"
+root = "ReadingPages"
