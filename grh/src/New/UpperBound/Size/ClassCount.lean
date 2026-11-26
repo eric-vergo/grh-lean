@@ -42,7 +42,7 @@ lemma New.Space.norm_map_mul_apply_le {E n : Type} [Field E] [Fintype n] (φ : E
     (hM : ∀ i j : n, ‖φ (M i j)‖ ≤ a) (hM' : ∀ i j : n, ‖φ (M' i j)‖ ≤ b) (i j : n) :
     ‖φ ((M * M') i j)‖ ≤ card n * (a * b) := calc
   ‖φ ((M * M') i j)‖ ≤ ∑ k, ‖φ (M i k)‖ * ‖φ (M' k j)‖ := by
-    simpa [mul_apply] using norm_sum_le _ fun k ↦ φ (M i k) * φ (M' k j)
+    simpa [Matrix.mul_apply] using norm_sum_le _ fun k ↦ φ (M i k) * φ (M' k j)
   _ ≤ ∑ _k : n, a * b := Finset.sum_le_sum fun k _ ↦
     mul_le_mul (hM i k) (hM' k j) (norm_nonneg _) ((norm_nonneg _).trans (hM i k))
   _ = card n * (a * b) := by simp
@@ -94,7 +94,7 @@ lemma New.Space.isIntegral_conjTranspose_mul_apply {E n : Type} [Field E] [CMTyp
     rw [← U.gram_invariant g]
     exact (hY.conjTranspose.mul .one).mul hZ
   rw [← algebraMap_mem_Ô]
-  simpa [mul_apply] using h_int i j
+  simpa [Matrix.mul_apply] using h_int i j
 
 /-- Let `g`, `g'` be double cosets in `StdClasses K₀ = Γ \ G_f / K₀`, with representatives `g.out`,
 `g'.out`, and let `Y`, `Y'` in `GL n E` have the same Gram matrix. Put `A = g.out⁻¹ Y` and
