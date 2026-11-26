@@ -159,7 +159,7 @@ lemma New.exists_toPoly_single_eq {N : Type} [Fintype N] [LinearOrder N] [Decida
       (weylKernel (fun _ ↦ N) κ (unit S)).eval x =
         ((of fun u (a : Fin h) ↦ x (⟨τ, u⟩, a)).submatrix (enumSubset S) id).det := by
     rw [eval_weylKernel_single_eq_det τ h_lt]
-    simp [unit, one_apply, Matrix.submatrix]
+    simp [unit, Matrix.one_apply, Matrix.submatrix]
   let c (S : Set.powersetCard N h) : ℂ := F ((1 : Matrix N N ℂ).submatrix id (enumSubset S))
   let ξ : WeylIndex N κ → ℂ := ∑ S, c S • weylEval (fun _ ↦ N) κ (unit S)
   have h_eval (x : (Σ _ : Φ, N) × ℕ → ℂ) :
@@ -173,7 +173,7 @@ lemma New.exists_toPoly_single_eq {N : Type} [Fintype N] [LinearOrder N] [Decida
     simp [← GL.eval_toPoly, h_eval, c, unit, Matrix.submatrix, Matrix.one_apply]
   have h_unit (S : Set.powersetCard N h) : star (unit S) = unit S := by
     ext ⟨⟨τ', u⟩, a⟩
-    simp [unit, one_apply, apply_dite (starRingEnd ℂ), apply_ite (starRingEnd ℂ)]
+    simp [unit, Matrix.one_apply, apply_dite (starRingEnd ℂ), apply_ite (starRingEnd ℂ)]
   have h_star : star ξ = ∑ S, star (c S) • weylEval (fun _ ↦ N) κ (unit S) := by
     simp_rw [ξ, star_sum, star_smul, GL.star_weylEval, h_unit]
   have h_sum : star ξ ⬝ᵥ (weylGram (fun _ ↦ N) κ).map (↑) *ᵥ ξ = ∑ S, star (c S) * c S := by
@@ -204,12 +204,12 @@ lemma New.exists_toPoly_eq_det_and_weylNormSq_le {a N c : Type} [Fintype a] [Dec
   let F (X : Matrix N (Fin h) ℂ) : ℂ :=
     ((fromCols (one.submatrix id Sum.inr * X) Z).submatrix id e).det
   have h_rows (X : Matrix N (Fin h) ℂ) : one.submatrix id Sum.inr * X = fromRows 0 X := by
-    ext (u | u) b <;> simp [one, mul_apply, one_apply]
+    ext (u | u) b <;> simp [one, Matrix.mul_apply, Matrix.one_apply]
   have h_unit (S : Set.powersetCard N h) :
       one.submatrix id Sum.inr * (1 : Matrix N N ℂ).submatrix id (enumSubset S) =
         one.submatrix id (Sum.inr ∘ enumSubset S) := by
     ext
-    simp [mul_apply, one_apply]
+    simp [Matrix.mul_apply, Matrix.one_apply]
   have h_expand (X : Matrix N (Fin h) ℂ) : F X = ∑ S : Set.powersetCard N h,
       (X.submatrix (enumSubset S) id).det *
         F ((1 : Matrix N N ℂ).submatrix id (enumSubset S)) := by

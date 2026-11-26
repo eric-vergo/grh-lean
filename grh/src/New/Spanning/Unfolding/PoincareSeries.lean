@@ -814,7 +814,7 @@ lemma New.Shape.submatrix_fromBlocks_besselIndexEquiv (𝔰 : Shape) {R : Type*}
       fromBlocks 1 0 0 (fromBlocks (fromBlocks m 0 0 1) 0 0 1) := by
   -- Compare entries block by block; what is left is arithmetic of the string indices.
   ext (i | (i | i) | i) (j | (j | j) | j) <;>
-    simp [besselIndexEquiv, one_apply, Fin.ext_iff] <;> lia
+    simp [besselIndexEquiv, Matrix.one_apply, Fin.ext_iff] <;> lia
 
 open Matrix in
 /-- A Kronecker product acts on a product vector factor by factor. -/
