@@ -484,7 +484,7 @@ locally constant of compact support and vanishes off the right invertible matric
 `localDatum S T v φ r` (real part `v`, `y ↦ φ (π y)` at `A`, the vacuum elsewhere) satisfies
 `New.Exchange.IsTargetBounded`. -/
 lemma ReadsAt.isTargetBounded (r : ReadsAt A π) [Nontrivial F] (hv : IsSchwartzVector v)
-    (hφ : φ ∈ schwartzBruhat fun x : Matrix n' n F ↦ HasLeftInv xᵀ) :
+    (hφ : φ ∈ schwartzBruhat {x : Matrix n' n F | HasLeftInv xᵀ}) :
     IsTargetBounded S T (localDatum S T v φ r) := by
   -- `pairTheta_decay_of_onto` bounds `‖θ (g, h)‖ * height h ^ N` by
   -- `C * fockMoment M v * height g ^ B`; take `N = 0` and the trivial characters.
