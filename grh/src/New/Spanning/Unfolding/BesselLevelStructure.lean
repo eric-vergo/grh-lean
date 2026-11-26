@@ -77,7 +77,8 @@ attribute [local aesop simp] selfDualChar ideleM splitGram middleGram latticeMid
 `R'`: `S.latticeMiddle R` is the middle block of this matrix and `splitGram` the whole matrix. -/
 lemma map_splitGram_latticeMiddle (f : R →+* R') :
     (S.latticeMiddle R).splitGram.map f = (S.latticeMiddle R').splitGram := by
-  aesop (add simp [fromBlocks_map, fromCols_map, fromRows_map])
+  ext i j
+  aesop (add simp [fromBlocks_map, fromCols_map, fromRows_map, Function.swap, Matrix.one_apply, scaleAt, diagonal, apply_ite])
 
 /-- If `γ` agrees with the identity matrix at the entries `(i, j)` with `r i j`, then so does its
 image under a ring homomorphism `f`; `agreeWithOneOn` is the group of such invertible matrices. -/
@@ -211,7 +212,7 @@ lemma simpleRootSum_adelicToFin (u : S.G (𝔸 E)) :
       (S.adelicToFin u).val (𝔰.besselFrame a.castSucc) (𝔰.besselFrame a.succ) =
         (u.val (𝔰.besselFrame a.castSucc) (𝔰.besselFrame a.succ)).2 := by
     cases a.succ using Fin.lastCases <;>
-      simp [adelicToFin, besselLatticeBasis, mul_apply, U.map, toLatticeBasis, Matrix.one_apply]
+      simp [adelicToFin, besselLatticeBasis, Matrix.mul_apply, U.map, toLatticeBasis, Matrix.one_apply]
   simp only [simpleRootSum, snd_sum, h_entry]
 
 /-- The sum of the entries just above the diagonal on the frame commutes with the embedding of
@@ -371,12 +372,14 @@ lemma isUnimodular_latticeMiddleGram [StarRing A] (𝔰 : Shape) {N : A} (hN : N
   let inv : Matrix 𝔰.MiddleIndex 𝔰.MiddleIndex A :=
     latticeMiddleGram 𝔰 0 + diagonal (Pi.single (inl 𝔰.k₀) N)
   have h_inv : latticeMiddleGram 𝔰 N * inv = 1 := by
-    aesop (add simp [inv, latticeMiddleGram, mul_apply, diagonal, Matrix.one_apply])
+    ext i j
+    aesop (add simp [inv, latticeMiddleGram, Matrix.mul_apply, diagonal, Matrix.one_apply, Function.swap])
   -- hermitian, as `N` is fixed by `star`; the entries of both matrices are `0`, `±1`, `±N`
   have h_herm : (latticeMiddleGram 𝔰 N)ᴴ = latticeMiddleGram 𝔰 N := by
-    aesop (add simp [latticeMiddleGram, diagonal])
+    ext i j
+    aesop (add simp [latticeMiddleGram, diagonal, Function.swap])
   have h_mem (a b : 𝔰.MiddleIndex) : latticeMiddleGram 𝔰 N a b ∈ R ∧ inv a b ∈ R := by
-    aesop (add simp [inv, latticeMiddleGram, diagonal])
+    aesop (add simp [inv, latticeMiddleGram, diagonal, Function.swap])
   let u : GL 𝔰.MiddleIndex A := ⟨latticeMiddleGram 𝔰 N, inv, h_inv, mul_eq_one_comm.1 h_inv⟩
   exact ⟨h_herm, u, mem_intGL.2 ⟨fun a b ↦ (h_mem a b).1, fun a b ↦ (h_mem a b).2⟩, rfl⟩
 
@@ -750,7 +753,8 @@ lemma exists_besselU_approx {x : S.GFin} (hx : x ∈ besselU) (y : S.GFin) :
   let V : Set (S.G (𝔸f E)) := f ⁻¹' S.principalLevel
   have h_open : IsOpen V := by
     refine IsOpen.preimage (f := f) (.subtype_mk ?_ _) ?_
-    · simp only [Subgroup.coe_mul, InvMemClass.coe_inv]
+    · simp only [Subgroup.coe_mul, InvMemClass.coe_inv, toLatticeBasis]
+      change Continuous fun z : S.G (𝔸f E) ↦ _ * (_ * (S.latticeBasis⁻¹ * z.val * S.latticeBasis)) * _
       fun_prop
     · rw [S.principalLevel_eq_unitaryLevel]
       exact (isOpen_intGL isOpen_Ô).preimage_val.and isOpen_Ô.matrix.preimage_of_continuous
