@@ -475,8 +475,13 @@ lemma differentiable_expMinor_scaleCross :
   have h_exp : Differentiable ℂ (NormedSpace.exp : Matrix n n ℂ → Matrix n n ℂ) :=
     fun X ↦ (NormedSpace.exp_analytic X).differentiableAt
   have h_det : Differentiable ℂ (det : Matrix n n ℂ → ℂ) := differentiable_matrix_det
-  unfold expMinor scaleCross
-  fun_prop
+  have h_scale (A : Matrix n n ℂ) : Differentiable ℂ (scaleCross Q A) :=
+    (differentiable_const (A - crossPart Q A)).add
+      ((differentiable_id : Differentiable ℂ (id : ℂ → ℂ)).smul_const (crossPart Q A))
+  have h_factor (A : Matrix n n ℂ) : Differentiable ℂ (fun τ ↦ NormedSpace.exp (scaleCross Q A τ)) :=
+    h_exp.comp (h_scale A)
+  exact h_det.comp ((differentiable_const 1).add ((differentiable_const Q).mul
+    (((h_factor A₁).mul (h_factor A₂) |>.mul (h_factor A₃)).sub (differentiable_const 1))))
 
 /-- The sum `∑ᵢ tr Q Aᵢ + ∑'_{i ≤ j} tr Q Aᵢ (1 - Q) Aⱼ` (the terms `i = j` halved) is an entire
 function of the factor `τ` that multiplies the crossing parts `Q Aᵢ (1 - Q) + (1 - Q) Aᵢ Q`. -/
