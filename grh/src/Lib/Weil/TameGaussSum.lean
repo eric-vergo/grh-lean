@@ -202,7 +202,7 @@ lemma exists_local_gauss_sum {χ : MulChar F ℂ} (hχ : TameLocalChar χ) {ψ :
             ContinuousOn.integrableOn_compact isCompact_O (by fun_prop)).symm
         _ = ∫ _ : F in (O : Subring F), hχ.resChar⁻¹ u * Γ :=
           setIntegral_congr_fun isCompact_O.measurableSet fun x hx ↦ h_sum ⟨x, hx⟩
-        _ = hχ.resChar⁻¹ u * Γ := by simp [volume_O, Measure.real]
+        _ = hχ.resChar⁻¹ u * Γ := by simp [volume_O, Measure.real, Set.univ_inter]
     simpa [f, u, hη ⟨_, ht⟩, MulChar.inv_apply_eq_inv', field] using h_avg
   · -- translating by `ϖ * s` multiplies the integral by `ψ (ϖ * t * s)`, which is not always `1`
     have h_zero : ∫ x in (O : Subring F), f x = 0 := by
@@ -256,7 +256,7 @@ lemma IntegralFrame.blockRelations (A : IntegralFrame F m n p) : A.BlockRelation
   -- the nine products are the blocks of `Q * P = 1`
   have h_entry (i j : p ⊕ n ⊕ p) :
       (fromRows A.dualK (fromRows A.dualI A.dualL) * fromCols A.K (fromCols A.I A.L)) i j =
-        if i = j then 1 else 0 := by rw [hQP, one_apply]
+        if i = j then 1 else 0 := by rw [hQP, Matrix.one_apply]
   exact
     { isIntMatrix_dualL := fun i j ↦ hQ_int (.inr (.inr i)) j
       isIntMatrix_dualI := fun i j ↦ hQ_int (.inr (.inl i)) j
