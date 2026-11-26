@@ -225,7 +225,7 @@ lemma norm_onBlock_gram_sub_one_le (e : X ⊕ Fin M ≃ n) (hε : ∀ x : X, ε 
     simp [Matrix.mul_apply, signMatrix, diagonal_apply, ← e.sum_comp, hε, hW_on, hW_off]
   have h_one : onBlock e (signMatrix ε) = 1 := by
     ext
-    simp [signMatrix, hε, one_apply, diagonal_apply]
+    simp [signMatrix, hε, Matrix.one_apply, diagonal_apply]
   rw [h_form, h_one] at h_split
   calc ‖(onBlock e A)ᴴ * onBlock e A - 1‖ = ‖onBlock e (Wᴴ * (signMatrix ε * W))‖ := by
         rw [h_split, sub_add_cancel_left, norm_neg, mul_assoc]
@@ -241,10 +241,10 @@ lemma exists_unitary_sub_one_eq_inclMatrix {u : Matrix X X ℂ} {Y : Type} [Fint
     ∃ s : USign ε, (s : Matrix n n ℂ) - 1 =
       inclMatrix ℂ (f ∘ .inl) * (u - 1) * (inclMatrix ℂ (f ∘ .inl))ᴴ := by
   set Q : Matrix n X ℂ := inclMatrix ℂ (f ∘ .inl) with hQ
-  have hQ_iso : Qᴴ * Q = 1 := by ext; simp [hQ, inclMatrix, Matrix.mul_apply, one_apply, eq_comm]
+  have hQ_iso : Qᴴ * Q = 1 := by ext; simp [hQ, inclMatrix, Matrix.mul_apply, Matrix.one_apply, eq_comm]
   have hQ_sgn : signMatrix ε * Q = Q := by
     ext i x
-    by_cases hi : i = f (.inl x) <;> simp [hQ, inclMatrix, signMatrix, one_apply, hε, hi]
+    by_cases hi : i = f (.inl x) <;> simp [hQ, inclMatrix, signMatrix, Matrix.one_apply, hε, hi]
   have hQ_sgn' : Qᴴ * signMatrix ε = Qᴴ := by
     rw [← conjTranspose_signMatrix, ← conjTranspose_mul, hQ_sgn]
   have h_expand : (uᴴ - 1) + (u - 1) + (uᴴ - 1) * (u - 1) = uᴴ * u - 1 := by noncomm_ring
@@ -387,8 +387,8 @@ lemma inclMatrix_mul_mul_conjTranspose_apply_eq_zero {σ : X → n} (u : Matrix 
     (hij : i ∉ range σ ∨ j ∉ range σ) : (inclMatrix ℂ σ * (u * (inclMatrix ℂ σ)ᴴ)) i j = 0 := by
   simp only [Set.mem_range, not_exists] at hij
   rcases hij with hi | hj
-  · simp [inclMatrix, Matrix.mul_apply, one_apply, fun x ↦ Ne.symm (hi x)]
-  · simp [inclMatrix, Matrix.mul_apply, one_apply, hj]
+  · simp [inclMatrix, Matrix.mul_apply, Matrix.one_apply, fun x ↦ Ne.symm (hi x)]
+  · simp [inclMatrix, Matrix.mul_apply, Matrix.one_apply, hj]
 
 omit [Fintype n] [DecidableEq X] in
 /-- Let `A - 1` be a matrix `u` on `X` placed, by `inclMatrix`, in the rows and columns in the image
@@ -634,7 +634,7 @@ lemma IsLaplaceDatum.exists_laplaceIntegrand_eq_and_onBlock_eq (hj : IsLaplaceDa
       zero_add]
   · rw [map_mul, Prod.fst_mul, Subgroup.coe_mul, Units.val_mul, eq_add_of_sub_eq hs₀_fst]
     ext x y
-    simp [inclMatrix, Matrix.add_mul, Matrix.mul_assoc, Matrix.mul_apply, one_apply, sub_mul]
+    simp [inclMatrix, Matrix.add_mul, Matrix.mul_assoc, Matrix.mul_apply, Matrix.one_apply, sub_mul]
   · rw [map_mul]
     exact norm_noncompactPart_mul_of_mem_blockDiagAlg
       (mem_blockDiagAlg_of_sub_one_eq_inclMatrix hj.sign_inl hs₀_fst) _
@@ -698,7 +698,7 @@ lemma IsLaplaceDatum.exists_laplaceIntegrand_eq_and_norm_subOnePair_le
         ‖noncompactPart η (j t).2‖ = ‖noncompactPart η (j s).2‖ :=
     hj.exists_laplaceIntegrand_eq_and_onBlock_eq (Unitary.star_mem hk₁) s
   have h_on : onBlock e (subOnePair j t).1 = z₁ - 1 := by
-    calc onBlock e (subOnePair j t).1 = onBlock e (j t).1 - 1 := by ext x y; simp [one_apply]
+    calc onBlock e (subOnePair j t).1 = onBlock e (j t).1 - 1 := by ext x y; simp [Matrix.one_apply]
       _ = k₁ᴴ * (k₁ * z₁) - 1 := by rw [h_block, ← h_polar, star_eq_conjTranspose]
       _ = z₁ - 1 := by rw [← mul_assoc, hk₁_inv, one_mul]
   rw [← hy, ← hy'] at hs
