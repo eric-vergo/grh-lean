@@ -57,7 +57,7 @@ lemma mem_vecsOfSize_of_floorBasis_mulVec {x : Fin 2 ⊕ FloorPairs b m ⊕ ι �
       F.floorBasis b k i ∈ Γ.ofSize 1 := by
     revert k i
     -- `sum_boole_mul` evaluates the products with `inclMatrix`; `ite_mul` would hide its pattern.
-    simp [floorBasis, mul_apply, inclMatrix, Matrix.one_apply, -ite_mul, sum_boole_mul,
+    simp [floorBasis, Matrix.mul_apply, inclMatrix, Matrix.one_apply, -ite_mul, sum_boole_mul,
       Γ.hasMatrixSize_basisMatrix _, zero_one_mem_ofSize, ite_mem]
   have h_basis : Γ.HasMatrixSize 1 (F.floorBasis b)ᴴ := fun i k ↦ by
     simpa [neg_mem_iff_and_star_mem_iff] using h_entry k i
