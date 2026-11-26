@@ -317,7 +317,8 @@ def thetaBPlus : BPlus →ₐ[ℚ_[p]] ℂ_[p] :=
 
 /-- On `A_inf`, `θ` of the period ring A is Fontaine's `θ`. -/
 @[simp]
-lemma thetaAmax_algebraMap : thetaAmax a = theta a := by grind [thetaAmax]
+lemma thetaAmax_algebraMap : thetaAmax a = theta a :=
+  (exists_lift theta 0 (by simp)).choose_spec.1 a
 
 /-- On A, `θ` of B⁺ is `θ` of A followed by the inclusion of `O_C` into `ℂ_p`. -/
 @[simp]
@@ -807,9 +808,8 @@ lemma BPlus.eq_zero_of_forall_pow_dvd (a : Ainf)
         push_cast
         rfl
       exact (BPlus.isUnit_p.pow l).mul_left_cancel h_mul
-    refine ⟨e, injective_Amax_BPlus ?_⟩
-    show (c : BPlus) = ((aeval Amax.xiDivP ((.X - C a) ^ m) * e : Amax) : BPlus)
-    rw [hw, hw_eq, algebraMap.coe_mul]
+    refine ⟨e, injective_Amax_BPlus (.trans hw ?_)⟩
+    rw [hw_eq, algebraMap.coe_mul]
   -- a nonzero polynomial is not divisible by `X - a` to its root multiplicity plus one
   have hFc_ne : F c ≠ 0 := fun h_zero ↦ hc ((hF_ker c).mpr h_zero)
   set r : ℕ := rootMultiplicity (Ideal.Quotient.mk (span {(p : Ainf), xi}) a) (F c) + 1
