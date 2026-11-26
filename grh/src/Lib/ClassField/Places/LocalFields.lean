@@ -166,8 +166,8 @@ lemma New.IsLocalGalois.frobenius_spec {Γ K Ω : Type*} [Group Γ] [Topological
         simpa [Subgroup.smul_def, isFrob_iff.mp hφ] using congrArg (residue B) h_fixed
       -- `residue B a` is a root of `X ^ q - X`, which splits over the residue field `k`
       obtain ⟨⟨b⟩, hb⟩ : residue B a ∈ (algebraMap k R).range :=
-        splits_X_pow_nat_card_sub_X.mem_range_of_isRoot
-          (X_pow_card_sub_X_ne_zero _ Finite.one_lt_card) (by simpa [sub_eq_zero] using h_pow)
+        Polynomial.splits_X_pow_nat_card_sub_X.mem_range_of_isRoot
+          (Polynomial.X_pow_sub_X_ne_zero Finite.one_lt_card) (by simpa [sub_eq_zero] using h_pow)
       rw [← hb]
       exact congrArg (residue B) (smul_algebraMap g b)
     -- Hence some `s ∈ G` acts on `R` as `g` does, and `s⁻¹ * g` is in the inertia group.

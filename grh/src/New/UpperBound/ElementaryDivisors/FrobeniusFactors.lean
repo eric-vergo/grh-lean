@@ -279,7 +279,7 @@ lemma _root_.New.adjugate_transpose_mem (G : ℝ → AddSubgroup R) [IsRealFiltr
       exacts [one_mem_graded G, zero_mem _]
     · simpa [level, hi] using hM i j
   have h_sum : ∑ i : Fin k, level i = -x b - k * v + v := by
-    simp [level, Finset.sum_update_of_mem, Finset.sum_sub_distrib, hx_sum, Finset.card_sdiff,
+    simp [level, Finset.sum_update_of_mem, Finset.sum_sub_distrib, hx_sum, Finset.card_sdiff, Finset.inter_univ,
       cast_pred b.pos]
     ring
   rw [transpose_apply, adjugate_apply, ← det_transpose, det_apply]
