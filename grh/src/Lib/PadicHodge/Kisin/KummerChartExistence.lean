@@ -386,7 +386,15 @@ lemma exists_kummerChart (Γ : Type) [Group Γ] [𝒥 : OverGp Γ p] :
     simp [pow_eq_pow_of_modEq ((Nat.modEq_sub one_le).pow _) hζ]
   -- `κ` is the inclusion of the integers of `K` in those of `ℂ_[p]`
   let κ : valRingBelow (localFieldOf Γ) (intQpBar p) →+* valRingCp p :=
-    ((algebraMap ..).comp (localFieldOf Γ).val.toRingHom).restrict _ _ (by simp [← coe_nnnorm])
+    ((algebraMap ..).comp (localFieldOf Γ).val.toRingHom).restrict _ _ (by
+      intro x hx
+      change ‖((x : PadicAlgCl p) : ℂ_[p])‖ ≤ 1
+      rw [PadicComplex.norm_extends]
+      simp only [valRingBelow, Valuation.mem_valuationSubring_iff, Valuation.comap_apply,
+        IntermediateField.algebraMap_apply] at hx
+      have h := (Selmer.valuation_intQpBar_le_iff (x : PadicAlgCl p) 1).mp
+        (by simpa only [map_one] using hx)
+      simpa only [norm_one] using h)
   -- `ev : Λ⟦X⟧ → A_inf` has `θ (ev X) = π`; each unit series `A` with `θ (ev A) = v` gives a chart
   obtain ⟨ev, h_evX, h_chart⟩ :=
     exists_chart_of_pow_mul_eq_neg f (v.map κ) (by simpa using congrArg κ hv)
