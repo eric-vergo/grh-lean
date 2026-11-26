@@ -132,9 +132,11 @@ seal Finset.sum in
 @[simp]
 lemma besselGraph_fst_mem_besselS (s : 𝔰.besselGraph) :
     (s : 𝔰.G₁ × U (1 : Matrix 𝔰.κ 𝔰.κ ℂ)).1 ∈ besselS := by
-  obtain ⟨⟨g, h⟩, h_mem⟩ := s
-  have h_unipotent : g * (embedH h)⁻¹ ∈ besselU := Shape.mem_besselGraph_iff_mul_inv_mem.1 h_mem
-  exact mem_besselS.2 ⟨g * (embedH h)⁻¹, h_unipotent, embedH h, toBesselH_mem h, by simp⟩
+  have h_unipotent : (embedH s.val.2)⁻¹ * s.val.1 ∈ (𝔰.middleGram (1 : ℂ)).besselU := s.property
+  have h_mem : (embedH s.val.2)⁻¹ * s.val.1 ∈ (𝔰.middleGram (1 : ℂ)).besselS :=
+    mem_partialUnitriangularGroup_of_mem_besselU h_unipotent
+  simpa only [mul_inv_cancel_left] using
+    (𝔰.middleGram (1 : ℂ)).besselS.mul_mem (𝔰.embedH_mem_besselS s.val.2) h_mem
 
 variable {ε : 𝔰.BesselIndex → ℤˣ} [SignFrame 𝔰.J₁ ε] {I : Type*} [Fintype I] [DecidableEq I]
   (l : HCParam ε) (rep : U (1 : Matrix 𝔰.κ 𝔰.κ ℂ) →* unitaryGroup I ℂ) (x : 𝔰.G₁)
