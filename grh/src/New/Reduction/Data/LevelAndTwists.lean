@@ -63,7 +63,7 @@ lemma weight_mem_Icc : (D.weight σ : ℝ) ∈ Icc (D.a / D.x₁) (D.a / D.x) :=
 /-- The size of the weight: `b / x₁ ≤ κ ≤ b` (upper bound for `u` true, lower for `u` false). -/
 instance {u : Bool} : D.HasLogBound u (D.weight σ) (D.logB + if u then 0 else -D.logX₁) :=
   .of_mem_Icc (D.a / D.x₁) (D.a / D.x) (D.weight_mem_Icc σ)
-    (by cases u <;> grind [D.scale_inequalities])
+    (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The weight `κ = D.weight σ` of an infinite place is at most the scale `b`. -/
 lemma weight_le_b : (D.weight σ : ℝ) ≤ D.b :=
@@ -185,7 +185,7 @@ instance {u : Bool} : D.HasLogBound u (P.bigOmega D.towerExp) (if u then 0 else 
   -- instance search finds `1 ≤ 2 π ≤ exp 6` and `x ^ 10 ≤ rd_E ≤ x ^ 12`; it remains to
   -- compare exponents, and the constants are small against `log x`
   have h_small : |chowlaSelbergConst P.d| + 6 ≤ D.logX := by
-    grind [constantBound, Finset.sum_nonneg, D.scale_inequalities]
+    grind [constantBound, Finset.sum_nonneg, D.coarse_scale_inequalities]
   unfold bigOmega
   exact .of_lower_of_upper (by grind)
 
@@ -242,7 +242,7 @@ false), from `m log b ≤ log N ≤ 30 m log b` and `√x ≤ m ≤ 2 √x`. -/
 instance {u : Bool} :
     D.HasLogBound u (Real.log D.N) (D.logX / 2 + Real.log D.logB + (if u then 32 else 0)) :=
   .of_mem_Icc (D.m * D.logB) (30 * D.m * D.logB) D.log_N_mem_Icc
-    (by cases u <;> grind [D.scale_inequalities])
+    (by cases u <;> grind [D.coarse_scale_inequalities])
 
 /-- The level `N` is prime. -/
 instance : Fact D.N.Prime := ⟨D.N_prime⟩

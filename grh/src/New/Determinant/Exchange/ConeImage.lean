@@ -56,7 +56,7 @@ lemma lineVector_ne_zero (w : InfinitePlace E) : lineVector X w ≠ 0 := by
   intro h_zero
   have h_dual : ((X.kCoord * X.kAdelic) () ()).1 w = 1 := by simp [X.coord_mul_frame]
   have h_entry (i : r') : (X.kAdelic i ()).1 w = 0 := congrFun h_zero i
-  simp [mul_apply, Prod.fst_sum, h_entry] at h_dual
+  simp [Matrix.mul_apply, Prod.fst_sum, h_entry] at h_dual
 
 lemma sum_norm_sq_lineVector_pos (w : InfinitePlace E) : 0 < ∑ i : r', ‖lineVector X w i‖ ^ 2 := by
   obtain ⟨i, hi⟩ : ∃ i, lineVector X w i ≠ 0 := Function.ne_iff.1 (lineVector_ne_zero X w)
@@ -71,7 +71,7 @@ lemma lineVector_isotropic (w : InfinitePlace E) :
     simp [← lCoord.eq_1, X.coord_mul_frame]
   have h_real : (atRealPlace X.kAdelic w)ᴴ * signMatrix t' * atRealPlace X.kAdelic w = 0 := by
     simp [gram_atRealPlace, h_gram]
-  simpa [mul_apply, dotProduct, mulVec, lineVector, signMatrix, diagonal, mul_assoc] using
+  simpa [Matrix.mul_apply, dotProduct, mulVec, lineVector, signMatrix, diagonal, mul_assoc] using
     congrFun₂ h_real () ()
 
 variable [WeilData E]
@@ -139,7 +139,7 @@ lemma realSlice_eq_slice_conePoint [IsBaseAdapted A] (κ : maxCompact E t')
       (isAdapted_homSource A V').mixedModel.slice (conePoint X (κ, a)) := by
   rw [realSlice]
   congr with q
-  simp [conePoint, matrixToVec, mul_apply, mulVec, dotProduct, lineVector, Prod.fst_sum,
+  simp [conePoint, matrixToVec, Matrix.mul_apply, mulVec, dotProduct, lineVector, Prod.fst_sum,
     G.adeleMatrix_fst]
 
 omit [WeilData E] in
