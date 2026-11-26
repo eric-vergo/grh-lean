@@ -316,8 +316,8 @@ lemma isThetaLift_thetaKernel [Nonempty n] [Nonempty n'] [DecidableEq n'] [Decid
       (realPairWeil ea eb (x, 1) (Fock.polyVector _ P))
       (by simp [realPairWeil_polyVector, ← map_smul])
     let T (u : GInf E (1 : n' → ℤˣ)) : (WeylIndex n' κ → ℂ) →L[ℂ] ℂ :=
-      .mk <| (α u * (β / stdLevelIndex K)) •
-        gramForm (highestVector κ l') ∘ₗ conjWeylRep κ ea (s := 1) u⁻¹
+      ((α u * (β / stdLevelIndex K)) •
+        gramForm (highestVector κ l') ∘ₗ conjWeylRep κ ea (s := 1) u⁻¹).toContinuousLinearMap
     refine ⟨(strongIntegral volume T).toLinearMap, fun o Φ φ h ↦ ?_⟩
     have h_realPart : HasRealPart (pairThetaKer (stdSpace E n) (stdSpace E n') (a o n) (a o n'))
         (realPairWeil ea eb) := pairWeil_integrated _ _ (a o n) (a o n')
@@ -333,7 +333,8 @@ lemma isThetaLift_thetaKernel [Nonempty n] [Nonempty n'] [DecidableEq n'] [Decid
       hβ (ha o) (hb o) K] at h_mean
     have T_int (v : WeylIndex n' κ → ℂ) : Integrable fun u : GInf E (1 : n' → ℤˣ) ↦ T u v := by
       simpa [T] using DiscreteSeries.integrable_of_compactSpace
-    simpa [strongIntegral_apply volume T T_int, T, realConv, algFormCoeff, ← mul_assoc, lift]
+    simp only [algFormCoeff_apply, ContinuousLinearMap.coe_coe, strongIntegral_apply volume T T_int]
+    simpa [T, realConv, algFormCoeff, ← mul_assoc, lift]
       using congrFun h_mean h
   | zero => exact ⟨0, by simp [algFormCoeff]⟩
   | add s t _ _ hs ht =>
