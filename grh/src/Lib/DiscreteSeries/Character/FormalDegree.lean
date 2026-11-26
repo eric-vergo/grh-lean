@@ -71,7 +71,7 @@ lemma sum_sign_mul_eval_alternant (ε : n → ℤˣ) (κ : n → ℤ) (x : n →
   have det_eq (w : Perm n) :
       ∑ τ : Perm n, (w.sign : ℂ) * (τ.sign * ∏ a, (x (τ a) : ℂ) ^ κ (w a)) =
         torusEval x (alternant 1 κ) := by
-    simpa [alternant, torusEval, det_apply', mul_sum] using
+    simpa [alternant, torusEval, det_apply', Function.swap, mul_sum] using
       (det_permute' w⁻¹ (of fun a b : n ↦ (x a : ℂ) ^ κ (w b))).symm.trans (det_transpose _).symm
   calc ∑ τ : Perm n, τ.sign * torusEval (x ∘ τ) (alternant ε κ)
       = ∑ w ∈ {w : Perm n | ε ∘ w = ε},
