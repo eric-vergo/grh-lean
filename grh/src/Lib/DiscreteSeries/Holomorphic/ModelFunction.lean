@@ -319,7 +319,7 @@ theorem IsInCornerBlock.mul_mul {s : ℤˣ} {y p q : Matrix n n ℂ} (hy : IsInC
       · simp [hy a b (by rwa [← h_row, h_col])]
       · simp [mem_blockDiagAlg.1 hq b j h_col]
     · simp [mem_blockDiagAlg.1 hp i a h_row]
-  simp only [mul_apply, sum_mul, h_term, sum_const_zero]
+  simp only [Matrix.mul_apply, sum_mul, h_term, sum_const_zero]
 
 /-- If `x - 1` lies in a corner block, then so does `kᴴ * x * k - 1` for `k` in
 `K = U(diag ε) ∩ U(n)`. -/

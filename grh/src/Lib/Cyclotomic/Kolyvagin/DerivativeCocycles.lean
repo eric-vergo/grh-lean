@@ -132,9 +132,9 @@ lemma cyclotomicPowDirichlet_smul (hg : (cyclotomicCharMod Ω (N * m) g).val = a
   -- Up to a unit, `m` is a power of `l` in `ℤ_[l]`, and modulo that power the `l`-adic cyclotomic
   -- character of `g` is `a`.
   have hm_ne : (m : ℤ_[l]) ≠ 0 := NeZero.ne _
-  have h_pow_dvd : (l : ℤ_[l]) ^ padicValNat l m ∣ (cyclotomicChar Ω l g).val - a :=
+  have h_pow_dvd : (l : ℤ_[l]) ^ multiplicity l m ∣ (cyclotomicChar Ω l g).val - a :=
     (pow_dvd_cyclotomicChar_sub_iff _).mpr
-      (cyclotomicCharMod_eq_of_dvd (.mul_left pow_padicValNat_dvd N) hg)
+      (cyclotomicCharMod_eq_of_dvd (.mul_left (pow_multiplicity_dvd l m) N) hg)
   have h_adic : (m : ℤ_[l]) ∣ (cyclotomicChar Ω l g).val - a :=
     (PadicInt.unitCoeff_spec hm_ne).dvd.trans (by simpa [PadicInt.valuation] using h_pow_dvd)
   obtain ⟨b, hb⟩ : (m : O) ∣ algebraMap ℤ_[l] O (cyclotomicChar Ω l g).val ^ e - a ^ e := by

@@ -224,7 +224,8 @@ private lemma nonempty_frame : Nonempty (Frame L) := by
   obtain ⟨M, U, v, hM⟩ := isChartOf.exists_isPeriodMatrixOf L.jumpBound L.jumpBound
     (ρ := (overZp L.ρ).comp k.subgroup.subtype) (h_adm.mono le_sup_right :)
       (finBasis ℤ_[p] L.Carrier)
-    (Nat.sInf_mem exists_jump_bound)
+    (Nat.sInf_mem (s := {a : ℕ | ∀ u : ℤ, jump ((overZp L.ρ).comp k.subgroup.subtype)
+        (ofId ℤ_[p] ℂ_[p]) u ≠ 0 → -a ≤ u ∧ u ≤ a}) exists_jump_bound)
   obtain ⟨Q, Q', Z, Y, B, hQQ', hZ, hUZ, hYZ, hφQ, hZ_gal⟩ := hM.isPeriodMatrix.exists_frame
   have h_surj (x : L.Ambient) : ∃ y : L.Ambient, tau ^ L.jumpBound • y = x := by
     simpa [← map_pow] using

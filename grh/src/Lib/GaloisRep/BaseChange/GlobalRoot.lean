@@ -206,7 +206,9 @@ lemma New.IsStep.exists_isSelfAdjoint_of_mem_kerCompNorm {E E' L : Type} [Field 
       χ_ker.le hf_ker ⟨algebraMap E' Ω t, Set.mem_range_self t⟩
     let f' : L →ₐ[E'] Ω := ⟨f.toRingHom.comp (algebraMap L Ω), hf_E'⟩
     have hf_L (t : L) : f (algebraMap L Ω t) = algebraMap L Ω t :=
-      AlgHom.adjoin_le_equalizer f' (algHom E' L Ω) (forall_eq.mpr (f.commutes x)) (hL.ge trivial)
+      AlgHom.adjoin_le_equalizer f' (algHom E' L Ω) (by
+        rintro _ rfl
+        exact f.commutes x) (hL.ge trivial)
     rw [← hf]
     exact ψ_ker.ge fun ⟨_, t, rfl⟩ ↦ hf_L t
   -- so `w = b * N s` with `b` in `Kˣ` and `s` an idele of `L`, and `N (s * star s / u)` is in `Kˣ`
