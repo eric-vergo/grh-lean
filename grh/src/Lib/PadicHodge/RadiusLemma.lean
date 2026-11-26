@@ -51,7 +51,8 @@ private lemma exists_E_dvd_xi_sub_p_mul : ∃ b : Ainf, c.E.val ∣ xi - p * b :
 valuations, from `v_p((n + 1)!) = v_p(n + 1) + v_p(n!)` and `v_p((n + 1)!) ≤ n + 1`. -/
 private lemma sub_padicValNat_factorial_add_two_eq (n : ℕ) :
     n - padicValNat p n ! + 2 = n + 1 - padicValNat p (n + 1)! + padicValNat p (n + 1) + 1 := by
-  grind [padicValNat_factorial_le, factorial, padicValNat.mul]
+  simp only [Nat.padicValNat_def] at *
+  grind [multiplicity_factorial_le, factorial, Nat.multiplicity_mul]
 
 private lemma coe_z_eq_seriesMap_X : (c.z : Ainf) = c.seriesMap X := rfl
 
@@ -263,7 +264,7 @@ lemma pow_smul_mem_span_of_unit {N : ℕ} (hN : 0 < N) {ev₀ : c.S⟦X⟧ →�
       M *ᵥ y ∈ L := by
     have h_cols : Set.range M.col ⊆ (L : Set (d → c.S)) := by
       refine Set.range_subset_iff.mpr fun k ↦ hL ⟨col (r : Matrix d d ℕ) k, fun i ↦ ?_⟩
-      simpa [f, g, mul_apply, mulVec, dotProduct, Matrix.natCast_apply, apply_ite,
+      simpa [f, g, Matrix.mul_apply, mulVec, dotProduct, Matrix.natCast_apply, apply_ite,
         C_eq_algebraMap, Subalgebra.algebraMap_def] using congrFun₂ h_scalar i k
     exact (range_mulVecLin M).trans_le (L.span_le.mpr h_cols) ⟨y, rfl⟩
   -- `M` and `M'` approximate `p ^ (2 * δ) • V⁻¹` and `p ^ (2 * δ) • V`, so `V * M ≡ p ^ (2 * δ)`
@@ -318,7 +319,7 @@ lemma exists_ainfToBPlus_eq_p_pow_mul_sub_z_mul (ht_fixes : c.FixesThetaZ t)
       ainfToBPlus (tau * c.z ^ (n + 1)) * (p ^ (v + 1) * W j - ainfToBPlus c.z * W'') := by
     linear_combination (norm :=
       (simp [W'', ← smul_algebraMap_eq_algebraMap_smul t (A _), smul_sub, hA, ht_z, mu, mul_sub,
-         mul_assoc, mul_apply, ← mul_sum, sub_mul, Matrix.one_apply, sub_eq_zero]
+         mul_assoc, Matrix.mul_apply, ← mul_sum, sub_mul, Matrix.one_apply, sub_eq_zero]
        ring) )
       -ainfToBPlus c.z ^ (n + 1) *
           (ainfToBPlus α * hD + W j * h_lte) -
@@ -366,7 +367,7 @@ lemma exists_ev_eq_frobEnd_pow (ht_fixes : c.FixesThetaZ t)
     p ^ (x.val.fst - padicValNat p x.val.fst ! + 2) * (frobEnd ^ l) (x.val.snd j)
   have h_start :
       ∀ k : d, ainfToBPlus (row 1 i k) = 1 • Y i k - ainfToBPlus c.z ^ (0 + 1) * W i k := by
-    simp [hYW, one_apply, apply_ite, -algebraMap_smul]
+    simp [hYW, Matrix.one_apply, apply_ite, -algebraMap_smul]
   have h_ev_smul :
       ∀ F : c.S⟦X⟧, ev.toAddMonoidHom ((X : c.S⟦X⟧) • F) = ev X • ev.toAddMonoidHom F := by
     simp
@@ -431,7 +432,7 @@ private lemma exists_mul_eq_one_add_z_smul {Z Z' : Matrix d d BPlus} {h : ℕ}
   let B : Matrix d d BPlus := of fun i j ↦ u ^ m i j * ainfToBPlus (algebraMap _ _ (w i j))
   let W : Matrix d d BPlus := (u ^ h * ainfToBPlus q) • 1 - (of fun i j ↦ u ^ m i j * y i j) * Z
   have hW_mem (i j : d) : W i j ∈ c.bicommutant := by
-    simp (maxDischargeDepth := 5) [W, mul_apply, sub_mem, _root_.sum_mem, mul_mem, hu, hy, hZ,
+    simp (maxDischargeDepth := 5) [W, Matrix.mul_apply, sub_mem, _root_.sum_mem, mul_mem, hu, hy, hZ,
       Matrix.one_apply, ite_mem, pow_mem]
   refine ⟨B, W, fun g hg i j ↦ ?_, hW_mem, ?_⟩
   · simp [B, hg, hu_fix]
@@ -444,7 +445,7 @@ private lemma exists_mul_eq_one_add_z_smul {Z Z' : Matrix d d BPlus} {h : ℕ}
             ainfToBPlus (c.z * q : c.S) * row 1 i j) :=
       by rw [hZ', hq]
     linear_combination (norm :=
-      (simp [B, W, mul_apply, ← sub_eq_of_eq_add (h_dec _ _), mul_sub, mul_add, ← mul_assoc,
+      (simp [B, W, Matrix.mul_apply, ← sub_eq_of_eq_add (h_dec _ _), mul_sub, mul_add, ← mul_assoc,
          ← mul_pow, hup, mul_sum, hu, hZ, mul_comm (Z' _ _), smul_def (A := BPlus),
          mul_right_comm _ (Z _ _), pow_mem, extendToBPlus_mul, sub_mul, Matrix.one_apply,
        Subalgebra.algebraMap_def, ite_mem, extendedCoord_oneIndex_eq_self, sub_eq_zero]
@@ -495,7 +496,7 @@ lemma radius_lemma (ht_fixes : c.FixesThetaZ t)
   have hBZ : t • (B * Z) = B * Z * G.map ainfToBPlus := by
     rw [Matrix.mul_assoc, ← hG]
     ext i j
-    simp [mul_apply, smul_sum, smul_mul', hB_fix t ht_fixes.left]
+    simp [Matrix.mul_apply, smul_sum, smul_mul', hB_fix t ht_fixes.left]
   -- `E ^ h (G - 1) = Z' (t Z - Z)` is divisible by `tau * z`, hence so is `G - 1`.
   have hG_one (i j : d) : tau * c.z ∣ (G - 1) i j := by
     have h_dvd : ainfToBPlus (tau * c.z) ∣ (Z' * (t • Z - Z)) i j :=
@@ -514,11 +515,18 @@ lemma radius_lemma (ht_fixes : c.FixesThetaZ t)
     rw [← Matrix.map_mul]
     ext i j
     simp [hW, hV', hX, hF, Matrix.one_apply, mul_assoc, mul_left_comm, -algebraMap_smul,
-      -RingHom.coe_pow]
+      -RingHom.coe_pow, -map_smul, -map_add, RingHom.map_add]
+    rw [map_add ev]
+    simp [hF, mul_assoc, mul_left_comm, hX, ← frobEnd_pow_ainfToBPlus,
+      Subalgebra.algebraMap_def, mul_add, pow_two, -RingHom.coe_pow]
   -- Apply `φ ^ l` to `E = p + z * r`.
   have h_pa : ainfToBPlus (c.frobE l) = p * ev ε := by
     simp [frobE, hε, hX, eq_add_of_sub_eq' hr, ← frobEnd_pow_ainfToBPlus, C_eq_algebraMap,
-      Subalgebra.algebraMap_def, mul_add, pow_two, mul_assoc, mul_left_comm, -RingHom.coe_pow]
+      Subalgebra.algebraMap_def, mul_add, pow_two, mul_assoc, mul_left_comm, -RingHom.coe_pow,
+      -map_smul, -map_add, RingHom.map_add]
+    rw [map_add ev]
+    simp [hF, mul_assoc, mul_left_comm, hX, ← frobEnd_pow_ainfToBPlus,
+      C_eq_algebraMap, Subalgebra.algebraMap_def, mul_add, pow_two, -RingHom.coe_pow]
   have h_unit : IsUnit (B.map (frobEnd ^ l) * Z.map (frobEnd ^ l)) := by
     rw [hBZ_frob]
     exact V'.isUnit.map _
