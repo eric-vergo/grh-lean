@@ -106,8 +106,9 @@ lemma exists_mem_inducedPlace_one_le_norm : ∃ δ : 𝓞 P.K, 1 ≤ ‖ιₚ (s
     -- `q x` is by definition the class of `algebraMap x`, hence `erw`.
     erw [eq_zero_iff_mem, mem_placeOfEmb, ιₚ.comp_apply, phi_algebraMap]
   -- The residue field has prime order `N`, so the generator `betaK P.d` reduces to some `c : ℕ`.
-  have h_card : Nat.card (𝓞 D.E ⧸ (D.inducedPlace 1).asIdeal) = D.N :=
-    q_eq_of_modEq_one D.N_modEq_one (p_mem_inducedPlace ..)
+  have h_card : Nat.card (𝓞 D.E ⧸ (D.inducedPlace 1).asIdeal) = D.N := by
+    rw [← Ideal.absNorm_eq_natCard]
+    exact q_eq_of_modEq_one D.N_modEq_one (p_mem_inducedPlace ..)
   obtain ⟨c, hc⟩ : ∃ c : ℕ, c • 1 = q (betaK P.d) := mem_multiples_of_prime_card h_card one_ne_zero
   let δ : 𝓞 P.K := betaK P.d - c
   refine ⟨δ, ?_, fun σ ↦ ?_⟩
