@@ -138,7 +138,7 @@ lemma apply_eq_sum_moebius_smul_of_changeLevel_eq {M r : ℕ} {ψ : DirichletCha
     (hr : q = M * r) (h_ind : changeLevel ⟨r, hr⟩ ψ = χ) (v : ℕ) :
     χ v = ∑ d ∈ (v.gcd r).divisors, μ d • ψ v := by
   -- The sum of `μ` over the divisors of `n` is `1` for `n = 1` and `0` otherwise.
-  rw [← sum_smul, ← coe_mul_zeta_apply, moebius_mul_coe_zeta, one_apply]
+  rw [← sum_smul, ← coe_mul_zeta_apply, moebius_mul_coe_zeta, ArithmeticFunction.one_apply]
   show χ v = (if v.gcd r = 1 then 1 else 0 : ℤ) • ψ v
   have h_coprime : IsCoprime (v : ℤ) q ↔ IsCoprime (v : ℤ) M ∧ v.gcd r = 1 := by
     simp only [isCoprime_iff_coprime, hr, coprime_mul_iff_right, ← coprime_iff_gcd_eq_one]

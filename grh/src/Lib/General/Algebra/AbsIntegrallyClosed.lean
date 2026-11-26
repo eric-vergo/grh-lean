@@ -77,7 +77,7 @@ lemma exists_root_of_coeffs_subset_range [hA : IsAbsIntegrallyClosed A] {f : A �
   obtain ⟨Q, rfl, hQ_deg, hQ⟩ :=
     lifts_and_natDegree_eq_and_monic ((lifts_iff_coeffs_subset_range P).2 h_coeffs) hP
   obtain ⟨x, hx⟩ := hA.exists_root Q hQ (by lia)
-  exact ⟨f x, hx.map⟩
+  exact ⟨f x, hx.map f⟩
 
 /-- In an absolutely integrally closed ring, every element has an `n`-th root for `n ≠ 0`. -/
 lemma exists_pow_eq [hA : IsAbsIntegrallyClosed A] (n : ℕ) [hn : NeZero n] (a : A) :
