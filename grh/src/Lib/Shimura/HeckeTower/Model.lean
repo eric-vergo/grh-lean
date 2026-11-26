@@ -791,7 +791,7 @@ lemma card_torsionBySet_adelicTorsion {I : Ideal (𝓞 E)} (hI : I ≠ ⊥) :
         -- `AddSubgroup.index` and the coercions of the fractional ideals
         simpa [ι, 𝔞, A, B, C] using! card_congr e.toEquiv
       _ = I.toAddSubgroup.relIndex ⊤ := relIndex_map_map_of_injective _ ⊤ Subtype.val_injective
-      _ = I.absNorm := relIndex_top_right _
+      _ = I.absNorm := by rw [relIndex_top_right, Ideal.absNorm_eq_natCard]; rfl
   -- the torsion is `(I⁻¹)ⁿ` modulo the vectors in `𝓞ⁿ`, a subgroup whose index is a product
   calc Nat.card (torsionBySet (𝓞 E) (AdelicTorsion E n) I)
     _ = Nat.card (frameTorsionClass (E := E) (n := n) 1 ∘ₗ J.compLeft n).range := by

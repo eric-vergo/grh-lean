@@ -116,7 +116,7 @@ lemma mem_intGL_of_mul_radical (hε : IsIdempotentElem ε) (hε_int : ε ∈ O.m
     (conj_mem_range_radicalHom hε (inv_mem hh) (inv_mem hu)) h_val_inv⟩
 
 /-- The set `GL_n(O) N`, with `N` the radical of the idempotent `ε`. -/
-def iwasawaSet (hε : IsIdempotentElem ε) (O : Subring k) : Set (GL n k) :=
+noncomputable def iwasawaSet (hε : IsIdempotentElem ε) (O : Subring k) : Set (GL n k) :=
   (intGL n O : Set (GL n k)) * ((radicalHom hε).range : Set (GL n k))
 
 /-- The set `GL_n(O) N` is invariant under right translation by the radical `N`. -/
