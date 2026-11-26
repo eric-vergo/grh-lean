@@ -254,7 +254,7 @@ private lemma exists_eval_detPowToPoly_eq_mul_branchKernel {c : ℤ} {η : WeylI
   clear g hη hy
   conv_rhs => simp +singlePass [← det_transpose, -finRotate_symm_apply]
   congr! <;> simp +instances (disch := grind) [ite_eq_right, ← Fin.eq_mk_iff_val_eq,
-    Nat.mod_eq_of_lt, Fin.add_def, -finRotate_symm_apply, ← Equiv.eq_symm_apply] <;> rfl
+    Function.swap, rowEquivFin, Nat.mod_eq_of_lt, Fin.add_def, -finRotate_symm_apply, ← Equiv.eq_symm_apply] <;> rfl
 
 /-- Let `c • (weylKernel n γ₁ P₁ * weylKernel n κ' P) = toPoly n κ₀ η` for an integer `c` and an
 integer vector `η`, where `γ₁ τ h = γ τ (h + 1)`, `P` is the permutation array of the row order
@@ -361,7 +361,7 @@ lemma exists_int_branching_of_weylKernel {c : ℤ} {η : WeylIndexFamily n κ₀
   -- side is a power of `s` times `c` times the kernel at `gᵀ x` and `y`.
   simp [schur_mulVec_weylEval_of_schurDetExp_eq_zero, hB_kernel, branchKernel_blockScalar ι g s x y,
     detPowToPoly_smul_schur_mulVec g, mul_smul, eval_rowSubst, mul_left_comm, prod_mul_distrib,
-    -mulVec_mulVec]
+    -mulVec_mulVec, -Matrix.transpose_of]
 
 /-- Let `v` be the Gram matrix `weylGramOver` times the evaluation vector at the permutation array
 of `rowEquivFin`. Let `B` be an integral matrix such that `nablaCombination` (ξ ↦ Σ ξ_i b_i over the

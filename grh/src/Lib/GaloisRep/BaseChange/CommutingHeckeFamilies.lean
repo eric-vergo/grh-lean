@@ -126,7 +126,7 @@ variable {E E' n : Type _} [Field E] [CMType E] [Field E'] [CMType E'] [Algebra 
 variable (E') in
 /-- The set of finite places of `E'` lying above a place of `S` or above the complex conjugate of a
 place of `S`. -/
-def placesAbove : Set (FinPlace E') := FinPlace.below (L := E') E ⁻¹' S.conjClosure
+noncomputable def placesAbove : Set (FinPlace E') := FinPlace.below (L := E') E ⁻¹' S.conjClosure
 
 omit [CMType E] in
 /-- If `σ` pulls the place `u` back to `v`, the component of `σ g` at `u` is the image of the

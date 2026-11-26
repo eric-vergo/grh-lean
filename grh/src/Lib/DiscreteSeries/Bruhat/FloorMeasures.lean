@@ -228,7 +228,7 @@ lemma inv_mul_mem_floorGroup_succ (h : g⁻¹ * s ∈ partialUnitriangularGroup 
   refine mem_floorGroup.2 fun i j hj ↦ ?_
   by_cases h_star : j = eStar a
   · rw [h_star]
-    simpa [Pi.single_apply, one_apply] using congrFun h_fix i
+    simpa [Pi.single_apply, Matrix.one_apply] using congrFun h_fix i
   · -- the other columns of floor at most `a` are those of the identity matrix by `h`
     grind [level_le_or_exists_eq_eStar, mem_inf, Fin.ext_iff]
 
@@ -478,7 +478,7 @@ lemma frameMatrix_heisenbergElem :
         (𝔰.besselFrame b) := by
     simp [frameMatrix, -heisenbergElem_mulVec]
   rw [h_col, heisenbergElem_mulVec, h_dual, ← besselFrame_castSucc]
-  simp [vecMulVec_apply, Pi.single_apply, one_apply, besselFrame_injective.eq_iff, sub_eq_add_neg,
+  simp [vecMulVec_apply, Pi.single_apply, Matrix.one_apply, besselFrame_injective.eq_iff, sub_eq_add_neg,
     -besselFrame_castSucc]
 
 /-- Let s be in G_{a+1}, so that s fixes the basis vectors of floor below a + 1. Let v be a vector
@@ -495,7 +495,7 @@ lemma simpleRootSum_conj_heisenbergElem (hs : s ∈ floorGroup (a + 1)) :
     ← inclMatrix_mulVec_floor_block a.2 hs, orbitPoint_eq_iff.1 rfl]
   -- the entries at the simple roots are read off the matrix on the frame
   change ∑ b : Fin 𝔰.ϱ, frameMatrix (heisenbergElem (T := T) a _) b.castSucc b.succ = _
-  simp [frameMatrix_heisenbergElem, vecMulVec_apply, Pi.single_apply, one_apply,
+  simp [frameMatrix_heisenbergElem, vecMulVec_apply, Pi.single_apply, Matrix.one_apply,
     (Fin.castSucc_lt_succ ..).ne]
 
 end FloorGroups
@@ -551,7 +551,7 @@ omit [TopologicalSpace A] [MeasureSpace A] [Place A] in
 indices `g j`. -/
 lemma gram_inclMatrix {n : Type*} (g : n → k) (J : Matrix k k A) :
     (inclMatrix A g)ᴴ * J * inclMatrix A g = J.submatrix g g := by
-  simp [inclMatrix, mul_apply, ← ext_iff, Matrix.one_apply]
+  simp [inclMatrix, Matrix.mul_apply, ← ext_iff, Matrix.one_apply]
 
 /-- If `f` enumerates the basis indices of `V_l` without repetition, then extension by zero along
 `f` carries the volume of `n → A` to the Haar measure of `V_l`. -/
@@ -617,7 +617,7 @@ lemma HyperbolicBasis.col_floorBasis (j : Fin 2 ⊕ FloorPairs b m ⊕ ι ⊕ Fl
   -- compare entries, for each kind of column
   rcases j with i | (c | a) | i | c | a
   all_goals
-    simp [funext_iff, middleVector, inclMatrix, mul_apply, one_apply, Pi.single_apply, -ite_mul,
+    simp [funext_iff, middleVector, inclMatrix, Matrix.mul_apply, Matrix.one_apply, Pi.single_apply, -ite_mul,
       Finset.sum_boole_mul]
 
 /-- The Gram matrix of `F.floorBasis b` consists of a hyperbolic plane for the first pair, one for
@@ -759,7 +759,7 @@ lemma measurePreserving_floor_block_mulVec [H : IsHermitianUnit T.splitGram]
     ext i j
     have h_entry : s.val.val i j = (1 : Matrix 𝔰.BesselIndex 𝔰.BesselIndex A) i j :=
       h i j (by grind)
-    simpa [toSquareBlockProp_def, one_apply, Subtype.ext_iff] using h_entry
+    simpa [toSquareBlockProp_def, Matrix.one_apply, Subtype.ext_iff] using h_entry
   have h_det : s.val.val.det = (s.val.val.toSquareBlockProp (l ≤ floorOf ·)).det := by
     simp [twoBlockTriangular_det' s.val.val (l ≤ floorOf ·) (by grind [one_apply_ne]), outside]
   have h_unitary : s.val.val.det ∈ unitary A := (U.det (H.2.map detMonoidHom) s).property
@@ -1061,13 +1061,13 @@ lemma Place.lintegral_damped_fourier_le (ξ : A) {G : A → ℝ} (hG : Continuou
       ∏ i : ι, ‖∫ v : A, G v * P.ψ (star v * ξ * z i)‖ₑ := by
     have ψ_sum (s : Finset ι) (x : ι → A) : P.ψ (∑ i ∈ s, x i) = ∏ i ∈ s, P.ψ (x i) := by
       induction s using Finset.cons_induction <;> simp [*, AddChar.map_add_eq_mul]
-    simp [enorm, ← ofNNReal_finsetProd, ← nnnorm_prod, ← integral_fintype_prod_volume_eq_prod,
+    simp [eNorm, ← ofNNReal_finsetProd, ← nnnorm_prod, ← integral_fintype_prod_volume_eq_prod,
       dotProduct, Finset.mul_sum, Finset.prod_mul_distrib, mul_comm, mul_left_comm, ψ_sum]
   -- For a fixed difference `z = w' - w`, Cauchy–Schwarz bounds `∫ |f w| |f (w + z)|`.
   have h_cauchy (z : ι → A) :
       ∫⁻ w : ι → A, ‖f w‖ₑ * ‖f (w + z)‖ₑ ≤ ∫⁻ w : ι → A, ‖f w‖ₑ ^ 2 := by
     simpa [← rpow_add_of_nonneg, ← two_mul, lintegral_add_right_eq_self (‖f ·‖ₑ ^ 2)] using
-      lintegral_mul_le_Lp_mul_Lq _ .two_two hf.1.enorm (hf.comp_add_right z).1.enorm
+      lintegral_mul_le_Lp_mul_Lq _ .two_two hf.1.eNorm (hf.comp_add_right z).1.eNorm
   have h_diff (z : ι → A) : ∫⁻ w : ι → A, ‖∫ v : ι → A, g v (w, w + z)‖ₑ ≤
       (∏ i : ι, ‖∫ v : A, G v * P.ψ (star v * ξ * z i)‖ₑ) * ∫⁻ w : ι → A, ‖f w‖ₑ ^ 2 := by
     simpa [g, ← mul_assoc (ψ _), integral_mul_const, lintegral_const_mul'] using
@@ -1082,7 +1082,7 @@ lemma Place.lintegral_damped_fourier_le (ξ : A) {G : A → ℝ} (hG : Continuou
       grw [← ofReal_integral_norm_eq_lintegral_enorm (by exact hg.integral_prod_left),
         Real.ofReal_le_enorm]
       rw [← integral_congr_ae (.of_forall h_nonneg), integral_complex_ofReal]
-      simp [enorm]
+      simp [eNorm]
     _ ≤ ∫⁻ x : (ι → A) × (ι → A), ‖∫ v, g v x‖ₑ := by
       grw [integral_integral_swap hg, enorm_integral_le_lintegral_enorm]
     _ ≤ ∫⁻ z : ι → A, ∫⁻ w, ‖∫ v, g v (w, w + z)‖ₑ := by
@@ -1111,7 +1111,7 @@ lemma Place.plancherel_inequality (η : Aˣ) {f : (ι → A) → ℂ} (hf : Inte
     ‖(‖∫ w, P.ψ (η * star v ⬝ᵥ w) * f w‖ ^ 2 * ∏ i, G (star x * v i) : ℂ)‖ₑ
   have h_limit (v : ι → A) :
       Tendsto (damped · v) (nhds 0) (nhds (‖∫ w, P.ψ (η * star v ⬝ᵥ w) * f w‖ₑ ^ 2)) :=
-    Continuous.tendsto' (by fun_prop) 0 _ (by simp [damped, enorm, hG_zero])
+    Continuous.tendsto' (by fun_prop) 0 _ (by simp [damped, eNorm, hG_zero])
   have h_unit (u : Aˣ) : ∫⁻ v : ι → A, damped u v ≤
       (P.kernelBound / P.modulus η) ^ card ι * ∫⁻ w : ι → A, ‖f w‖ₑ ^ 2 := by
     -- Substitute `v ↦ (star u)⁻¹ • v` on the left and `z ↦ η * u⁻¹ * z` in the mass of the kernel;
