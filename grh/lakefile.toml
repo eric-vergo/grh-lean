@@ -13,7 +13,7 @@ maxHeartbeats = 4000000
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4"
-rev = "56a005855ea17e0b0958f73ec801ae140b0a1679"
+rev = "v4.36.0"
 
 [[lean_lib]]
 name = "Lib"
@@ -28,5 +28,29 @@ name = "Main"
 roots = ["Statements", "Main"]
 
 [[lean_lib]]
-name = "Challenge"
-srcDir = ".."
+name = "Comparator"
+srcDir = "."
+globs = ["Comparator.+"]
+
+[[require]]
+name = "subverso"
+git = "https://github.com/eric-vergo/subverso"
+rev = "4e04c61d96960d5a1461c6c870572ccb8b45a495"
+
+[[require]]
+name = "verso"
+git = "https://github.com/eric-vergo/verso"
+rev = "94cea086b880f61f5b3847d30151b8e5f80e1259"
+
+[[require]]
+name = "VersoBlueprint"
+git = "https://github.com/eric-vergo/verso-blueprint"
+rev = "11afe5e30105914a412551f4e0c042710345c459"
+
+[[lean_lib]]
+name = "GrhBlueprint"
+srcDir = "blueprint"
+
+[lean_lib.leanOptions]
+experimental.module = true
+weak.verso.blueprint.externalCode.strictResolve = true
