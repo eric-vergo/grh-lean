@@ -285,7 +285,7 @@ lemma realPairWeil_schurCoeffPoly (hκ : IsLiftWeight n n' κ eb e) {ea : Infini
         ((y τ : GL n' ℂ) : Matrix n' n' ℂ)ᵀ *
           ((of fun (b : n') (c : n) ↦ w (τ, b, c)) * ((x τ : GL n ℂ) : Matrix n n ℂ)ᵀ) := by
     ext b c
-    simp only [of_apply, mul_apply, transpose_apply, Finset.mul_sum]
+    simp only [of_apply, Matrix.mul_apply, transpose_apply, Finset.mul_sum]
     exact sum_congr rfl fun i _ ↦ sum_congr rfl fun j _ ↦ by ring
   ext w
   -- Evaluate both polynomials at `w` and collect the Schur matrices on the right into one;
