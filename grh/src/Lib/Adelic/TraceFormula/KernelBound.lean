@@ -290,7 +290,8 @@ lemma integrable_majorant (φ : TestFunction (Gf E n)) {A : ℕ} (hA : 8 * card 
       simpa using h_integrable
     exact (h_decay.const_mul (2 ^ A)⁻¹).congr (.of_forall fun z ↦ by simp [div_eq_mul_inv, mul_pow])
   have h_inf : Integrable fun z : GInf E s ↦ ∏ w : InfinitePlace E, (‖(z w).val.val‖ ^ A)⁻¹ :=
-    .fintype_prod fun _ ↦ h_place
+    Integrable.fintype_prod (μ := fun _ ↦ volume)
+      (f := fun (_ : InfinitePlace E) (z : USign s) ↦ (‖z.val.val‖ ^ A)⁻¹) fun _ ↦ h_place
   obtain ⟨h_const, h_compact, -⟩ := φ.property
   have h_fin : Integrable φ.1 := h_const.continuous.integrable_of_hasCompactSupport h_compact
   have h_eq (y : G E s) :
@@ -325,11 +326,16 @@ theorem exists_tsum_majorant_le (φ : TestFunction (Gf E n)) : ∃ C ≥ (0 : �
   set S : ℝ≥0∞ := ∑' γ : U V.J, ENNReal.ofReal (majorant φ A (g⁻¹ * V.ratEmbed γ * x))
   set B : Set (G E s) := levelBox E s (c * V.height x ^ 2)⁻¹ J
   set cover : ℝ := (12 * (c * V.height x ^ 2)) ^ d
-  have h_sum : S * volume B ≤ bound := by
-    refine tsum_mul_measure_le_lintegral volume (measurableSet_levelBox _ hJ.isOpen)
-      (h_disjoint g x) (f := fun y ↦ .ofReal (majorant φ A y)) ofReal_ne_top fun y z hz ↦ ?_
+  have hB : MeasurableSet B :=
+    measurableSet_levelBox (s := s) (c * V.height x ^ 2)⁻¹ hJ.isOpen
+  have h_local (y : G E s) (z : G E s) (hz : z ∈ B) :
+      .ofReal (majorant φ A y) ≤ ENNReal.ofReal factor * .ofReal (majorant φ A (y * z)) := by
     rw [← ofReal_mul (by positivity)]
     exact ofReal_le_ofReal (majorant_le_mul_majorant_mul hJ_fix A (inv_le_one_of_one_le₀ hD) y hz)
+  have h_sum := tsum_mul_measure_le_lintegral (G := G E s) (I := U V.J) (B := B) volume hB
+    (y := fun γ : U V.J ↦ g⁻¹ * V.ratEmbed γ * x) (h_disjoint g x)
+    (f := fun y ↦ .ofReal (majorant φ A y)) (c := .ofReal factor) (ofReal_ne_top (r := factor)) h_local
+  change S * volume B ≤ bound at h_sum
   have h_le : S * v ≤ .ofReal cover * bound :=
     calc S * v ≤ S * (.ofReal cover * volume B) := by gcongr; exact h_volume _ hD
       _ = .ofReal cover * (S * volume B) := mul_left_comm _ _ _
