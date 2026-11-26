@@ -401,7 +401,8 @@ theorem sum_termSize_mul_not_inSameLinkClass_le {E : Type} [Field E] [CMType E]
         grw [pow_le_pow_right₀ hτ (by norm_num : 4 ≤ 9)]
       _ = _ := by rw [tailScale_pow_four]
   have hB : 0 ≤ S.identitySecondMoment / S.tailScale ^ 10 := by positivity
-  refine (sum_termSize_mul_le _ (fun c c' q hq ↦ hq.left) hB ?_).trans (ofReal_le_ofReal h_const)
+  refine (sum_termSize_mul_le (fun c c' ↦ {q | S.IsNearPairOverAgreeingBlock c c' q ∧
+    ¬S.InSameLinkClass q.1 q.2}) (fun _ _ _ hq ↦ hq.1) hB ?_).trans (ofReal_le_ofReal h_const)
   rintro c c' γ γ' ⟨hq, h_class : ¬S.InSameLinkClass γ γ'⟩
   set j : Fin (𝔰.ϱ + 2) := S.cellRank γ
   set j' : Fin (𝔰.ϱ + 2) := S.cellRank γ'
@@ -466,7 +467,9 @@ theorem sum_termSize_mul_inSameLinkClass_le {E : Type} [Field E] [CMType E]
     rw [div_pow, ← pow_mul, mul_assoc, mul_comm _ 𝔰.k, pow_mul', ← tailScale_pow_four]
     ring
   rw [← h_const]
-  refine sum_termSize_mul_le _ (fun c c' q hq ↦ hq.left) (by positivity) ?_
+  refine sum_termSize_mul_le (fun c c' ↦ {q | S.IsNearPairOverAgreeingBlock c c' q ∧
+    S.InSameLinkClass q.1 q.2 ∧ ∃ s : S.ResidueGL, z ≤ S.meetNorm s ∧ q.1 ∈ S.termsOver c s c'})
+    (fun _ _ _ hq ↦ hq.1) (by positivity) ?_
   rintro c c' γ γ' ⟨⟨⟨-, h_cell⟩, ⟨-, h_cell'⟩, s, h_agrees, h_over, h_over'⟩,
     ⟨h_disc, -, h_link⟩, s', h_meet, h_over_s'⟩
   obtain rfl : s' = s := eq_of_mem_termsOver h_over_s' h_over
@@ -741,6 +744,17 @@ theorem secondMoment_remainingTerms_le {E : Type} [Field E] [CMType E] {𝔰 : S
       rw [add_mul, ofReal_add (by positivity) (by positivity),
         mul_comm (S.identitySecondMoment / _), ofReal_mul (sq_nonneg S.unipotentCovolume)]
 
+/-- Sum estimates over blocks whose indexing pairs inject into a common set. -/
+private lemma tsum_blocks_le_of_injective {ι κ : Type*} {J : ι → Type*}
+    (j : (Σ i, J i) → κ) (hj : Function.Injective j) (C : ℝ≥0∞) (weight : κ → ℝ≥0∞)
+    (block : ι → ℝ≥0∞) (bound : ∀ i, block i ≤ ∑' q : J i, C * weight (j ⟨i, q⟩)) :
+    ∑' i, block i ≤ C * ∑' k, weight k := by
+  calc
+    _ ≤ ∑' (i) (q : J i), C * weight (j ⟨i, q⟩) := ENNReal.tsum_le_tsum bound
+    _ = ∑' x, C * weight (j x) := (tsum_sigma' fun x ↦ C * weight (j x)).symm
+    _ ≤ ∑' k, C * weight k := tsum_comp_le_tsum_of_injective hj fun k ↦ C * weight k
+    _ = _ := ENNReal.tsum_mul_left
+
 /-- **Remaining terms, one link at a time.** Let `E` be a CM field with a primitive root of unity of
 order 5040, and let `S` be data of the filling theorem over `E` that satisfy the standing hypotheses
 `S.IsAdmissible`. Let `Ω` be a set of reductions, that is, of elements of `S.ResidueGL`, the product
@@ -806,19 +820,14 @@ theorem linkSecondMoment_le_of_le_meetNorm {E : Type} [Field E] [CMType E]
       obtain ⟨-, h_link' : link q = Λ'⟩ := mem_of_mem_nearRepresentativesOver hq'
       obtain rfl : Λ = Λ' := h_link.symm.trans h_link'
       rfl
-    calc
-      _ = ∑' p : Ω × Link, ‖S.amplitudeSum .cut (terms p.2) c p.1 c'‖ₑ ^ 2 :=
-        ENNReal.tsum_prod.symm
-      _ ≤ ∑' (p : Ω × Link) (q : nearRepsInLink c c' p × nearRepsInLink c c' p),
-          .ofReal (S.unipotentCovolume ^ 2) * size c c' (q.1, q.2) :=
-        ENNReal.tsum_le_tsum fun p ↦ (sq _).trans_le
-          (enorm_amplitudeSum_mul_le (h_stable p.2) (h_stable p.2) (h_sub p.2) (h_sub p.2))
-      _ = ∑' x, .ofReal (S.unipotentCovolume ^ 2) * size c c' (pair x) :=
-        (ENNReal.tsum_sigma' fun x ↦ .ofReal (S.unipotentCovolume ^ 2) * size c c' (pair x)).symm
-      _ ≤ ∑' q : sameLinkPairs c c', .ofReal (S.unipotentCovolume ^ 2) * size c c' q :=
-        tsum_comp_le_tsum_of_injective h_injective fun q ↦
-          .ofReal (S.unipotentCovolume ^ 2) * size c c' q
-      _ = _ := ENNReal.tsum_mul_left
+    rw [← tsum_prod (f := fun (s : Ω) (Λ : Link) ↦ ‖S.amplitudeSum .cut (terms Λ) c s c'‖ₑ ^ 2)]
+    apply tsum_blocks_le_of_injective pair h_injective (.ofReal (S.unipotentCovolume ^ 2))
+      (fun q ↦ size c c' q) (fun p : Ω × Link ↦ ‖S.amplitudeSum .cut (terms p.2) c p.1 c'‖ₑ ^ 2)
+    intro p
+    rw [sq]
+    exact enorm_amplitudeSum_mul_le (S := S) (c := c) (c' := c') (s := p.1)
+      (T := terms p.2) (T' := terms p.2)
+      (h_stable p.2) (h_stable p.2) (h_sub p.2) (h_sub p.2)
   calc
     _ = ∑ c : S.Classes, ∑ c' : S.Classes,
         ∑' (s : Ω) (Λ : Link), ‖S.amplitudeSum .cut (terms Λ) c s c'‖ₑ ^ 2 := by
@@ -830,7 +839,7 @@ theorem linkSecondMoment_le_of_le_meetNorm {E : Type} [Field E] [CMType E]
     _ ≤ .ofReal (S.unipotentCovolume ^ 2) *
         .ofReal ((S.b ^ (2 * numInfPlaces E) / z) ^ 𝔰.k * S.mainSecondMoment) := by
       gcongr
-      exact sum_termSize_mul_inSameLinkClass_le hz
+      exact sum_termSize_mul_inSameLinkClass_le (S := S) hz
     _ = _ := by rw [mul_comm _ (S.unipotentCovolume ^ 2), ofReal_mul (sq_nonneg _)]
 
 end New.Filling
