@@ -540,7 +540,7 @@ lemma weylEval_dotProduct_weylGram_mulVec_weylEval (y z : (Σ τ : Φ, n τ) × 
   refine Finset.prod_congr rfl fun τ _ ↦ Finset.prod_congr rfl fun h _ ↦ ?_
   rw [← det_transpose]
   refine congrArg (· ^ _) (congrArg det (Matrix.ext fun s t ↦ ?_))
-  simp [squarePart, mul_apply, mul_comm]
+  simp [squarePart, Matrix.mul_apply, Function.swap, mul_comm]
 
 /-- Let `v` be the Gram matrix `weylGramOver` times the evaluation vector at the permutation array
 of `rowEquivFin`. Let the integral matrix `B` be equivariant for the block group, and let the row
