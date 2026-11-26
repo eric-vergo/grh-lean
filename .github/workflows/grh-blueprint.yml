@@ -1,0 +1,88 @@
+name: Readable GRH blueprint
+on:
+  push:
+    branches: [codex/grh-blueprint]
+    paths: ['grh/**', '.github/workflows/grh-blueprint.yml']
+  workflow_dispatch:
+    inputs:
+      sandboxed_comparator:
+        description: Run Linux sandboxed Comparator with nanoda in an additional job
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+concurrency:
+  group: grh-blueprint-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    defaults:
+      run:
+        working-directory: grh
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Install elan
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/227caca133724d5516bee25c2aeb3e609478f2d8/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Release runner disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - name: Restore local project compilation
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: grh/.lake/build
+          key: grh-linux-${{ hashFiles('grh/lake-manifest.json','grh/lean-toolchain','grh/lakefile.toml') }}-${{ github.sha }}
+          restore-keys: grh-linux-${{ hashFiles('grh/lake-manifest.json','grh/lean-toolchain','grh/lakefile.toml') }}-
+      - run: lake exe cache get
+      - name: Build and verify the published edition
+        env:
+          VERSO_BLUEPRINT_KERNEL_REPLAY_SECONDS: '7200'
+          VERSO_BLUEPRINT_KERNEL_REPLAY_MEMORY_MB: '12000'
+        run: ./scripts/check-blueprint.sh
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          path: grh/_out/site/html-multi
+  comparator:
+    if: github.event_name == 'workflow_dispatch' && inputs.sandboxed_comparator
+    needs: site
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    defaults:
+      run:
+        working-directory: grh
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - name: Prepare Linux toolchain and sandbox
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/227caca133724d5516bee25c2aeb3e609478f2d8/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: grh/.lake/build
+          key: grh-linux-${{ hashFiles('grh/lake-manifest.json','grh/lean-toolchain','grh/lakefile.toml') }}-${{ github.sha }}
+      - run: lake exe cache get
+      - run: ulimit -s unlimited && lake comparator --config Comparator/Grh/comparator.json
+  deploy:
+    needs: site
+    if: github.ref == 'refs/heads/codex/grh-blueprint'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+      - id: deploy
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346

@@ -1,0 +1,12 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+:root { color-scheme: light dark; font-family: system-ui,sans-serif; line-height: 1.5; }
+body { margin: 1.5rem auto; padding: 0 1rem; max-width: 85rem; }
+a { color: light-dark(#174e83,#9ccafa); }
+h1, li { overflow-wrap: anywhere; }
+h1 { font-size: clamp(1.35rem,3vw,2.4rem); }
+pre { overflow: auto; border: 1px solid #8886; padding: 1rem 0; tab-size: 2; }
+.ln { display: inline-block; min-width: 4em; padding-right: 1em; text-align: right; user-select: none; opacity: .72; }
+.line:target, .line:has(:target) { background: light-dark(#fff0bb,#504119); }
+details, form { margin: 1rem 0; }
+summary, button { cursor: pointer; }
+input, button { font: inherit; }

@@ -1,8 +1,7 @@
 import Statements
 
 /-! The five theorems of `src/Main.lean`, with `sorry` in place of their proofs, for the tool
-Comparator. This file imports only `src/Statements.lean`, which imports only Mathlib. Nothing
-imports this file. -/
+Comparator. This file imports only `src/Statements.lean`, which imports only Mathlib. The solution imports the proof independently. -/
 
 theorem riemannHypothesis : RiemannHypothesis := by
   sorry

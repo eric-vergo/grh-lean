@@ -1,6 +1,6 @@
 {
-  "challenge_module": "Challenge",
-  "solution_module": "Main",
+  "challenge_module": "Comparator.Grh.Challenge",
+  "solution_module": "Comparator.Grh.Solution",
   "theorem_names": [
     "riemannHypothesis",
     "riemannZeta_eq_zero_re",
