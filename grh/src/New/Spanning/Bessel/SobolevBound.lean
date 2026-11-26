@@ -441,8 +441,8 @@ theorem New.RealPlace.lintegral_gramSection_le_of_hasDerivWords {𝔰 : Shape} {
         e_preserving.setLIntegral_comp_preimage measurableSet_ball
           (f := fun Y ↦ ∫⁻ ω, ‖V w (gramSection Y * shift ω)‖ₑ ^ 2 ∂μ) (by fun_prop)
       _ ≤ .ofReal ((2 * P ^ 2) ^ (2 * 𝔰.n ^ 2)) * ∫⁻ g, ‖V w g‖ₑ ^ 2 ∂besselQuotMeasure :=
-        lintegral_lintegral_gramSection_le one_le hc measurableSet_ball h_disc h_cell
-          (by fun_prop) hw_inv
+        lintegral_lintegral_gramSection_le (Q := Q) (w := fun g ↦ ‖V w g‖ₑ ^ 2)
+          one_le hc measurableSet_ball h_disc h_cell ((hV_meas w).eNorm.pow_const 2) hw_inv
       _ ≤ _ := by grw [hK w hw]
   -- Each of the `2 n ^ 2` coordinates costs `a` in Sobolev's inequality and `2 P ^ 2` on the cube.
   let a : ℝ := 2 / (P ^ 8)⁻¹ * (1 + (card L * (Λ * P ^ 85)) ^ 2)
@@ -555,7 +555,7 @@ lemma New.RealPlace.hasDerivWords_integral {𝔰 : Shape} {I : Type} [Fintype I]
     -- The entries of `Y = y⁻¹ * X t * y` bring the new factors of the weights.
     have Y_apply (a b : 𝔰.BesselIndex) :
         ψ i y * Y a b = ∑ c, ∑ d, coeff t ((a, b), c, d) * ψ (((a, b), c, d) :: i) y := by
-      simp only [Y, coeff, ψ_cons, InvMemClass.coe_inv, coe_units_inv, mul_apply, Finset.sum_mul,
+      simp only [Y, coeff, ψ_cons, InvMemClass.coe_inv, coe_units_inv, Matrix.mul_apply, Finset.sum_mul,
         Finset.mul_sum, Matrix.smul_apply, real_smul, ofReal_pow]
       congr! 2
       field
