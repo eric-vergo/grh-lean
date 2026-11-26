@@ -799,7 +799,8 @@ lemma norm_disc_eq_one {p : ℕ} [Fact p.Prime] {d : ℕ} (C : CMLattice d) [Pri
     simp [← nnnorm_prod, ← map_prod, prod_scaledDisc_t hD]
   have h_unit : ‖ι ((D 𝒞₀).scaledDisc (D 𝒞₀).t)‖₊ = 1 :=
     (prod_eq_one_iff_of_le_one fun 𝒞 _ ↦ h_le 𝒞).1 h_prod 𝒞₀ (mem_univ _)
-  simpa [scaledDisc_t, ← coe_nnnorm, map_ofNat] using h_unit
+  simpa only [scaledDisc_t, map_sub, map_pow, map_ofNat, coe_nnnorm, NNReal.coe_one]
+    using congrArg (fun r : NNReal ↦ (r : ℝ)) h_unit
 
 end CMLattice
 
