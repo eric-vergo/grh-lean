@@ -165,7 +165,7 @@ lemma match_mem_of_stdColDatum
   have h_translates :
       IsLocallyConstant fun (k : intGL n V.O) (y : Matrix n b F) ↦ p ((d * k : GL n F).val * y) :=
     isLocallyConstant_curry (hP_le hp) (fun (k : intGL n V.O) y ↦ d.val * (k : GL n F).val * y)
-      (fun k y ↦ (k : GL n F).inv * d.inv * y) (fun k y ↦ by simp [Matrix.mul_assoc])
+      (fun k y ↦ ((k : GL n F)⁻¹).val * d.inv * y) (fun k y ↦ by simp [Matrix.mul_assoc])
   -- The integral `I y` of `‖p (d * k * y)‖` over `k` is constant where `Ψ y ≠ 0`: these `y` are in
   -- the orbit of `x`.
   let I (y : Matrix n b F) : ℝ := ∫ k : intGL n V.O, ‖p ((d * k : GL n F).val * y)‖ ∂.haar
@@ -245,7 +245,7 @@ lemma sum_mul_addChar_lift_eq_zero {R : Type} [CommRing R] [Fintype R] [Decidabl
     _ = matrixFourier φ (fun r ↦ η r.det) (T.map π) := by
       refine sum_congr rfl fun r _ ↦ congrArg _ ?_
       -- the pairing of `T` with the lift of `r` reduces to that of `T.map π` with `r`
-      simpa [trace, mul_apply, ← congrFun₂ (hl r)] using (hφπ (T * l r).trace).symm
+      simpa [trace, Matrix.mul_apply, ← congrFun₂ (hl r)] using (hφπ (T * l r).trace).symm
     -- The transform at `T.map π` is a constant times `η⁻¹ (det (T.map π))`.
     _ = 0 := by simp [h_fourier _, MulChar.inv_apply_eq_inv', h_det]
 
@@ -279,7 +279,7 @@ lemma IntegralFrame.stdColDatum_mul_sub_smul (A : IntegralFrame F n m b) (r : Ma
     ⟨of fun i j ↦ ⟨(A.dualL * x) i j, h_blocks.isIntMatrix_dualL.mul hx i j⟩, rfl⟩
   let N : Matrix b b V.O := r * k - (⟨V.ϖ.1, ϖ_mem⟩ : V.O) • u
   have hN : A.dualL * y = N.map Subtype.val := by
-    simp [N, hy, ← Matrix.mul_assoc, h_blocks.dualL_mul_L, ← hk, ← hu, ← Matrix.ext_iff, mul_apply,
+    simp [N, hy, ← Matrix.mul_assoc, h_blocks.dualL_mul_L, ← hk, ← hu, ← Matrix.ext_iff, Matrix.mul_apply,
       Matrix.mul_sub]
   have hϖ : hχ.reduction ⟨V.ϖ.1, ϖ_mem⟩ = 0 :=
     (hχ.reduction_surjective_and_eq_zero_iff.right _).2 (by simp)
@@ -334,7 +334,7 @@ lemma IntegralFrame.match_mem_of_isPrimitiveMatrix_vanishing
   let l (r : Matrix b b R) : Matrix b b V.O := if r = 1 then 1 else r.map (surjInv h_surj)
   have hl (r : Matrix b b R) : (l r).map π = r := by
     ext i j
-    by_cases hr : r = 1 <;> simp [l, hr, one_apply, apply_ite π, surjInv_eq h_surj]
+    by_cases hr : r = 1 <;> simp [l, hr, Matrix.one_apply, apply_ite π, surjInv_eq h_surj]
   let f (r : Matrix b b R) : Matrix n b F → ℂ := η r.det • S (V.ϖ.inv • (l r).map Subtype.val)
   have h_avg : ∑ r, f r ∈ P := by
     refine h_kill _ (sum_mem fun r _ ↦ M.smul_mem _ (h_shear_mem _)) ?_
@@ -397,6 +397,8 @@ the dual block `dualL` of `adaptedFrame 𝔠.readsAt D`.
 -/
 
 section StandardCoefficients
+
+open scoped Pointwise
 
 open Matrix Prod New Exchange SemilocalField G Space Splitting Gf RingHom WeilData
 
@@ -506,7 +508,10 @@ lemma New.Exchange.SplitTameChar.isIntMatrix_glue_hermitian {E : Type} [Field E]
     · exact Q_int i j ⟨v, hv⟩ trivial
     · rw [← hQ]
       exact (v_star_apply ..).trans_le (Q_int j i ⟨star v, hv⟩ trivial)
-  exact add_mem (P_int i j) (by simpa [e, ← idem_compl, idem_mul_mem_Ô] using entry_int)
+  refine add_mem (show (e * P i j).snd ∈ Ô E from P_int i j) ?_
+  simp [e, ← idem_compl, idem_mul_mem_Ô] at entry_int ⊢
+  intro w h
+  exact entry_int w (fun hw ↦ h.resolve_left hw)
 
 /-- The pairs `(T, q)` of an index `T` and a point `q` of `GL_b(𝔸)` at which vanishing at self-dual
 lattices is tested, for a hermitian space `V'` over the CM field `E` with form `V'.J`, signs `t'`
@@ -828,7 +833,7 @@ theorem New.Exchange.IsEquivariantLift.apply_eq_zero_of_areMatched
     · simp [hτ, conjTranspose_nonsing_inv]
     · simp [Q, e, ← coe_snd, ← Matrix.map_mul, sub_mul, hC', mul_add, add_mul, smul_smul, mul_sub]
   have Q_eq : Q = siegelBracket T q₀.1 := by
-    simp [Q, e, S, hq₀, siegelBracket, τ, mul_comm, smul_smul, Units.smul_def, mul_sub, add_mul,
+    simp [Q, e, hq₀, siegelBracket, τ, mul_comm, smul_smul, Units.smul_def, mul_sub, add_mul,
       mul_add]
   have Q_herm : (Q.map snd)ᴴ = Q.map snd := by
     simp [Q, e, ← conjTranspose_map _ snd_star, siegelBracket, hτ, hT, mul_assoc,
