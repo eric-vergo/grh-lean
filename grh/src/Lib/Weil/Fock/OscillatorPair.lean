@@ -371,6 +371,8 @@ lemma isUnitaryRep_detTwist {a : ℝ}
     (h_norm : ∀ {g : USign ε}, ‖(f g : Matrix C C ℂ)‖ ≤ a * ‖(g : Matrix R R ℂ)‖)
     (hf : Continuous f := by
       rw [continuous_U_iff_matrix]
+      simp only [MonoidHom.comp_apply, MonoidHom.inr_apply, MonoidHom.inl_apply, coe_pairHom]
+      try simp only [← GeneralLinearGroup.coe_inv, ← Subgroup.coe_inv]
       fun_prop [kroneckerMap]) :
     IsUnitaryRep (card C) (detTwist f γ) fockInner := by
   refine ⟨fun x ↦ ?_, fun g x y ↦ ?_, conj_modelInner, fun x hx ↦ ?_,
@@ -413,7 +415,7 @@ lemma isDerivedAction_detTwist {ρ : GlModule R (MvPolynomial C ℂ)}
   -- The matrix of `f (expU (t • Y))` is `c • F (exp (t • c • Y))`, and `c * c = 1`.
   have h_f : HasDerivAt (fun t : ℝ ↦ (f (expU (t • Y)) : Matrix C C ℂ)) (F Y) 0 := by
     have h_curve : HasDerivAt (fun t : ℝ ↦ c • F (NormedSpace.exp (t • c • Y.val))) (F Y) 0 := by
-      refine ((hasDerivAt_exp_smul_const (c • Y.val) 0).map_clm (.mk (c • F))).congr_deriv ?_
+      refine ((hasDerivAt_exp_smul_const (c • Y.val) 0).map_clm (c • F).toContinuousLinearMap).congr_deriv ?_
       simp [smul_smul]
     simpa [h_exp, smul_comm c] using h_curve
   have h_weil : HasDerivAt (fun t : ℝ ↦ realWeil (f (expU (t • Y))) (polyVector ε' P))
