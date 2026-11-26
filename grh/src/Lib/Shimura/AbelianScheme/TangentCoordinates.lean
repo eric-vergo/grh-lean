@@ -240,7 +240,7 @@ lemma HasSignature.of_points [Fintype ι] [DecidableEq ι]
     simpa [← hq, Matrix.map_add, map_smul', vecMulVec] using congr_fun₂ (hX_rank n) i j
   have h_eigen_b (n : N) (i : ι) :
       ∑ j : ι, σ n (q i j) * X n j + σ n (ρ b') * X n i = σ n (ρ b) * X n i := by
-    simpa [← hq, one_apply, add_mul, Finset.sum_add_distrib, apply_ite (σ n)] using h_eigen n b i
+    simpa [← hq, Matrix.one_apply, add_mul, Finset.sum_add_distrib, apply_ite (σ n)] using h_eigen n b i
   have h_trace : ρ b - ρ b' - ∑ i, q i i = 0 := by
     -- `q X = (ξ ⬝ X) X` is the trace times `X`; compare with `q X = (ρ b - ρ b') X` at a unit
     -- entry of `X`.

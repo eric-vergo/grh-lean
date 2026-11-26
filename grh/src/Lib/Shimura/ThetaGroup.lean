@@ -252,7 +252,8 @@ lemma IsSectionLift.comp {X'' : Over (Spec (CommRingCat.of R''))} {μ : Type}
   have h_frame : ((M.mul T.inv).pull (𝟙 _)).IsFrame
       fun ((i, a), b) ↦ v (i, b) * pull g (u (b, a)) := by
     simp [M, T, IsFrame, IsSection, IsRegularOn] at hu hv ⊢
-    grind [L'.transition_trans]
+    aesop (config := { warnOnNonterminal := false })
+    all_goals grind [L'.transition_trans, Category.assoc]
   -- Applied to the frame `1` of `T`, they glue to a frame `w` of `M`.
   have h_one : T.IsFrame 1 := by simp [T, IsFrame, IsSection, IsRegularOn]
   obtain ⟨w, ⟨⟨hw_reg, -⟩, -⟩, hw_eq, hw_frame⟩ :=
