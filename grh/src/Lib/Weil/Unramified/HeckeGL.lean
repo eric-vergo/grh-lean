@@ -100,7 +100,8 @@ lemma isOpen_localCongruence {m : ℕ} : (localCongruence n w m).IsOpen := by
   have h_ball : ((v (R := LocField w)).leSubmodule (exp (-(m.succ : ℤ))) : Set (LocField w)) =
       {x | v.restrict x ≤ v.restrict ((uniformizer w ^ m.succ : (LocField w)ˣ) : LocField w)} := by
     ext x
-    rw [Set.mem_ofPred_eq, v.restrict_le_iff]
+    change v x ≤ _ ↔ v.restrict x ≤ _
+    rw [v.restrict_le_iff]
     simp [v_uniformizer]
   rw [h_ball]
   exact isOpen_closedBall _ ((uniformizer w ^ m.succ).isUnit.map v.restrict).ne_zero
@@ -159,7 +160,7 @@ lemma pow_pow_mem_localCongruence {q : ℕ} (hq : (q : NumberField.RingOfInteger
     have h_q : (if a = b then (q : LocField w) else 0) ∈ P := by
       simp_all [P, apply_ite, ← lt_mul_exp_iff_le, ← w.intValuation_lt_one_iff_mem,
         ← v_algebraMap_eq_intValuation]
-    simpa [P, Matrix.sum_apply, one_apply] using add_mem h_sum h_q
+    simpa [P, Matrix.sum_apply, Matrix.one_apply] using add_mem h_sum h_q
 
 /-! ### Reduction of matrices and the kernel of the reduction -/
 
@@ -197,7 +198,9 @@ lemma map_residueOrZero_mul {y : Matrix n n (LocField w)} (hz : ∀ (i : m) (j :
   ext a b
   -- The entry of `z * y` comes from a sum of products in the local integers.
   let s : LocInt w := ∑ k, ⟨z a k, hz a k⟩ * ⟨y k b, hy k b⟩
-  simpa [s, mul_apply, residueOrZero, hz, hy] using residueOrZero_coe s
+  have hs : (z * y) a b = s.val := by simp [s, Matrix.mul_apply]
+  rw [Matrix.map_apply, hs, residueOrZero_coe]
+  simp [s, Matrix.mul_apply, residueOrZero, hz, hy]
 
 omit [DecidableEq n] in
 /-- For a matrix x over a field k with columns indexed by n, the number of columns minus the rank
@@ -233,7 +236,7 @@ lemma diagGL_ite_mem_basicDoubleCoset (hϖ : v ϖ.val = exp (-1)) (s : Finset n)
   -- Each condition is read off the diagonal entries. `coe_units_inv` is left out so that the
   -- inverse stays the image of a unit under `diagGL`.
   simp +decide [basicDoubleCoset, -coe_units_inv, ← map_inv, diagonal_apply, apply_ite, hϖ,
-    ite_apply]
+    ite_apply, Finset.univ_inter]
 
 /-- For a uniformiser ϖ of E_w and a set s of indices, the kernel of the reduction modulo w of
 the diagonal matrix with ϖ on s and 1 elsewhere has dimension #s. -/
@@ -290,7 +293,7 @@ lemma v_mul_inv_le_one_iff (hg : g ∈ basicDoubleCoset n w j) :
     have h_col : (y.map residueOrZero)ᵀ b ∈ residueKer g.val :=
       calc (g.val.map residueOrZero * y.map residueOrZero)ᵀ b
         _ = ((g.val * y).map residueOrZero)ᵀ b := by rw [map_residueOrZero_mul hg_int hy]
-        _ = 0 := by simp [hy_def, funext_iff, one_apply, apply_ite v, ite_eq_iff]
+        _ = 0 := by simp [hy_def, funext_iff, Matrix.one_apply, apply_ite v, ite_eq_iff]
     have h_zero : residueOrZero ((z * y) a b) = 0 :=
       calc (z * y).map residueOrZero a b
         _ = (z.map residueOrZero * y.map residueOrZero) a b := by rw [map_residueOrZero_mul hz hy]
