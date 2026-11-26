@@ -413,7 +413,7 @@ lemma New.exists_trace_mul_weightRep_eq_of_twistedNorm_eq [DecidableEq n] (hσ :
         univ_eq_empty]
     | succ m ih =>
       -- Use `ih` for `ω δ` and `M * G 0 (ω δ)`; by definition `G l (ω δ) = G (l + 1) δ`.
-      simp [h_norm, ← (consEquiv fun _ : Fin (m + 2) ↦ _).sum_comp, ← mul_assoc, mul_apply, sum_mul,
+      simp [h_norm, ← (consEquiv fun _ : Fin (m + 2) ↦ _).sum_comp, ← mul_assoc, Matrix.mul_apply, sum_mul,
         Fintype.sum_prod_type_right, prod_univ_succ, ih]
       rfl
   -- `s` permutes the basis by rotating the index `Fin (k + 1)`.
