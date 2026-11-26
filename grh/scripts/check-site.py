@@ -1,5 +1,6 @@
 """Check the published atlas, links and proof-verification results. SPDX-License-Identifier: Apache-2.0."""
 import json
+import re
 import sys
 from collections import Counter
 from html.parser import HTMLParser
@@ -15,6 +16,7 @@ class Page(HTMLParser):
         self.ids = set()
         self.hrefs = set()
         self.classes = Counter()
+        self.tags = Counter()
         self.verdicts = {}
         self.line_depth = 0
         self.line = []
@@ -25,6 +27,7 @@ class Page(HTMLParser):
         self.close()
 
     def handle_starttag(self, tag, attrs):
+        self.tags[tag] += 1
         attrs = dict(attrs)
         if self.line_depth:
             self.line_depth += 1
@@ -101,9 +104,29 @@ def check_navigation(site):
           f'{dynamic} client-managed preview links for destination pages')
 
 
+def check_reading_pages(site):
+    for document in ('GUIDE', 'INDEX', 'REFERENCES'):
+        markdown = Path(document + '.md').read_text()
+        page = Page(site / 'reading' / (document.lower() + '.html'))
+        lines = markdown.splitlines()
+        rows = sum(line.startswith('|') and not re.fullmatch(r'[| :\-]+', line) for line in lines)
+        check(page.tags['tr'] == rows, f'{document}: expected all {rows} table rows')
+        check(page.tags['h2'] == sum(line.startswith('## ') for line in lines),
+              f'{document}: missing section')
+        for name in set(re.findall(r'`((?:New|Lib)/[A-Za-z0-9_/]+)`', markdown)):
+            if (Path('src') / (name + '.lean')).is_file():
+                check('../source/' + name.replace('/', '.') + '.html' in page.hrefs,
+                      f'{document}: no atlas link for {name}')
+        check(any(h.endswith('/grh/' + document + '.md') for h in page.hrefs),
+              f'{document}: missing upstream provenance link')
+
+
 site = Path(sys.argv[1])
 check_navigation(site)
 if sys.argv[2:] == ['--links-only']:
+    sys.exit(0)
+check_reading_pages(site)
+if sys.argv[2:] == ['--reading-only']:
     sys.exit(0)
 atlas = site / 'source'
 index = Page(atlas / 'index.html')
@@ -130,6 +153,9 @@ for module, source in sources.items():
     check(all(not h.startswith('#') or h[1:] in page.ids for h in page.hrefs), 'Broken local link: ' + module)
 landing = Page(site / 'index.html')
 check('source/index.html' in landing.hrefs, 'Landing page has no source atlas link')
+check({'reading/guide.html', 'reading/guide.html#2-glossary', 'reading/guide.html#3-sizes',
+       'reading/index.html', 'reading/references.html'} <= landing.hrefs,
+      'Landing page does not link to all readable companions')
 stats = Page(site / 'Project-Stats/index.html')
 judged = json.loads(Path('Comparator/Grh/comparator.json').read_text())['theorem_names']
 check(all('source/Main.html#d-' + name in landing.hrefs for name in judged),

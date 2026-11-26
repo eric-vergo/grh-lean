@@ -24,4 +24,5 @@ lake exe vbp check | tee .lake/grh-site-report.txt
 tail -1 .lake/grh-site-report.txt | python3 -c 'import json,sys; assert json.load(sys.stdin)["ok"] is True'
 site=_out/site/html-multi
 node blueprint/atlas/build.mjs "$site/source"
+lake exe grhReadingPages "$site/reading"
 python3 scripts/check-site.py "$site"

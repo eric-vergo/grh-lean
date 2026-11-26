@@ -29,6 +29,11 @@ names and locations come from the Lean compiler's source index. A line number li
 line, and a declaration search result takes you to its definition. The chapter panels explain
 selected steps. The dependency graph below describes the relationships recorded in those panels.
 
+The readable edition’s [guide](reading/guide.html) includes its [glossary](reading/guide.html#2-glossary)
+and [table of scales](reading/guide.html#3-sizes). The [results and sources](reading/index.html)
+connect each part of the argument to a file. The [reference audit](reading/references.html)
+records which citations the edition checked and how.
+
 The Project Stats page compares the five statements in `Comparator.Grh.Challenge` with those
 in `Comparator.Grh.Solution` and reports the outcome of this build's kernel replay. The build
 checks that the solution file matches `src/Main.lean` byte for byte and separately prints the

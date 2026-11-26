@@ -11,3 +11,9 @@ details, form { margin: 1rem 0; }
 summary, button { cursor: pointer; }
 input, button { font: inherit; }
 .ref { text-decoration: underline dotted; text-underline-offset: .15em; }
+
+.edition-document main { max-width: 78rem; }
+.edition-document p { max-width: 82ch; }
+.edition-document table { display: block; overflow-x: auto; border-collapse: collapse; margin: 1rem 0; }
+.edition-document th, .edition-document td { border: 1px solid #8886; text-align: left; padding: .45rem .65rem; vertical-align: top; }
+.edition-document :is(th,td) code { overflow-wrap: anywhere; }
