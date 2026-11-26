@@ -82,7 +82,7 @@ lemma norm_det_mul_det_gram_mul_det_le_one {F : Type} [NormedField F] [IsUltrame
   have h_mem (z : F) : z ∈ (valuation (K := F)).integer ↔ ‖z‖ ≤ 1 := .rfl
   have h_entry (a b : S) :
       (u'ᴴᵀ * (gram ℂ φ * uᵀ)) a b = ⟪∑ c : S, u' a c • φ c, ∑ c : S, u b c • φ c⟫_ℂ := by
-    simp only [← star_dotProduct_gram_mulVec, mul_apply, dotProduct, mulVec, transpose_apply,
+    simp only [← star_dotProduct_gram_mulVec, Matrix.mul_apply, dotProduct, mulVec, transpose_apply,
       conjTranspose_apply, Pi.star_apply]
   have h_int : ι (u'ᴴᵀ * (gram ℂ φ * uᵀ)).det ∈ (valuation (K := F)).integer := by
     rw [ι.map_det, det_apply']
@@ -106,7 +106,7 @@ lemma posSemidef_formGram [Fintype S] (hG : G.PosSemidef) (v : S → I → ℂ) 
   have h_eq : formGram G v = (of v)ᵀᴴ * G * (of v)ᵀ := by
     rw [Matrix.mul_assoc]
     ext i k
-    simp [formGram, mul_apply, dotProduct, mulVec]
+    simp [formGram, Matrix.mul_apply, dotProduct, mulVec]
   rw [h_eq]
   exact hG.conjTranspose_mul_mul_same _
 

@@ -321,7 +321,7 @@ lemma taylorVia_translatedX_mem_integralSeriesRing :
   have h_simple : IsUnit ((F.toPoly.map Φ).derivative.eval (Φ r)) := by
     simp [h_map, isUnit_iff_constantCoeff, hΦr₀, hy₀]
   have h_eq : Φ r = x :=
-    IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub hr_root.map hx_root h_congr h_simple
+    IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub (hr_root.map Φ) hx_root h_congr h_simple
   exact C.mem_integralSeriesRing.2 ⟨r, by rw [← hΦ, h_eq]⟩
 
 /-- For a `CMLattice` `C` (a lattice `Λ` with a point `t` of order two modulo `Λ`), let
