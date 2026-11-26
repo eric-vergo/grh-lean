@@ -273,6 +273,8 @@ conjugation `New.eq_one_of_apply_apply_eq_neg` fixes the sign.
 
 section FiniteCocycleTrivial
 
+open scoped Pointwise
+
 open Complex NumberField Gf ComplexOrder WeilData AddChar Weil Heisenberg IsVacuum
 
 variable {E ι : Type*} [Field E] [CMType E] [Fintype ι] [DecidableEq ι] [WeilData E]
