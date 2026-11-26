@@ -50,7 +50,7 @@ Theorem A constructs integral generators whose normalized images have short lift
   * Use the j-th power of the twist. The determinant factorization reduces a question about the whole chain to these individual lifts.
 :::
 
-[Field and rank data](https://eric-vergo.github.io/grh-lean/source/New.Reduction.Data.AdmissibleData.html), [lower chain](https://eric-vergo.github.io/grh-lean/source/New.UpperBound.Objects.RowChain.html), and [single-lift determinants](https://eric-vergo.github.io/grh-lean/source/New.Determinant.Chain.NormOfChain.html).
+[Field and rank data](/source/New.Reduction.Data.AdmissibleData.html), [lower chain](/source/New.UpperBound.Objects.RowChain.html), and [single-lift determinants](/source/New.Determinant.Chain.NormOfChain.html).
 
 # What the text checks
 

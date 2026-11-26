@@ -18,7 +18,7 @@ Take the independent family selected using Theorems A and B. Let $`n` be its siz
 
 # Where the main amount goes
 
-The main amount itself is `m k directionAmount`. The direction amount sums, over infinite places, the archimedean cost of a derivative at the local weight less the corresponding guaranteed prime divisibility. The product by `k` counts the source-rank contribution at each of the `m` steps. The term is at least `x⁴ f a`, so losing it inside the error would overwhelm the desired bound. [Main amount and its sign](https://eric-vergo.github.io/grh-lean/source/New.Reduction.PrimeSums.html).
+The main amount itself is `m k directionAmount`. The direction amount sums, over infinite places, the archimedean cost of a derivative at the local weight less the corresponding guaranteed prime divisibility. The product by `k` counts the source-rank contribution at each of the `m` steps. The term is at least `x⁴ f a`, so losing it inside the error would overwhelm the desired bound. [Main amount and its sign](/source/New.Reduction.PrimeSums.html).
 
 The upper estimate has `n (mainAmount − m totalRemainder)` as its leading term. The lower estimate has `d mainAmount`. Since $`n` is at most $`d` and the main amount is nonnegative, the difference of these main contributions has the favorable sign. The lower bound on $`n` keeps the coefficient of the remainder large. The proof absorbs the index and codimension costs into powers of the logarithm. This order of comparison matters because applying separate coarse estimates to the two occurrences of the main amount would lose the arithmetic information.
 
@@ -34,7 +34,7 @@ Write $`R` for the smoothed prime remainder, with a subscript for its progressio
 
 $`\mathrm{rem}=a\bigl(B(R_q(x)-R_q(x_1))+A R_1(x_1)\bigr).`
 
-Divide by `a B`. Since `f = φ(q) A` and `A/B ≤ log b`, the main inequality gives the following upper bound. The sign of the last remainder is immaterial after taking absolute values. [Cutoff identity](https://eric-vergo.github.io/grh-lean/source/New.Reduction.PrimeSums.html).
+Divide by `a B`. Since `f = φ(q) A` and `A/B ≤ log b`, the main inequality gives the following upper bound. The sign of the last remainder is immaterial after taking absolute values. [Cutoff identity](/source/New.Reduction.PrimeSums.html).
 
 :::theorem "grh-guide-cutoffs" (lean := "New.Data.primeRemainder_le") (uses := "grh-guide-star")
 At the smaller cutoff, `R_q(x) ≤ φ(q) (log b)⁶/m + |R_q(x₁)| + log b |R₁(x₁)|`.
