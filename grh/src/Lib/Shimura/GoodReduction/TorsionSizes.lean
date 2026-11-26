@@ -67,14 +67,18 @@ def LatticeForm.sizeAt (f : V → ℂ) (x : torsionPoints L) : ℝ≥0 := v (B.t
 all torsion points of V/L. -/
 abbrev LatticeForm.thetaNorm (v : Valuation ℂ ℝ≥0) (f : V → ℂ) : ℝ≥0 := iSup (B.sizeAt v f)
 
-/-- The sizes of degree B: the functions `New.ThetaTori.LatticeForm.sizeAt` of f on the torsion
-points of V/L, for f a theta function of type (B, χ) (f is holomorphic, and for l in L, f(z + l) is
-χ(l) times an exponential factor fixed by B, times f(z)), with any χ such that
-`New.ThetaTori.IsAmpleType` holds for B and χ (a twisted theta function of degree B). -/
-inductive LatticeForm.sizes : Set (torsionPoints L → ℝ≥0)
-  /-- For `f` in `B.thetaSpace χ` with `IsAmpleType B χ`, the function `B.sizeAt v f` belongs to
-  `LatticeForm.sizes`. -/
-  | of_mem_thetaSpace {χ f : V → ℂ} : IsAmpleType B χ → f ∈ B.thetaSpace χ → sizes (B.sizeAt v f)
+/-- A function is the size of a theta function of an ample type of degree `B`. -/
+inductive LatticeForm.IsSize : (torsionPoints L → ℝ≥0) → Prop
+  /-- A theta function of ample type gives its size on torsion points. -/
+  | of_mem_thetaSpace {χ f : V → ℂ} : IsAmpleType B χ → f ∈ B.thetaSpace χ → IsSize (B.sizeAt v f)
+
+/-- The set of size functions on torsion points from all ample types of degree `B`. -/
+def LatticeForm.sizes : Set (torsionPoints L → ℝ≥0) := {φ | B.IsSize v φ}
+
+/-- The size of a theta function of ample type belongs to the set of sizes. -/
+lemma LatticeForm.sizes.of_mem_thetaSpace {B : LatticeForm L} {v : Valuation ℂ ℝ≥0}
+    {χ f : V → ℂ} (hχ : IsAmpleType B χ) (hf : f ∈ B.thetaSpace χ) :
+    B.sizeAt v f ∈ B.sizes v := LatticeForm.IsSize.of_mem_thetaSpace hχ hf
 
 /-- The analytic form of good reduction of V/L at v: for all degrees B, C and all sizes φ, ψ of
 these degrees (sizes of twisted theta functions f, g), the sup norm of the product φψ, the size of

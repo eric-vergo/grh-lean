@@ -133,7 +133,10 @@ lemma New.isFullRankLattice_ker_of_isolated {G V : Type*} [AddCommGroup G] [Topo
            span_top := eq_top_iff'.mpr fun v ↦ by_contra fun hv ↦ ?_ }
   obtain ⟨l, lv_ne, l_ker⟩ := exists_le_ker_of_notMem hv
   have small : {b : V | |l b| < |l v|} ∈ 𝓝 (0 : V) :=
-    l.toContinuousLinearMap.cont.abs.continuousAt (gt_mem_nhds (by simpa using lv_ne))
+    l.toContinuousLinearMap.cont.abs.continuousAt (gt_mem_nhds (by
+      change |l 0| < |l v|
+      rw [map_zero, abs_zero]
+      exact abs_pos.mpr lv_ne))
   have often : ∃ᶠ n : ℕ in atTop, n • e v ∈ e '' {b : V | |l b| < |l v|} :=
     (mapClusterPt_zero_atTop_nsmul (e v)).frequently (e_open (image_mem_map small))
   obtain ⟨n, ⟨b, lb_lt, eb_eq⟩, n_ge⟩ := (often.and_eventually (eventually_ge_atTop 1)).exists
