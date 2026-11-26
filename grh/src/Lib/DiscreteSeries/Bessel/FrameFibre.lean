@@ -164,12 +164,12 @@ theorem conjTranspose_frameCols_mul_self : 𝔰.frameColsᴴ * 𝔰.frameCols = 
 
 /-- The columns `e_a, x_i` of `freeCols` are orthonormal for the standard hermitian form. -/
 theorem conjTranspose_freeCols_mul_self : 𝔰.freeColsᴴ * 𝔰.freeCols = 1 := by
-  simp [← ext_iff, inclMatrix, mul_apply, one_apply, eq_comm]
+  simp [← ext_iff, inclMatrix, Matrix.mul_apply, Matrix.one_apply, eq_comm]
 
 /-- The columns `e_a, x_i` of `freeCols` are orthogonal to the frame `e_0, …, e_{ϱ-1}, z` for
 the form `J₁`. -/
 theorem frameCols_gram_freeCols : 𝔰.frameColsᴴ * 𝔰.J₁ * 𝔰.freeCols = 0 := by
-  simp [← ext_iff, J₁_eq, inclMatrix, mul_apply, Fin.forall_fin_succ']
+  simp [← ext_iff, J₁_eq, inclMatrix, Matrix.mul_apply, Fin.forall_fin_succ']
 
 /-- The `ϱ + 1` vectors of the frame and the `ϱ + k` columns of `freeCols` are together as many as
 the basis vectors. -/
@@ -242,7 +242,7 @@ theorem leFibreMeasure_dualCols :
         fun g : 𝔰.G₁ ↦ g.val.val * 𝔰.dualCols) := by
   -- Fix the products with the frame, then the Gram matrix.
   have h_dual : 𝔰.J₁ * 𝔰.frameCols * (𝔰.frameColsᴴ * 𝔰.J₁ * 𝔰.dualCols) = 𝔰.dualCols := by
-    simp [← ext_iff, J₁_eq, inclMatrix, mul_apply, one_apply, Fin.sum_univ_castSucc]
+    simp [← ext_iff, J₁_eq, inclMatrix, Matrix.mul_apply, Matrix.one_apply, Fin.sum_univ_castSucc]
   let μ : Measure (Matrix 𝔰.BesselIndex (Fin 𝔰.ϱ) ℂ) :=
     volume.map fun p : Matrix (Fin 𝔰.ϱ ⊕ 𝔰.κ) (Fin 𝔰.ϱ) ℂ ↦ 𝔰.dualCols + 𝔰.freeCols * p
   have h_linear : LeFibreMeasure volume volume (𝔰.frameColsᴴ * 𝔰.J₁ * ·)

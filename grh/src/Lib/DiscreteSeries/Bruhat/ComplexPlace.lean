@@ -164,7 +164,7 @@ lemma continuous_cellBoost (𝔰 : Shape) {X : Type*} [TopologicalSpace X] {a : 
     (ha : Continuous a) (ha_norm : ∀ x : X, 1 ≤ ‖a x‖) :
     Continuous fun x : X ↦ cellBoost 𝔰 (a x) (ha_norm x) := by
   refine continuous_U_iff_matrix.2 ?_
-  simp only [cellBoost, U.of]
+  simp only [cellBoost, U.of, IsUnit.unit_spec]
   fun_prop
 
 /-- For a ≠ 0 the point a / min(1, |a|) lies outside the open unit disc. -/
