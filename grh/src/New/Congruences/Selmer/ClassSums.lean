@@ -334,7 +334,9 @@ theorem exists_isTwistMeasure_of_z_eq_one {p : D.CriticalPair} (h_ram : p.IsRami
       detPeriod_mul_upsilonU1_insert hv hQ hχ hψ
     simp [h_period, ↓← mul_conj', AutChar.frobValue, AutChar.spaceChar, ← ofReal_pow,
       prod_range, inv_eq_conj, prod_mul_distrib]
-    ring
+    have hq : (v.q : ℂ) ≠ 0 := by exact_mod_cast (zero_lt_one.trans v.one_lt_q).ne'
+    field_simp [hq]
+    <;> ring
   · -- Compare `Λ_twist` at `ϑ` and at `1`: the two values of `lValueProd` differ by the factor
     -- in `lValueProd_eq_mul_prod_ratio_sq`, and `C ≠ 0` cancels.
     have h_sq : (‖Λ ϑ.1‖ : ℂ) ^ 2 =
