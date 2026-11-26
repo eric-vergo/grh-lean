@@ -221,7 +221,9 @@ lemma abelianLift_artinMap_eq_finprod (χ : QZChar Γ) (a : (𝔸f K)ˣ) :
   -- Almost all factors are `1`: those where `χ` is unramified and `a` is a unit.
   have h_fin (χ : QZChar Γ) (a : (𝔸f K)ˣ) :
       ∀ᶠ v : FinPlace K in .cofinite, abelianLift χ (artinAt Γ v (ideleAt v a)) = 1 := by
-    filter_upwards [finite_ramified (Ω := Ω) (isOpen_ker χ), finite_setOf_valued_val_ne_one a]
+    have h_units : ∀ᶠ v : FinPlace K in .cofinite, Valued.v (a.val v) = 1 := by
+      simpa only [Set.mem_setOf_eq, not_not] using (finite_setOf_valued_val_ne_one a).eventually_cofinite_notMem
+    filter_upwards [finite_ramified (Ω := Ω) (isOpen_ker χ), h_units]
       with v h_unr (hv : Valued.v (a.val v) = 1)
     exact (v.isPlaceOver_placeOver.artinAt_units_trivial_iff_inertiaGroup_le χ).2
       (h_unr _ v.isPlaceOver_placeOver) _ hv

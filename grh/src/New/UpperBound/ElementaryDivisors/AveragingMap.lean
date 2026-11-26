@@ -213,7 +213,7 @@ lemma frobContraction_evalAtOne (r ℓ : ℕ) (z : O) :
   let ev : MvPolynomial (ZMod N × Fin k × Fin k) O →+* O :=
     eval fun v : ZMod N × Fin k × Fin k ↦ vec (1 : Matrix (Fin k) (Fin k) O) v.2
   have h_factor (s : ZMod N) (d : ℕ) : (T.frobGenericMatrix s d).map ev = 1 :=
-    Matrix.ext fun b c ↦ by simp [ev, one_apply, T.prime.ne_zero, eq_comm]
+    Matrix.ext fun b c ↦ by simp [ev, Matrix.one_apply, T.prime.ne_zero, eq_comm]
   have h_one : (T.substitutionOperator (k := k) r ℓ n T.frobGenericMatrix).map ev = 1 := by
     -- `substitutionOperator_map_eq_conj` at `g = 1` moves `ev` into the factors.
     simp [T.substitutionOperator_map_eq_conj ev (one_mem _), h_factor, substitutionOperator_one]
@@ -255,7 +255,7 @@ lemma letterRep_mul_frobContraction {r ℓ : ℕ} {g : GL (Fin k) W} (hg : g ∈
   let T' : FrobeniusCycle N W (MvPolynomial (ZMod N × Fin k × Fin k) O) := T.map C
   have h_entry (s : ZMod N) (b c : Fin k) :
       conj (X (s, b, c)) = T'.letterConj g⁻¹ s (of fun b' c' : Fin k ↦ X (s, b', c')) b c := by
-    simp [T', conj, letterConj, conjSubst, linSubst, ← C_mul', map, mul_apply, mul_assoc,
+    simp [T', conj, letterConj, conjSubst, linSubst, ← C_mul', map, Matrix.mul_apply, mul_assoc,
       mul_comm (X _), sum_prod_type, mul_sum]
   have h_frame : (fun (s : ZMod N) (d : ℕ) ↦
       T'.letterConj g s ((T.frobGenericMatrix s d).map conj.toRingHom)) =
@@ -322,7 +322,7 @@ lemma map_contractOtherCopies_one {r ℓ : ℕ} {l : ZMod N → Dual O (MvPolyno
     (β : Exponents N k n) :
     m (T.contractOtherCopies r ℓ l j 1 h β) = (T.frobContraction n r ℓ (update l j m) *ᵥ h) β := by
   simp [contractOtherCopies, conjFrobGenericMatrix_one, frobContraction, mulVec_apply, dotProduct,
-    map_tensorDualExcept, one_apply, mul_comm]
+    map_tensorDualExcept, Matrix.one_apply, mul_comm]
 
 /-- Change of basis. Let `F_g = T.contractOtherCopies r ℓ l j g h` be the vector of polynomials in
 one generic matrix `X` that arises by substituting `N` generic matrices, in the basis given by `g`,
