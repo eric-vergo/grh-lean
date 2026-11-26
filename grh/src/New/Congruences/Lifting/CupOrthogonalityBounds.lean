@@ -113,7 +113,10 @@ the jump set `letterJumps` at each letter. -/
 lemma KummerChart.fitsWindows_letterJumps {η b W : ℕ} {ε : ℤˣ}
     (hU : ∀ g : O →ₐ[ℤ_[p]] ℂ_[p], FitsWindows η ε b W (U g)) (i : k.Letter) :
     FitsWindows η ε b W (k.letterJumps ζ U i) := by
-  grind [mem_letterJumps]
+  intro u hu
+  obtain rfl | ⟨g, _, hg⟩ := (k.mem_letterJumps ζ).1 hu
+  · exact .inl ⟨by simp, by simp⟩
+  · exact hU g u hg
 
 /-- Let the set `V` lie in `[-η, η] ∪ -ε [b, b + W]` and `V'` in `[-η, η] ∪ ε [b, b + W]`, for a
 sign `ε` and `η ≤ b`. Then `-(v + v') - 1 ≤ b + W + η` for `v ∈ V` and `v' ∈ V'`, since `v` and `v'`
@@ -267,7 +270,13 @@ lemma KummerChart.crysCocycles_le_cupOrthogonal_of_no_small_neg_jump [Topologica
         u ∉ Ico (-a : ℤ) 0) ∨
       k.IsUnramified ∧ ∀ i : k.Letter, k.letterJumps ζ U' i ⊆ Icc (-η : ℤ) 0 := by
     refine h_small.imp (fun h_avoid i u hu ↦ ?_) fun h_low ↦ ⟨hk, fun i u hu ↦ ?_⟩
-    · grind [mem_letterJumps]
+    · rcases hu with hu | hu
+      · obtain rfl | ⟨g, _, hg⟩ := (k.mem_letterJumps ζ).1 hu
+        · simp
+        · exact h_avoid g u (.inl hg)
+      · obtain rfl | ⟨g, _, hg⟩ := (k.mem_letterJumps ζ).1 hu
+        · simp
+        · exact h_avoid g u (.inr hg)
     · obtain rfl | ⟨g, -, hg⟩ := (k.mem_letterJumps ζ).1 hu
       exacts [by simp, h_low g hg]
   have differentBound_eq : k.differentBound = 0 := hk.right.right
@@ -457,7 +466,7 @@ lemma TameChart.linearFrob_eq_one (d : TameChart Γ) (h_bij : Bijective Γ.overG
     filter_upwards [continuous_subtype_val.tendsto 1
       (mem_comap'.1 hY.eventually_linearFrob_eq_one)] with g hg using hg (toGp_symm g) (weil g)
   have β_pow (g : inertiaGroup (Gp p) (intQpBar p)) : β g ^ d.e = 1 := by
-    simpa [β, sub_eq_zero] using (h_killed _ (weil g)).2
+    simpa [β, eval₂_sub, sub_eq_zero] using (h_killed _ (weil g)).2
   have stabilizer_le : MulAction.stabilizer (inertiaGroup (Gp p) (intQpBar p)) d.ϖ ≤ β.ker :=
     (isLocalGalois_padic.tame_inertia isUniformiser_ell (valuation_natCast_eq_one d.tame)
       d.varpi_pow_eq β ker_open β_pow).left
@@ -497,7 +506,8 @@ lemma exists_tameChart_e_eq_lcm (h_surj : Surjective Γ.overGp.toGp) (hr : r < p
 /-- The number `differentBound` of a tame chart is at most `1`, since `p` does not divide the
 ramification index. -/
 lemma TameChart.differentBound_le_one (d : TameChart Γ) : d.differentBound ≤ 1 := by
-  grind [KummerChart.differentBound, padicValNat.eq_zero_of_not_dvd d.tame]
+  simp [KummerChart.differentBound, Nat.padicValNat_def, multiplicity_eq_zero_of_not_dvd d.tame]
+  split <;> omega
 
 /-- If `b + n < q`, then `q` divides no nonzero integer within distance `n` of `0`, `b` or `-b`. -/
 lemma noMultipleNear_of_add_lt {q n b : ℕ} (h_lt : b + n < q) : NoMultipleNear q n b :=
