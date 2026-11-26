@@ -19,6 +19,8 @@ for name in names:
         raise SystemExit('Unexpected axiom report for ' + name)
 PY
 lake build GrhBlueprint
+# The five published roots alone serialize to more than the replay worker's 4 GiB default.
+export VERSO_BLUEPRINT_KERNEL_REPLAY_EXPORT_MB="${VERSO_BLUEPRINT_KERNEL_REPLAY_EXPORT_MB:-8192}"
 VERSO_BLUEPRINT_KERNEL_REPLAY_RECORD='' lake exe vbp build
 lake exe vbp check | tee .lake/grh-site-report.txt
 tail -1 .lake/grh-site-report.txt | python3 -c 'import json,sys; assert json.load(sys.stdin)["ok"] is True'
