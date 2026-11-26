@@ -351,8 +351,11 @@ theorem HCParam.IsKHighest.casimirK_bound_of_highest (hx : l.IsKHighest ρ ν x)
   -- `W` is `𝔨`-stable: `ρ.E a b` commutes with `T`, and its adjoint `ρ.E b a` preserves `U`.
   have hW_stable (a b : n) (hab : ε a = ε b) : W ∈ (ρ.E a b).invtSubmodule := by
     refine fun z ⟨hzU, hz_orth⟩ ↦ ⟨hU_stable a b hab hzU, fun u hu ↦ ?_⟩
-    simpa [T, hρ.inner_E_left, ← End.mul_apply, (hD_comm ..).eq, hab,
-      ((hD_comm ..).mul_right (commute_E_casimirK ..)).eq] using
+    have hET : Commute (ρ.E a b) T :=
+      (((hD_comm a b hab).smul_right α).mul_right (commute_E_casimirK hab)).sub_right
+        ((hD_comm a b hab).smul_right β)
+    have hET_apply : ρ.E a b (T z) = T (ρ.E a b z) := congrArg (fun L : End ℂ H ↦ L z) hET.eq
+    simpa [hρ.inner_E_left, hab, hET_apply] using
       hz_orth (ρ.E b a u) (hU_stable b a hab.symm hu)
   have : FiniteDimensional ℂ W := finiteDimensional_of_le inf_le_left
   obtain ⟨μ, z, ⟨hzU, hz_orth⟩, hz_ne, hz_wt, hz_high⟩ := l.exists_highest_vector W hW_ne hW_stable

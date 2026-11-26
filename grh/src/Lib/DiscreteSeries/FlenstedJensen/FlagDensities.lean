@@ -91,7 +91,7 @@ diagonal than `(i, j)`, then conjugation by `b` multiplies the entry `(i, j)` of
 lemma IsBorelMatrix.mul_mul_inv_apply (ho : o.Injective) (hb : IsBorelMatrix o b)
     {y : Matrix n n ℂ} {i j : n} (hy : ∀ k l : n, o i - o j < o k - o l → y k l = 0) :
     (b * y * b⁻¹) i j = b i i * y i j * b⁻¹ j j := by
-  simp_rw [mul_apply, sum_mul, ← sum_product']
+  simp_rw [Matrix.mul_apply, sum_mul, ← sum_product']
   refine sum_eq_single_of_mem (j, i) (by simp) fun ⟨l, k⟩ _ h_ne ↦ ?_
   -- An outer factor vanishes unless `o i ≤ o k` and `o l ≤ o j`; in that case `y k l` vanishes.
   have b_tri : o k < o i → b i k = 0 := fun h ↦ hb.left h
