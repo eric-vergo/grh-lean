@@ -106,7 +106,9 @@ lemma injective_pow_add_one_mul_pow (hp : p ≠ 2) :
     · simpa [Nat.prime_dvd_prime_iff_eq h_prime Nat.prime_two] using hp
     · simpa [Nat.dvd_add_right (dvd_pow_self p he.ne')] using h_prime.ne_one
   have h_val (e j : ℕ) : padicValNat p ((p ^ e + 1) * p ^ j) = j := by
-    simp [padicValNat.mul, padicValNat.eq_zero_of_not_dvd (h_not_dvd e), h_prime.ne_zero]
+    rw [Nat.padicValNat_def]
+    rw [Nat.multiplicity_mul (by positivity) (pow_ne_zero _ h_prime.ne_zero),
+      multiplicity_eq_zero_of_not_dvd (h_not_dvd e), Nat.multiplicity_prime_pow, zero_add]
   rintro ⟨e, j⟩ ⟨e', j'⟩ (h : (p ^ e + 1) * p ^ j = (p ^ e' + 1) * p ^ j')
   obtain rfl : j = j' := by rw [← h_val e j, h, h_val]
   have h_pow : p ^ e = p ^ e' := by simpa [h_prime.ne_zero] using h

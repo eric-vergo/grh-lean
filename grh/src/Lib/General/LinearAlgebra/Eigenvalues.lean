@@ -138,7 +138,7 @@ lemma New.exists_antitone_of_swap {α : Type*} {N : ℕ} [LinearOrder α] (f : F
     ∃ σ : Equiv.Perm (Fin N), P σ ∧ Antitone (f ∘ σ) := by
   -- Among the permutations with `P` take one for which `f ∘ σ` is lexicographically largest.
   obtain ⟨τ, hτ, τ_max⟩ : ∃ τ, P τ ∧ ∀ σ, P σ → toLex (f ∘ σ) ≤ toLex (f ∘ τ) :=
-    Set.exists_max_image P _ Subtype.finite h_exists
+    Set.exists_max_image {σ | P σ} _ (Set.toFinite _) h_exists
   refine ⟨τ, hτ, (antitone_iff_forall_covBy _).2 fun i j hij ↦ le_of_not_gt fun hlt ↦ ?_⟩
   -- Swapping an increasing pair of neighbours `i`, `j` would give a larger one: the two agree
   -- before `i`.
