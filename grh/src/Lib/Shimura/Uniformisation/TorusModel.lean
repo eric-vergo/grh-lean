@@ -337,7 +337,7 @@ lemma exists_unit_on_roots_of_unity (φ : O →+* ℂ) :
     -- `φ (ζ ω)` is a root of the cyclotomic polynomial, so it and `ω` are powers of each other.
     have hφω : IsPrimitiveRoot (φ (ζ ω)) N := by
       rw [← isRoot_cyclotomic_iff, ← map_cyclotomic N φ]
-      exact (hζω.isRoot_cyclotomic hN.pos).map
+      exact (hζω.isRoot_cyclotomic hN.pos).map (f := φ)
     obtain ⟨k, -, hk⟩ := hω.eq_pow_of_pow_eq_one hφω.pow_eq_one
     obtain ⟨l, -, hl⟩ := hφω.eq_pow_of_pow_eq_one hω.pow_eq_one
     refine ⟨(k, l), by simp, Set.mem_biInter fun t ht ↦ ?_⟩
@@ -554,7 +554,7 @@ lemma torsionPoint_comp (m : x.TorusModel Y) (m' : x'.TorusModel Y') {z : GL D.I
   refine denseRange_frameCoords (g := g).induction_on y ⟨?_⟩ fun w ↦ ?_
   · exact IsLocallyConstant.comp₂ isOpen_preimage_torsionClass
       (.comp_continuous isOpen_preimage_torsionClass (by fun_prop))
-      (fun t t' ↦ m.fullStructure.torsionPoint t ≫ ψ = m'.fullStructure.torsionPoint t') Not
+      (fun t t' ↦ m.fullStructure.torsionPoint t ≫ ψ = m'.fullStructure.torsionPoint t') {p | ¬p}
   · simpa [← torsionPoint_frameTorsionClass, frameTorsionClass_apply, frameCoords,
       LinearMap.compLeft, comp_def, RingHom.map_mulVec, π] using h_periods (toRealVectors w)
 
