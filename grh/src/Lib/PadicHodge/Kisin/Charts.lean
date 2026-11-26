@@ -220,7 +220,7 @@ lemma WittFq.exists_smul_algebraMap_eq {f : ℕ+} (m : FrobGal) (c : WittFq f) :
   -- keeps the relation `t ^ p ^ f = t` that defines `flatFq f`.
   have h_mem (n : ℕ) : m • (c.coeff n : OFlat) ∈ flatFq f :=
     (smul_pow' m (c.coeff n : OFlat) (p ^ (f : ℕ))).symm.trans (congrArg _ (c.coeff n).prop)
-  exact ⟨⟨fun n ↦ ⟨m • (c.coeff n : OFlat), h_mem n⟩⟩, rfl⟩
+  exact ⟨WittVector.mk p (fun n ↦ ⟨m • (c.coeff n : OFlat), h_mem n⟩), rfl⟩
 
 /-- Reduction of the coordinates from `flatFq f` to the residue field of `OFlat` is injective on
 Witt vectors. -/
@@ -528,7 +528,7 @@ lemma phi_pow_z (n : ℕ) : (c.φ ^ n) c.z = c.z ^ p ^ n := by
 lemma z_dvd_frobE_sub_p (n : ℕ) : c.z ∣ c.frobE n - p := by
   -- Apply `φ^n` to `z ∣ E - p`; it sends `z` to `z ^ p ^ n`.
   have h_map : (c.φ ^ n) c.z ∣ (c.φ ^ n) (c.E - p) := map_dvd (c.φ ^ n) c.z_dvd_E_sub_p
-  rw [phi_pow_z, map_sub, map_natCast] at h_map
+  rw [phi_pow_z, RingHom.map_sub, map_natCast] at h_map
   exact (dvd_pow_self c.z (NeZero.ne (p ^ n))).trans h_map
 
 /-- If g in G_p fixes Λ = W(F_{p^f}) pointwise and d in A_inf divides gz − z, then d divides gs − s
@@ -577,7 +577,8 @@ lemma weierstrass_division (n : ℕ) {N : ℕ} (hN : p ^ n * c.e = N) (s : c.S) 
   -- `φ^n E = z ^ N * φ^n A + p`, with `A` the unit series of the chart. Here and below the power
   -- `c.φ ^ n` is kept as a ring map (`-RingHom.coe_pow`), so that `phi_pow_z`, `IsUnit.map` apply.
   have h_frobE : c.frobE n = c.z ^ N * (c.φ ^ n) (c.seriesEquiv c.unitSeries) + p := by
-    simp [frobE, phi_pow_z, ← pow_mul, hN, -RingHom.coe_pow]
+    simp only [frobE, E, RingHom.map_add, RingHom.map_mul, map_pow, map_natCast, phi_pow_z,
+      ← pow_mul, hN]
   -- Modulo `p` the series `G` is `X ^ N` times a unit, so its order is `N`.
   obtain ⟨hG, rfl⟩ : G.map (residue _) ≠ 0 ∧ (G.map (residue _)).order.toNat = N := by
     simp [G, h_frobE, order_mul, hp, order_zero_of_isUnit, IsUnit.ne_zero, IsUnit.map,

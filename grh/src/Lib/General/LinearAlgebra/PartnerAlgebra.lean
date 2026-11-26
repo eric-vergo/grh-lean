@@ -179,7 +179,7 @@ lemma firstCols_mul_invFirstRows_mul (h_kill : invLastRows e k * y = 0) :
   have h_sum : firstCols e k * invFirstRows e k + lastCols * invLastRows e k = 1 := by
     rw [← k.mul_inv]
     ext i j
-    simp [lastCols, mul_apply, ← e.sum_comp, Fintype.sum_sum_type]
+    simp [lastCols, Matrix.mul_apply, ← e.sum_comp, Fintype.sum_sum_type]
   simpa [Matrix.add_mul, Matrix.mul_assoc, h_kill] using congrArg (· * y) h_sum
 
 variable [DecidableEq a] [DecidableEq b]
@@ -196,7 +196,7 @@ lemma exists_firstCols_eq_mul (O : Subring R) (g : GL b R) (hg : g ∈ intGL b O
   let d : GL n R := reindexGL e (blockGL (g, f⁻¹))
   have hd : d ∈ intGL n O := by simp_all [d, mem_intGL, reindex_equiv e, ← map_inv]
   refine ⟨k * d, mul_mem hk hd, ?_, ?_, by simp [d, mul_assoc, Ring.inverse_mul_cancel]⟩ <;>
-    simp [d, mul_apply, reindex_equiv e, ← map_inv, ← ext_iff]
+    simp [d, Matrix.mul_apply, reindex_equiv e, ← map_inv, ← ext_iff]
 
 /-- The set of the matrices `invLastRows e k` (rows `a` of `k⁻¹`) with `k ∈ GL n O` is stable under
 left multiplication by `GL a O`. -/
