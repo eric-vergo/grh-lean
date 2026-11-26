@@ -206,12 +206,15 @@ namespace New
 /-- The `p`-adic valuation is monotone for divisibility of nonzero natural numbers. -/
 lemma padicValNat_mono_of_dvd {p : ℕ} [hp : Fact p.Prime] {a b : ℕ} (hab : a ∣ b) (hb : b ≠ 0) :
     padicValNat p a ≤ padicValNat p b :=
-  (padicValNat_dvd_iff_le hb).1 (pow_padicValNat_dvd.trans hab)
+  by
+    simp only [Nat.padicValNat_def]
+    exact (padicValNat_dvd_iff_le hb).1 (pow_multiplicity_dvd _ _ |>.trans hab)
 
 /-- One step of Legendre's formula: for the `p`-adic valuation `v = padicValNat p`,
 `v(n!) = ⌊n / p⌋ + v(⌊n / p⌋!)`. -/
 lemma padicValNat_factorial_eq_div_add {p : ℕ} [Fact p.Prime] (n : ℕ) :
     padicValNat p n ! = n / p + padicValNat p (n / p)! := by
+  simp only [Nat.padicValNat_def]
   rw [← padicValNat_mul_div_factorial, padicValNat_factorial_mul, add_comm]
 
 /-- For a prime `p`, the first term of Legendre's formula gives `n / p - 1 ≤ v(n!)`, with
@@ -248,9 +251,11 @@ and the product `B = D.lossProduct l` of the `n♯` integers after `l⁻`, as `l
 lemma padicValNat_factorial_le_add_lossProduct (D : Data P) {p : ℕ} [Fact p.Prime] (l : ℕ) :
     padicValNat p l ! ≤
       padicValNat p (l - D.lossFactorCount)! + padicValNat p (D.lossProduct l) := by
+  simp only [Nat.padicValNat_def]
   rw [← padicValNat.mul (factorial_ne_zero _) (D.lossProduct_ne_zero l), lossProduct,
     factorial_mul_ascFactorial]
-  exact padicValNat_mono_of_dvd (factorial_dvd_factorial le_tsub_add) (factorial_ne_zero _)
+  simpa only [Nat.padicValNat_def] using
+    padicValNat_mono_of_dvd (p := p) (factorial_dvd_factorial le_tsub_add) (factorial_ne_zero _)
 
 /-- `x ^ 42 ≤ n♯ = ⌈6 b / k⌉` for the numbers `x`, `b` and `k` of the data `D`, as `b` is far larger
 than `x` and `k`. -/
