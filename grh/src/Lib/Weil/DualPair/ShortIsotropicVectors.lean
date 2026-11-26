@@ -206,7 +206,7 @@ lemma map_schrodingerOp_eq_zero_of_invariant {P : Set (FinPlace E)} (hP : Set.Is
     (Set.forall_mem_range.2 hℓ) (fun y hy ↦ ?_) f
   let K (i : p) (j : q) (x : n' × n) : 𝔸f E := (X x.1 i * star (Y x.2 j)).2
   obtain ⟨i, j, h_ne⟩ : ∃ (i : p) (j : q), star (K i j) ⬝ᵥ y ≠ 0 := by
-    simpa [← ext_iff, K, dotProduct, Fintype.sum_prod_type, mul_apply, vecToMatrix,
+    simpa [← ext_iff, K, dotProduct, Fintype.sum_prod_type, Matrix.mul_apply, vecToMatrix,
       Finset.mul_sum, mul_assoc, mul_comm, mul_left_comm] using h_supp y hy
   have h_col : (fun x : n' × n ↦ ((shiftMatrix s X Y *ᵥ Pi.single (i, j) 1) x).2) = K i j :=
     funext fun x ↦ by simp [K, shiftMatrix, stdForm]
