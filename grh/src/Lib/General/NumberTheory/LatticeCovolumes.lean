@@ -782,7 +782,7 @@ lemma exists_isAddFundamentalDomain_of_integral {V σ : Type*} [NormedAddCommGro
   let M : Matrix σ σ ℝ := e.toMatrix (b.ofZLatticeBasis ℝ L)
   have h_det : M.det ≠ 0 := (e.isUnit_det (b.ofZLatticeBasis ℝ L)).ne_zero
   have h_entry (s t : σ) : ∃ n : ℤ, (Mᵀ * M) s t = n := by
-    simpa [M, mul_apply, Basis.toMatrix_apply] using h_int _ (b s).2 _ (b t).2
+    simpa [M, Matrix.mul_apply, Basis.toMatrix_apply] using h_int _ (b s).2 _ (b t).2
   choose N hN using h_entry
   have h_map : (Int.castRingHom ℝ).mapMatrix (of N) = Mᵀ * M := ext fun s t ↦ (hN s t).symm
   have h_cast : ((of N).det : ℝ) = M.det ^ 2 := by
