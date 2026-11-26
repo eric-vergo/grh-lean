@@ -356,8 +356,9 @@ lemma QuadField.star_ne_of_chiK_eq_one {d p : ℕ} [PrimeSevenModEight d] [Fact 
   -- The residue field has `p` elements, so `betaK d = (1 + √-d) / 2` is congruent to an integer
   -- `n`. If `w` is its own conjugate, `star (betaK d)` is congruent to `n` too; their difference
   -- `sqrtNegDInt d = √-d` is then in `w`, so `p ∣ d`.
-  have h_card : Nat.card (𝓞 (QuadField d) ⧸ w.asIdeal) = p :=
-    (q_eq_iff_chiK_ne_neg_one w hw).2 (by simp [hp])
+  have h_card : Nat.card (𝓞 (QuadField d) ⧸ w.asIdeal) = p := by
+    rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
+    exact (q_eq_iff_chiK_ne_neg_one w hw).2 (by simp [hp])
   have : Nontrivial (𝓞 (QuadField d) ⧸ w.asIdeal) :=
     Ideal.Quotient.nontrivial_iff.2 w.isPrime.ne_top
   obtain ⟨n, hn⟩ :

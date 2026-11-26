@@ -293,7 +293,8 @@ lemma exists_finite_groupRing_quotient [IsTopologicalGroup G] [Finite κ] {τ : 
       finite := h_finite
       surjective := Φ.rangeRestrict_surjective
       factors := fun s y ↦ by simp [u, Φ] -- the maps `u s` recover the `τ s`
-      apply_eq_zero_iff := fun y ↦ by simp [Φ, Subtype.ext_iff, funext_iff]
+      apply_eq_zero_iff := fun y ↦
+        ⟨fun h s ↦ congrFun (congrArg Subtype.val h) s, fun h ↦ Subtype.ext (funext h)⟩
       isCrystallineUpTo := fun {h w} h_crys ↦ ?_ }⟩
   -- The columns of the `u s` are jointly injective equivariant maps from `T` to the `τ s`.
   let f (s : Σ s, (τ s).Index) : Φ.range →ₗ[ℤ_[p]] (τ s.fst).Index → PadicAlgCl p :=
