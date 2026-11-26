@@ -751,7 +751,11 @@ lemma exists_stdLevelIndex_lastLevel_eq {P : Parameters} (D : Data P) :
   -- count, and clear denominators. The index that enters `DescentPair.gramFactor` is that of the
   -- flag group of `D.GridIndex false 0 1`.
   let := Prop.linearOrder
-  simp +instances [κ, index_rangeParabolic_inl_eq, no_places, ← card_GL_eq 1, ← card_GL_eq D.m,
+  have hQ : (∏ w : (D.levelPlaces ϑ).TwistIndex,
+      (((D.levelPlaces ϑ).twistPlace w).q : ℂ)) ≠ 0 := by
+    apply Finset.prod_ne_zero_iff.mpr
+    exact fun w _ ↦ by exact_mod_cast ((D.levelPlaces ϑ).twistPlace w).q_pos.ne'
+  simp +instances [κ, hQ, index_rangeParabolic_inl_eq, no_places, ← card_GL_eq 1, ← card_GL_eq D.m,
     DescentPair.gramFactor, descentPair, DescentPair.rankDiff, descentResidueLevel,
     card_levelModulus_residueRing, card_ResField, relIndex_levelOf, Nat.card_pi,
       Seesaw.index_pi_univ,
