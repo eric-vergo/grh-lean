@@ -1,9 +1,9 @@
 # The Generalized Riemann Hypothesis for Dirichlet L-functions, in Lean 4
 
-Research artifact. Not maintained and not accepting contributions.
+This fork ports the readable research artifact to Lean 4.36.0 and adds a mathematical blueprint. The upstream project describes its research release as unmaintained and closed to contributions.
 
 The proof is Levent Alpöge's, with Claude.
-The Lean text and the documents in this project were written by Claude (AI).
+The upstream README credits Claude (AI) with writing its Lean text and documents. Eric Vergo and OpenAI Codex authored the blueprint chapters.
 
 This project holds a Lean 4 proof of the Riemann Hypothesis. It also proves the Generalized Riemann Hypothesis for Dirichlet L-functions. The proof builds on Mathlib. It uses only the axioms `propext`, `Classical.choice` and `Quot.sound`.
 
@@ -11,7 +11,20 @@ This project is a shorter rewriting of Levent Alpöge's Lean proof (see <https:/
 
 This is the readable edition, about 300,000 lines of code. A compact edition, about 76,000 lines, is in [../grh-compact](../grh-compact/); some of its steps use other arguments.
 
+## Read the blueprint
+
+1. [From zeros to a comparison of volumes](blueprint/GrhBlueprint/Parts/Orientation.lean)
+2. [Theorem A. Short lifts and their denominators](blueprint/GrhBlueprint/Parts/ShortForms.lean)
+3. [Theorem B. Filling the target by translates](blueprint/GrhBlueprint/Parts/Spanning.lean)
+4. [Theorem C. The cost of a nearly full family](blueprint/GrhBlueprint/Parts/LongForms.lean)
+5. [Comparing the two estimates](blueprint/GrhBlueprint/Parts/Cancellation.lean)
+6. [The one-sided criterion and the five conclusions](blueprint/GrhBlueprint/Parts/Analytic.lean)
+7. [Finding the constructions in either edition](blueprint/GrhBlueprint/Parts/Atlas.lean)
+
+For a glossary and parameter sizes, read the [upstream guide](GUIDE.md). Use the [result index](INDEX.md) to identify the relevant formal statement and its source. The blueprint explains the mathematical route. The statements and proofs in Lean determine what the artifact establishes.
+
 ## Theorems
+
 `src/Statements.lean` states the theorems in Mathlib's terms. `src/Main.lean` proves five theorems:
 - `riemannHypothesis`: Mathlib's `RiemannHypothesis`.
 - `riemannZeta_eq_zero_re`: every zero s ≠ 1 of ζ other than −2, −4, … has real part 1/2 (s = 1 is the pole).
@@ -22,12 +35,20 @@ This is the readable edition, about 300,000 lines of code. A compact edition, ab
 All moduli N ≥ 1 and all characters are covered, primitive or not. The last three theorems say nothing about zeros with re s ≤ 0. To trust the result, read `src/Statements.lean`, which imports only Mathlib, the five statements in `src/Main.lean`, and the list of axioms, and build or replay the files. All other definitions occur only inside the proof.
 
 ## Build
-The build needs Lean v4.35.0, set in `lean-toolchain`. It needs Mathlib at commit 56a005855ea17e0b0958f73ec801ae140b0a1679, set in `lake-manifest.json`. Run `lake exe cache get`, then `lake build`. If the cache is missing, Lake builds Mathlib from source (about 85 minutes on 12 cores). A build takes one to two hours on 12 cores; allow 24 GB of memory. The build prints some linter and deprecation warnings. To list the axioms, run `lake env lean scripts/PrintAxioms.lean`. The first of its five results is `'riemannHypothesis' depends on axioms: [propext, Classical.choice, Quot.sound]`. To replay a compiled module through the kernel, run `lake env leanchecker <module>`.
+
+Run these commands in the readable edition directory. The toolchain is Lean v4.36.0. The manifest pins Mathlib and the blueprint dependencies. [Port details](PORT.md).
+
+```sh
+lake exe cache get
+lake build
+lake env lean scripts/PrintAxioms.lean
+```
 
 ## Checks
-Every file in `src` compiles with the pinned Lean and Mathlib, without errors or `sorry`. The first theorem has Mathlib's type `RiemannHypothesis`, the other four have the types fixed in `src/Statements.lean`, and all five depend only on the three axioms above. An export of the five theorems with all they depend on, Mathlib included (`lake env leanexport Main -- riemannHypothesis riemannZeta_eq_zero_re LFunction_ne_zero_of_half_lt_re LFunction_eq_zero_re LFunction_eq_zero_re_of_isPrimitive`), is accepted by the independent checkers nanoda, con-leche and con-ron. These checks show that Lean accepts the proof of the stated theorems. Several hundred of the more than 20,000 declarations are not used by the five theorems: they state results for their own sake, or serve automation.
 
-`Challenge.lean` states the five theorems with `sorry` in place of proofs, and `comparator.json` sets up the tool [Comparator](https://github.com/leanprover/comparator), which compares them with `src/Main.lean` and checks the proofs again. Nothing imports `Challenge.lean`, and `lake build` does not build it. We ran Comparator v4.35.0 on this folder (Linux, with a stand-in for its sandbox and `ulimit -s unlimited`), and it accepted the proofs; allow 64 GB of memory and a few hours.
+The upstream authors report a successful build of the Lean 4.35.0 original and a three-axiom report for each public theorem. They also report acceptance by nanoda, con-leche, con-ron and Comparator v4.35.0. The upstream README says no mathematician has read the proof through. [Original verification report](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/README.md#checks).
+
+In this fork the [challenge](Comparator/Grh/Challenge.lean) fixes the five public statements. The [solution mirror](Comparator/Grh/Solution.lean) represents the declarations from [Main](src/Main.lean) for the comparator and blueprint. The challenge contains placeholders by design. The blueprint imports the solution.
 
 ## Layout
 About 300,000 lines of code; 433,000 non-blank lines with comments; 477,000 lines in all.

@@ -4,7 +4,7 @@ Authors: Eric Vergo, OpenAI Codex
 -/
 import VersoManual
 import VersoBlueprint
-import Main
+import Comparator.Grh.Solution
 
 open Verso.Genre Verso.Genre.Manual Informal
 
@@ -43,3 +43,5 @@ Mathlib’s Riemann hypothesis holds. In explicit form every zero of the Riemann
 :::
 
 Use the modulus-one character for zeta. Remove the gamma poles at the negative even integers and handle zero using the known value of zeta there. The completed zeta functional equation supplies the reflected zero. The explicit zeta statement and Mathlib’s proposition agree definitionally. [Public theorem signatures](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/src/Main.lean) and [reflection lemmas](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/src/New/Main.lean).
+
+The five public declarations originate in the readable edition’s `src/Main.lean`. The blueprint imports their solution mirror, `Comparator.Grh.Solution`, so each formal panel resolves to the declarations checked against the challenge.
