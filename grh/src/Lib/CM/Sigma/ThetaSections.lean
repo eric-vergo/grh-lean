@@ -341,7 +341,7 @@ lemma mul_sigma_mul_deriv_sigma_eq_of_mul_sigma_sq_eq {K : ℂ}
         C.translatedX z * (2 * C.θ z * deriv C.θ z) := by
   have hx_diff : DifferentiableAt ℂ C.translatedX z := by fun_prop [translatedX]
   have h_deriv : deriv (fun w ↦ K * C.σ w ^ 2) z = deriv (fun w ↦ C.translatedX w * C.θ w ^ 2) z :=
-    EqOn.deriv hK C.isOpen_setOf_add_t_notMem hz
+    EqOn.deriv (fun w hw ↦ hK w hw) C.isOpen_setOf_add_t_notMem hz
   simpa (disch := fun_prop) using h_deriv
 
 /-- Let Λ be the lattice of `C` with 2-torsion point t, σ the sigma function of Λ, θ = `C.θ`, and
