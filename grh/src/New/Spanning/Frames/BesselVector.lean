@@ -375,7 +375,7 @@ theorem setLIntegral_congruenceSubgroup_integral_sq :
       ‖∫ y : T.G in Z, extendedBesselChar F.levelUnit (y * x * y⁻¹) ∂F.groupMeasure‖ₑ ^ 2 =
         F.groupMeasure Z ^ 2 := by
     rw [setIntegral_congr_fun Z.isOpen.measurableSet (h_const x hx)]
-    simp [Measure.real, ← ofReal_norm, groupMeasure_ne_top Z.le_unitaryLevel_one]
+    simp [Measure.real, Set.univ_inter, ← ofReal_norm, groupMeasure_ne_top Z.le_unitaryLevel_one]
   rw [setLIntegral_congr_fun measurableSet_unitaryLevel h_inner, setLIntegral_const]
 
 /-- For a large lattice datum `F` (hypothesis `IsLargeLatticeData F`) and `Z` with K(g) ≤ Z ≤ K, the
