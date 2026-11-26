@@ -75,7 +75,10 @@ lemma apply_det_eq_prod (h : μ.HasWeight e ψ) {ι : Type*} [Fintype ι] {w : �
   have hψ_map : ∀ u : FinPlace E, u ∉ Finset.univ.map ⟨w, hw⟩ → ψ u = 1 := by simpa using hψ
   have h_int : (detFin s k.val : 𝔸 E).snd ∈ Ô E := by simp [det_mem (mem_stdLevel.mp k.property)]
   rw [h.apply_eq _ h_int, finprod_tame_eq_prod_reduceU1 (u := detFin s k.val) hψ_map h_int]
-  simp [reduceU1, h_red]
+  simp [reduceU1]
+  apply Finset.prod_congr rfl
+  intro i _
+  simpa using congrArg (ψ (w i)) (h_red (w i) h_int)
 
 /-- A character `μ` with trivial tame part (`μ.HasWeight e 1`) is trivial on the determinant
 `detFin s k` of every `k` in the stabiliser `stdLevel E n` of the standard lattice. -/
