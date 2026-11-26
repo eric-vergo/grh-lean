@@ -130,7 +130,7 @@ lemma gramDiscReal_div_two_le_and_isBoundedInCell {𝔰 : Shape} {M P : ℝ} {Z 
 
 theorem euclidean_enorm_sq_eq_sum {I : Type*} [Fintype I] (u : EuclideanSpace ℂ I) :
     ‖u‖ₑ ^ 2 = ∑ i : I, ‖u i‖ₑ ^ 2 := by
-  simp [enorm, u.nnnorm_eq, ← ENNReal.coe_pow]
+  simp [eNorm_eq_nnNorm, u.nnnorm_eq, ← ENNReal.coe_pow]
 
 end New.RealPlace
 
@@ -156,14 +156,14 @@ the section `γ_Z`. Outside the last row and column its entry at `(i, a)` is
 lemma New.RealPlace.sectionCoeff_castSucc_castSucc {𝔰 : Shape} (Z : 𝔰.FrameMatrix) (i a : Fin 𝔰.ϱ) :
     sectionCoeff Zᴴ Z i.castSucc a.castSucc =
       -(2⁻¹ * Z⁻¹ i.castSucc (.last 𝔰.ϱ) * Zᴴ⁻¹ (.last 𝔰.ϱ) a.castSucc) := by
-  norm_num [diagLast, eq_comm, mul_apply, diagonal, one_apply, sum_univ_castSucc, sectionCoeff,
+  norm_num [diagLast, eq_comm, Matrix.mul_apply, diagonal, Matrix.one_apply, sum_univ_castSucc, sectionCoeff,
     mul_comm]
 
 /-- The last row of `sectionCoeff Zᴴ Z`, a coefficient matrix in the formula `sectionMatrix Z Zᴴ`
 for the section `γ_Z`, vanishes outside the last column. -/
 lemma New.RealPlace.sectionCoeff_last_castSucc {𝔰 : Shape} (Z : 𝔰.FrameMatrix) (a : Fin 𝔰.ϱ) :
     sectionCoeff Zᴴ Z (.last 𝔰.ϱ) a.castSucc = 0 := by
-  simp [diagLast, eq_comm, mul_apply, diagonal, one_apply, sectionCoeff]
+  simp [diagLast, eq_comm, Matrix.mul_apply, diagonal, Matrix.one_apply, sectionCoeff]
 
 /-- Let `Z` lie in the open cell `𝔰.openCell`: `Z` is invertible and the last diagonal entry of
 `Z⁻¹` has absolute value less than 1. Let `γ_Z = gramSection Z`, an element of the unitary group
@@ -216,8 +216,8 @@ lemma New.inv_apply_eStar_eq_sum_frameVector {𝔰 : Shape} {Z : 𝔰.FrameMatri
   have h_col : V x (eStar a) = (L * 𝔰.frameCols * Z'ᴴ⁻¹) x a.castSucc -
       (V * 𝔰.frameCols * sectionCoeff Zᴴ Z) x a.castSucc := by
     conv_lhs => rw [h_sec, h_frame]
-    simp [diagLast, eq_comm, mul_apply, diagonal, inclMatrix, one_apply, sum_univ_castSucc]
-  simp [h_col, mul_inclMatrix, mul_apply, sum_univ_castSucc, sectionCoeff_castSucc_castSucc,
+    simp [diagLast, eq_comm, Matrix.mul_apply, diagonal, inclMatrix, Matrix.one_apply, sum_univ_castSucc]
+  simp [h_col, mul_inclMatrix, Matrix.mul_apply, sum_univ_castSucc, sectionCoeff_castSucc_castSucc,
     sectionCoeff_last_castSucc, mul_comm]
 
 /-- A bound for `‖z‖` from the length of `γ_Z z`. Let `n = 𝔰.n = ϱ + 1`, `8 n ≤ M` and
