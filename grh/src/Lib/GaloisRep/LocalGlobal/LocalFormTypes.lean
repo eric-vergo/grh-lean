@@ -69,6 +69,7 @@ end LocalRep
 section LocalTranslates
 
 open Set Fintype Submodule Module End Gf Patching
+open scoped Pointwise
 
 variable {E n : Type _} [Field E] [CMType E] [Fintype n]
   [DecidableEq n] {V : Space E n 1} {κ : Weight E} {w : FinPlace E} {hw : star w ≠ w}
@@ -168,7 +169,7 @@ lemma IsEigenform.of_mem_cyclicSpan {y : localFormRep V κ hw} {P : FinPlace E �
     have h_swap :
         V.formTranslation κ k (V.formTranslation κ (embedAtSplit hw g) x) =
           V.formTranslation κ (embedAtSplit hw g) (V.formTranslation κ k x) := by
-      rw [← mul_apply, ← map_mul, h_comm.eq, map_mul, mul_apply]
+      rw [← Module.End.mul_apply, ← map_mul, h_comm.eq, map_mul, Module.End.mul_apply]
     simpa [mem_levelSpace.mp h_fixed k] using h_swap
   · -- the Hecke operators at `u` commute with the translations at `w`, so each translate of `x`
     -- is an eigenvector with eigenvalue `t j`

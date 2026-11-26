@@ -849,7 +849,8 @@ lemma exists_isBaseChangeLevel {H : Subgroup (Gf E n)} (hH : H.IsOpen) :
   obtain ⟨S₀, hS₀_good, hS₀_le⟩ := exists_inf_trivialOn_le hH
   let A : Set (FinPlace E') := placesAbove E' {w | IsStepUnramifiedAt E' μ w ∧ w ∉ conjClosure S₀}
   have hA_unram (u : FinPlace E') (hu : u ∈ A) : IsStepUnramifiedPlace μ u :=
-    isStepUnramifiedPlace_of_mem_placesAbove (fun w hw ↦ hw.left) hu
+    isStepUnramifiedPlace_of_mem_placesAbove
+      (T := {w | IsStepUnramifiedAt E' μ w ∧ w ∉ conjClosure S₀}) (fun _ hw ↦ hw.1) hu
   have hA_off (u : FinPlace E') (hu : u ∈ A) : u.below E ∉ (S₀ : Set (FinPlace E)) := by
     rcases hu with ⟨-, h_notMem⟩ | ⟨-, h_notMem⟩
     · exact fun hS₀ ↦ h_notMem (.inl hS₀)
