@@ -319,7 +319,7 @@ lemma neighbourAxis_mem (i : PairIndex X X'') : neighbourAxis X X'' P i ∈ Ô E
 lemma neighbourMatrix_apply [DecidableEq X] [DecidableEq X''] (i m : PairIndex X X'') :
     neighbourMatrix X X'' P π i m = (if i = m then 1 else 0) +
       neighbourScale P π * (neighbourAxis X X'' P i * star (neighbourAxis X X'' P m)) := by
-  simp [neighbourMatrix, vecMulVec_apply, one_apply]
+  simp [neighbourMatrix, vecMulVec_apply, Matrix.one_apply]
 
 /-- Off `P` and its conjugate, `γ = neighbourMatrix X X'' P π` is the identity. -/
 lemma neighbourMatrix_apply_of_notMem [DecidableEq X] [DecidableEq X'']
@@ -529,7 +529,7 @@ lemma commute_neighbourMatrix_diagonal [Fact N.Prime] (hP : IsSplitLevel P N)
     grind [neighbourScale, hκ.idem_mul_apply hP i, hκ.star_idem_mul_apply hP i]
   ext i m : 1
   rw [mul_diagonal, diagonal_mul]
-  simp only [neighbourMatrix, Matrix.add_apply, Matrix.smul_apply, smul_eq_mul, one_apply]
+  simp only [neighbourMatrix, Matrix.add_apply, Matrix.smul_apply, smul_eq_mul, Matrix.one_apply]
   grind [h_scale i, h_scale m]
 
 /-- The diagonal matrix of the factors `κ`, each of which has norm one, as a finite point of the
@@ -609,7 +609,7 @@ lemma kroneckerOne_smul {ι : Type} [Fintype ι] [DecidableEq ι] (g : Gf E ι) 
     (i : ι × X') :
     (kroneckerOne X' ι g • x) i = ((g : Matrix ι ι (𝔸f E)) *ᵥ fun l : ι ↦ x (l, i.2)) i.1 := by
   change ((kroneckerOne X' ι g : Matrix (ι × X') (ι × X') (𝔸f E)) *ᵥ x) i = _
-  simp [coe_kroneckerOne, mulVec, dotProduct, Fintype.sum_prod_type, one_apply]
+  simp [coe_kroneckerOne, mulVec, dotProduct, Fintype.sum_prod_type, Matrix.one_apply]
 
 omit [WeilData E] in
 /-- The conjugate of `residueOverN y` (the adele `y w / N` at `w ∈ P`, `0` elsewhere) is unchanged
