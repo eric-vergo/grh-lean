@@ -137,7 +137,7 @@ lemma New.Rows.exists_unitary_mul_triangular_of_pos {n : Type} [Fintype n] [Deci
     have right_apply (j : n) : (signMatrix s * (c - (τ : ℂ) • vecMulVec v β)) j l =
         s j * (c j l - τ * (v j * β l)) := by
       simp [signMatrix, vecMulVec_apply]
-    rw [gram, mul_apply, sum_eq_single l]
+    rw [gram, Matrix.mul_apply, sum_eq_single l]
     · rw [right_apply, conjTranspose_apply]
       obtain rfl | hne := eq_or_ne i l
       · have diag : r i * p (o i) * r i * (p (o i) - τ * x i) = 1 := by
@@ -519,7 +519,7 @@ lemma New.Rows.ofMatrix_transvection_mem_Gamma {E n : Type} [Field E] [CMType E]
       (1 - p • vecMulVec y (star y) * V.J).map toAdele := by
     ext1 i j
     simp [m_eq, Space.vecAtPoint, star_mulVec, -coe_units_inv, vecMulVec_mul, mul_sub,
-      mul_vecMulVec, sub_mul, ← Space.map_J, vecMul_apply_eq_sum, one_apply, vecMulVec_apply,
+      mul_vecMulVec, sub_mul, ← Space.map_J, vecMul_apply_eq_sum, Matrix.one_apply, vecMulVec_apply,
       apply_ite toAdele]
   exact fun i j ↦ ⟨_, (Matrix.ext_iff.2 h_conj i j).symm⟩
 
@@ -534,14 +534,14 @@ lemma New.Rows.ofMatrix_transvection_snd_mem_principalLevel {E n : Type} [Field 
   have h_int (i j : n) : (Y i).2 * star (Y j).2 ∈ Ô E := mul_mem (hY i) (star_mem_Ô (hY j))
   have h_entry (i j : n) : ((ofMatrix m hm).2.val : Matrix n n (𝔸f E)) i j =
       (1 : Matrix n n (𝔸f E)) i j - algebraMap (𝓞 E) (𝔸f E) p * ((Y i).2 * star (Y j).2) := by
-    simp [m_eq, stdForm, one_apply, apply_ite snd, vecMulVec_mul, ← adeleMatrix_snd,
+    simp [m_eq, stdForm, Matrix.one_apply, apply_ite snd, vecMulVec_mul, ← adeleMatrix_snd,
       vecMulVec_apply,
       vecMul_diagonal, ← coe_algebraMap_Ô]
     rfl
   refine ⟨mem_stdLevel.2 fun i j ↦ ?_, fun i j ↦
     ⟨-((Y i).2 * star (Y j).2), neg_mem (h_int i j), ?_⟩⟩
   · rw [h_entry]
-    exact sub_mem (by simp [one_apply, ite_mem]) (mul_mem (algebraMap (𝓞 E) (Ô E) p).2 (h_int i j))
+    exact sub_mem (by simp [Matrix.one_apply, ite_mem]) (mul_mem (algebraMap (𝓞 E) (Ô E) p).2 (h_int i j))
   · simp [h_entry]
 
 /-- Peaks of a holomorphic form lie away from the cusp. The order `o` puts the signs `+1` first. Let
@@ -569,8 +569,7 @@ theorem New.Rows.IsPeak.le_firstMinimum {E n : Type} [Field E] [CMType E] [Finty
   have le_sup (x : G E s) : ‖F x‖ ≤ C := le_ciSup hg.bddAbove x
   have C_pos : 0 < C := (norm_pos_iff.2 hg.ne_zero).trans_le (le_sup g)
   have le_one : (√(A * A'))⁻¹ ≤ 1 := by
-    grw [← hA, ← hA']
-    bound
+    exact inv_le_one_of_one_le₀ (Real.one_le_sqrt.2 (one_le_mul_of_one_le_of_one_le (by linarith) hA'))
   refine le_firstMinimum_iff.2 ⟨le_one, fun y hy hy₀ ↦ ?_⟩
   by_contra! short
   -- a lattice vector `y` of length less than `1` is isotropic; `Y` are its coordinates at `g`
@@ -611,7 +610,7 @@ theorem New.Rows.IsPeak.le_firstMinimum {E n : Type} [Field E] [CMType E] [Finty
     simp [field]
   have t_eq (w : InfinitePlace E) : ((t.1 w : USign s) : Matrix n n ℂ) =
       1 - Φ w p.val • vecMulVec (fun i ↦ (Y i).1 w) (star fun i ↦ (Y i).1 w) * signMatrix s := by
-    simp [← ext_iff, t, m, stdForm, signMatrix, one_apply, apply_ite, ite_apply,
+    simp [← ext_iff, t, m, stdForm, signMatrix, Matrix.one_apply, apply_ite, ite_apply,
       ← adeleMatrix_fst, vecMulVec_apply]
   have schwarz : ‖F g‖ ≤ C * exp (2 + -(2 * π)) := by
     simpa [Prod.mk_one_one] using norm_le_of_transvection_invariant ho h_gap h_wt hA (h_hol g)
