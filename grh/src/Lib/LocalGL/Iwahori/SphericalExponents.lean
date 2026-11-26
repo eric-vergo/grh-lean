@@ -76,7 +76,7 @@ lemma exists_v_entry_eq_one_of_mem_intGL {k : GL (Fin N) F} (hk : k ∈ intGL (F
   have h_term_lt (r : Fin N) : v (k⁻¹ m r * k r m) < 1 := by
     grind [mem_intGL, mul_lt_of_lt_of_le_one, v.mem_integer_iff]
   have h_lt : v (∑ r, k⁻¹ m r * k r m) < 1 := v.map_sum_lt' one_pos fun r _ ↦ h_term_lt r
-  have h_sum : ∑ r, k⁻¹ m r * k r m = 1 := by rw [← mul_apply, k.inv_mul, one_apply_eq]
+  have h_sum : ∑ r, k⁻¹ m r * k r m = 1 := by rw [← Matrix.mul_apply, k.inv_mul, one_apply_eq]
   rw [h_sum, map_one] at h_lt
   exact lt_irrefl 1 h_lt
 
@@ -139,7 +139,7 @@ private def residueCol (m : Fin N) (p : blockParahoric (F := F) (N := N) (min m)
 private lemma reduceParahoric_mulVec_residueCol (k p : blockParahoric (F := F) (N := N) (min m)) :
     reduceParahoric m k *ᵥ residueCol m p = residueCol m (k * p) := by
   ext i
-  simp [residueCol, map_mul, mulVec, dotProduct, mul_apply]
+  simp [residueCol, map_mul, mulVec, dotProduct, Matrix.mul_apply]
 
 /-- Let `x` be fixed by the `p ∈ blockParahoric (min m)` with column `m` in `𝔭` off the diagonal.
 Then `ρ u x` depends only on column `m` of `u` modulo `𝔭`. -/
