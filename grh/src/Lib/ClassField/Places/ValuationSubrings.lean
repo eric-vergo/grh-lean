@@ -329,7 +329,7 @@ lemma IsPlaceOver.exists_above [Algebra.IsAlgebraic L Ω] :
     ∃ u : FinPlace L, IsPlaceOver A u ∧ u.below K = v := by
   -- The norm of `v` is nonzero and of value below `1`, so `A` lies over some place `u` of `L`.
   -- `↓`: `map_ne_zero` applies before simp unfolds the casts.
-  have h_ne : algebraMap K Ω (absNorm v.asIdeal : 𝓞 K) ≠ 0 := by simp [↓map_ne_zero]
+  have h_ne : algebraMap K Ω (absNorm v.asIdeal : 𝓞 K) ≠ 0 := by simp [↓map_ne_zero, v.ne_bot]
   have h_val : A.valuation (algebraMap K Ω (absNorm v.asIdeal : 𝓞 K)) < 1 :=
     (h _).mpr (absNorm_mem _)
   obtain ⟨u, hu⟩ : ∃ u : FinPlace L, IsPlaceOver A u :=

@@ -321,6 +321,7 @@ lemma resH2_subgroupOf_eq_zero_symm {U V : Subgroup Γ} {α : M.H2} :
   -- Pull the vanishing class back along the identification of the two copies of `U ⊓ V`.
   let swap : V.subgroupOf U →ₜ* U.subgroupOf V :=
     .mk (.mk' (fun g ↦ ⟨⟨g, Subgroup.mem_subgroupOf.mp g.prop⟩, g.val.prop⟩) (by tauto))
+      ((continuous_subtype_val.comp continuous_subtype_val).subtype_mk _ |>.subtype_mk _)
   intro h_zero
   -- By definition, restricting to `U` and then to `U ⊓ V` is the pull-back along `swap` of
   -- restricting to `V` and then to `U ⊓ V`.
