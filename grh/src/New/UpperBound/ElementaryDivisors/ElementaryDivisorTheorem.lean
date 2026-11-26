@@ -131,10 +131,10 @@ lemma card_add_card_le_mul_finrank [Fintype X] [Fintype I] [DecidableEq X] [Deci
     (R.fromRows (U⁻¹.val - U⁻¹.val * Q * R)) ?_ ?_
   · rw [h_blocks]
     rintro (j | j) hj (i | i)
-    · simp [one_apply]
+    · simp [Matrix.one_apply]
     · simp
     · simp [hRU i (inr_mem_disjSum.1 hj)]
-    · simp [one_apply, mul_apply (N := R * U.val), hRU _ (inr_mem_disjSum.1 hj)]
+    · simp [Matrix.one_apply, Matrix.mul_apply (N := R * U.val), hRU _ (inr_mem_disjSum.1 hj)]
   · rintro (j | j) hj
     exacts [hQ j, hU j (inr_mem_disjSum.1 hj)]
 
@@ -329,7 +329,7 @@ lemma pairingMap_mul_nearInverse_apply (u : Ed → GL H O) (Av : Matrix L L O) (
       = ∑ x : H × Ed, (fun l : L ↦ Q' (x, l) i) ⬝ᵥ (B *ᵥ fun l : L ↦ R' j (x, l)) := by
         -- The matrix `1 ⊗ₖ B` is block diagonal over `H × Ed`.
         rw [h_product]
-        simp [mul_apply, Fintype.sum_prod_type (α₁ := H × Ed), one_apply, dotProduct, mulVec]
+        simp [Matrix.mul_apply, Fintype.sum_prod_type (α₁ := H × Ed), Matrix.one_apply, dotProduct, mulVec]
     _ = _ := by simp only [hB]
 
 end Edgewise
@@ -938,8 +938,8 @@ lemma IsEdgePairing.pairingMap_mul_nearInverse_one {H Ed ι : Type*} [Fintype H]
     _ = ∑ x : H × Ed, a * ∑ β : Exponents N k n, R' j (x, β) * Q' (x, β) i := by
         refine sum_congr rfl fun x _ ↦ ?_
         rw [hb.pairing_mul_eq_pow_mul_dotProduct, dotProduct_comm, dotProduct]
-    _ = a * (R' * Q') j i := by rw [mul_apply, Fintype.sum_prod_type (α₁ := H × Ed), mul_sum]
-    _ = (a • (1 : Matrix ι ι O)) i j := by simp [hR', one_apply, eq_comm]
+    _ = a * (R' * Q') j i := by rw [Matrix.mul_apply, Fintype.sum_prod_type (α₁ := H × Ed), mul_sum]
+    _ = (a • (1 : Matrix ι ι O)) i j := by simp [hR', Matrix.one_apply, eq_comm]
 
 /-- A near inverse. Let `T` be a Frobenius cycle with `N` letters and prime `p = w ^ 2`, `k` the
 rank, `n` the degree and `c₀ = T.multinomialExponent k`. The weights `b` pair forms, with
