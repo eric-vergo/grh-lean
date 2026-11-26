@@ -156,7 +156,7 @@ lemma sum_log_weight :
       log (D.weight τ) = log D.a - D.logX₁ - if τ ∈ D.bPlaces then D.logX - D.logX₁ else 0 := by
     rw [cast_weight]
     split_ifs <;> simp [log_div, (HasLogBound.pos D).ne']
-  simp [h_log, sum_sub_distrib, mul_sub]
+  simp [h_log, sum_sub_distrib, mul_sub, Finset.univ_inter]
 
 /-- Let `s_main = D.mainPrimeSum = a (log a - f⁻¹ ∑_τ log κ(τ) + c₁)`, the sum running over all `f`
 places with weights `κ = D.weight`. Then `#Φ_a s_main` equals
