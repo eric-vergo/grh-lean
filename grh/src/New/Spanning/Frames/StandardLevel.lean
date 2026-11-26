@@ -212,7 +212,7 @@ lemma IntegralPlace.exists_right_invariant_measure_besselH :
   let η : Measure T.G := ν.map Subtype.val
   have η_apply (S : Set T.G) : η S = ν (Subtype.val ⁻¹' S) := h_emb.map_apply ν S
   have η_box : η K = 1 :=
-    calc η K = haarMeasure K₀ (Subtype.val ⁻¹' (K : Set T.G))⁻¹ := by rw [η_apply, inv_apply]
+    calc η K = haarMeasure K₀ (Subtype.val ⁻¹' (K : Set T.G))⁻¹ := by rw [η_apply, Measure.inv_apply]
       _ = 1 := haarMeasure_self
   have η_right (s : T.G) (hs : s ∈ H) : η ∗ₘ dirac s = η := by
     have h_pres : MeasurePreserving (· * s) η η :=
@@ -613,7 +613,7 @@ lemma exists_intGL_mulVec_mem_commonVectors {x y u k : T.G}
     · have h_last (a : Fin 𝔰.ϱ) : (N * Y) (eStar a) j = 0 := h_zero (inr (inl a)) j
       have hu_inv : u⁻¹ ∈ T.besselU := inv_mem hu
       generalize u⁻¹ = u' at hu_inv ⊢
-      simp [Matrix.mul_assoc, mul_apply (N := N * Y), apply_inr_of_mem_besselU hu_inv, h_last,
+      simp [Matrix.mul_assoc, Matrix.mul_apply (N := N * Y), apply_inr_of_mem_besselU hu_inv, h_last,
         Matrix.one_apply]
   -- so `(x z)⁻¹ = k⁻¹ y⁻¹ u⁻¹ y x⁻¹` acts on the columns as `k⁻¹ x⁻¹`
   let W : Matrix 𝔰.BesselIndex (Fin d) A := x⁻¹.val.val * (F.orthonormalPart * Y)
@@ -624,7 +624,7 @@ lemma exists_intGL_mulVec_mem_commonVectors {x y u k : T.G}
       _ = (k⁻¹ * y⁻¹).val.val * (N * Y) := by rw [h_fix]
       _ = k⁻¹.val.val * W := by simp [N, W, Matrix.mul_assoc]
   have h_int : IsIntMatrix integers W :=
-    (inv_mem hx).1.isIntMatrix.mul (by simp [mul_apply, h.isIntMatrix_basisMatrix _, Y,
+    (inv_mem hx).1.isIntMatrix.mul (by simp [Matrix.mul_apply, h.isIntMatrix_basisMatrix _, Y,
       hV.isIntMatrix _, IsIntMatrix, mul_mem, sum_mem])
   have h_cong : IsIntMatrix integers (F.levelUnit⁻¹.val • (W - k⁻¹.val.val * W)) := by
     simpa [← smul_neg, Matrix.sub_mul, Units.smul_def] using ((inv_mem hk).2.mul h_int).neg
@@ -913,7 +913,7 @@ theorem groupMeasure_boxSet_le : F.groupMeasure F.boxSet ≤ ENNReal.ofReal (1 +
         Fin F.blockRank ⊕ Fin F.blockRank →
           Fin 2 ⊕ FloorPairs l (m + 1) ⊕ ι ⊕ FloorPairs l (m + 1)) := by
       simpa only [comp_elim] using inr_injective.comp (h_mid.comp h_blocks)
-    simpa [SemilocalField.volume_O, volume_coordinateBox, Size.vecsOfSize, -Sum.forall] using!
+    simpa [SemilocalField.volume_O, volume_coordinateBox, Size.vecsOfSize, Set.univ_inter, -Sum.forall] using!
       h_solved.setLIntegral_le isOpen_O.measurableSet h_disjoint measurable_one
   calc F.groupMeasure F.boxSet
     _ ≤ F.quotientMeasureFrom 0 {g : T.G | F.IsNear (𝔰.ϱ + 2) (g * 1)} := by
