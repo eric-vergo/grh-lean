@@ -475,7 +475,7 @@ lemma mulVec_mem_baseLattice (u : Gf E κ) {s : ℕ} {y : Matrix κ (Fin s) E}
   -- `vecAtPoint_move` must fire before `vecAtPoint` is unfolded.
   intro j
   change (((stdSpace E κ).move (1, u)).vecAtPoint (y *ᵥ B i) j).2 ∈ Ô E
-  simpa [↓vecAtPoint_move, mulVec, mul_apply, Space.vecAtPoint, dotProduct, snd_sum] using
+  simpa [↓vecAtPoint_move, mulVec, Matrix.mul_apply, Space.vecAtPoint, dotProduct, snd_sum] using
     h_int j i
 
 /-- Let `u` be a finite adelic unitary matrix. A nonzero vector of the lattice
