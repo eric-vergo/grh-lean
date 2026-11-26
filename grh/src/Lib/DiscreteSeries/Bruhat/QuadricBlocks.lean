@@ -148,20 +148,22 @@ theorem IsDisintegration.lintegral_lintegral_comm {μ : Measure (κ → A)} {μ'
     l.comap (fun p : skewAdjoint A × (B → A) ↦ β - p.1) (by fun_prop)
   have h_meas : Measurable fun p : skewAdjoint A × (κ → A) ↦
       ∫⁻ z : B → A, f (p.2, z) ∂l' (β - p.1) :=
-    Measurable.lintegral_kernel_prod_right (κ := k) (by fun_prop)
+    Measurable.lintegral_kernel_prod_right (κ := k) (f := fun p z ↦ f (p.2, z))
+      (hf.comp (measurable_fst.snd.prodMk measurable_snd))
   have h_meas' : Measurable fun p : skewAdjoint A × (B → A) ↦
       ∫⁻ y : κ → A, f (y, p.2) ∂l (β - p.1) :=
-    Measurable.lintegral_kernel_prod_right (κ := k') (by fun_prop)
+    Measurable.lintegral_kernel_prod_right (κ := k') (f := fun p y ↦ f (y, p.2))
+      (hf.comp (measurable_snd.prodMk measurable_fst.snd))
   calc
     _ = ∫⁻ b : skewAdjoint A, ∫⁻ y : κ → A, ∫⁻ z : B → A, f (y, z) ∂l' (β - b) ∂l b ∂skewMeasure :=
-      hl.lintegral_quadricIndex h_meas
+      hl.lintegral_quadricIndex (G := fun p ↦ ∫⁻ z, f (p.2, z) ∂l' (β - p.1)) h_meas
     _ = ∫⁻ b : skewAdjoint A, ∫⁻ y : κ → A, ∫⁻ z : B → A, f (y, z) ∂l' b ∂l (β - b)
           ∂skewMeasure := by
       rw [← lintegral_sub_left_eq_self _ β]
       simp only [_root_.sub_sub_cancel]
     _ = ∫⁻ b : skewAdjoint A, ∫⁻ z : B → A, ∫⁻ y : κ → A, f (y, z) ∂l (β - b) ∂l' b ∂skewMeasure :=
-      lintegral_congr fun b ↦ lintegral_lintegral_swap (by fun_prop)
-    _ = _ := (hl'.lintegral_quadricIndex h_meas').symm
+      lintegral_congr fun b ↦ lintegral_lintegral_swap (f := fun y z ↦ f (y, z)) hf.aemeasurable
+    _ = _ := (hl'.lintegral_quadricIndex (G := fun p ↦ ∫⁻ y, f (y, p.2) ∂l (β - p.1)) h_meas').symm
 
 omit [TopologicalSpace A] [MeasureSpace A] [Place A] [Fintype B] [Fintype κ] in
 /-- Let T be hermitian and let e split κ into κ₂ and B so that the basis vectors indexed by B are
@@ -265,7 +267,7 @@ theorem IsDisintegration.isSolvedIn_quadricMeasure [DecidableEq B] [DecidableEq 
       ∫⁻ x, f x ∂(volume ⊗ₘ ζ).map join = ∫⁻ y, ∫⁻ z, f (join (y, z)) ∂ζ y ∂volume := by
         rw [lintegral_map hf h_join, lintegral_compProd (f := fun p ↦ f (join p)) (hf.comp h_join)]
       _ = ∫⁻ z, ∫⁻ y, f (join (y, z)) ∂q (β - quadricIndex (star z ⬝ᵥ 1 *ᵥ z)) ∂volume :=
-        h_dis.lintegral_lintegral_comm hl β (hf.comp h_join)
+        h_dis.lintegral_lintegral_comm (f := fun p ↦ f (join p)) hl β (hf.comp h_join)
       _ = ∫⁻ z, ∫⁻ x, f (flatChart T β (coords (z, x))) ∂volume.prod skewMeasure ∂volume := by
         refine lintegral_congr fun z ↦ ?_
         rw [hq, lintegral_map (by fun_prop) (by fun_prop)]
