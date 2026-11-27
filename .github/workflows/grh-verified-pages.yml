@@ -9,10 +9,10 @@ permissions:
   contents: read
 
 env:
-  SOURCE_COMMIT: 3dc897b2852a91e32c160a41e9e2ce644dbe8da4
-  RELEASE_TAG: grh-blueprint-3dc897b
-  ARCHIVE: grh-pages-3dc897b.tar.gz
-  SHA256: 702c3e15cc99e34411f21646633ed1f2f25db43c094f2404a11d22533533d6ef
+  SOURCE_COMMIT: 3f525f011dedf8822bd3a9afe82fe3eeb86d70f3
+  RELEASE_TAG: grh-blueprint-3f525f0
+  ARCHIVE: grh-pages-3f525f0.tar.gz
+  SHA256: 825f14e845cec0e057b674a6a5d570e1d8f18b1e6662f610bd3ccd92b1e8a3a5
 
 jobs:
   site:
