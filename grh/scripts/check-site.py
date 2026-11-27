@@ -3,6 +3,7 @@ import json
 import re
 import sys
 from collections import Counter
+from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urljoin, urlsplit
@@ -128,7 +129,7 @@ class Chapter(HTMLParser):
         self.section_depth = 0
         self.past_opening = False
         self.in_opening_paragraph = False
-        self.divs = []
+        self.containers = []
         self.proof = None
         self.proof_body = False
         self.feed(filepath.read_text())
@@ -140,21 +141,22 @@ class Chapter(HTMLParser):
             self.section_depth += 1
             if self.section_depth > 1:
                 self.past_opening = True
-        if tag == 'p' and self.section_depth == 1 and not self.past_opening and 'panel' not in self.divs:
+        if tag == 'p' and self.section_depth == 1 and not self.past_opening and 'panel' not in self.containers:
             self.in_opening_paragraph = True
-        if tag == 'div':
+        if tag in ('div', 'details'):
             facet = attrs.get('data-bp-facet')
             node = attrs.get('data-bp-node')
             role = ''
             if facet and node:
                 role = 'panel'
                 if facet == 'proof':
+                    check(tag != 'details' or 'open' in attrs, f'{node}: proof is collapsed on first load')
                     self.proof = node
                     self.facets.setdefault(node, [])
             if 'bp_kind_proof_content' in attrs.get('class', '').split():
                 role = 'proof-body'
                 self.proof_body = True
-            self.divs.append(role)
+            self.containers.append(role)
 
     def handle_data(self, data):
         if self.in_opening_paragraph:
@@ -167,12 +169,26 @@ class Chapter(HTMLParser):
             self.section_depth -= 1
         elif tag == 'p':
             self.in_opening_paragraph = False
-        elif tag == 'div' and self.divs:
-            role = self.divs.pop()
+        elif tag in ('div', 'details') and self.containers:
+            role = self.containers.pop()
             if role == 'proof-body':
                 self.proof_body = False
             elif role == 'panel':
                 self.proof = None
+
+
+def check_source_fallbacks(file):
+    """A failed syntax-highlighting pass must still leave a readable formal proof."""
+    html = file.read_text()
+    marker = r'data-lean-source="([^"]+)">'
+    incomplete = re.search(marker + r'<div class="bp_external_decl_rendered">', html)
+    check(not incomplete, f'{file}: declaration panel lacks its Lean source')
+    for match in re.finditer(marker + r'<details class="grh-source-fallback">.*?'
+                             r'<pre><code>(.*?)</code></pre></details>', html, re.S):
+        module, start, end = re.fullmatch(r'([^:]+):(\d+):\d+-(\d+):\d+', match[1]).groups()
+        lines = (Path('src') / module).read_text().splitlines()
+        check(unescape(match[2]) == '\n'.join(lines[int(start) - 1:int(end)]),
+              f'{file}: fallback proof differs from {match[1]}')
 
 
 def check_chapters(site):
@@ -182,6 +198,7 @@ def check_chapters(site):
     pages = {name: Page(site / name / 'index.html') for name in chapters}
     narrative = {name: Chapter(site / name / 'index.html') for name in chapters}
     for name, page in narrative.items():
+        check_source_fallbacks(site / name / 'index.html')
         check(''.join(page.opening).strip(), f'{name}: chapter opens without explanatory prose')
     for path, anchor in links:
         name = Path(path).parts[0]

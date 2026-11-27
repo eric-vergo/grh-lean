@@ -84,10 +84,45 @@ private def withProofLinks (source : String) (site : FilePath) : IO String := do
   unless entries.isEmpty do throw <| IO.userError "Concordance includes rows absent from INDEX.md"
   return String.intercalate "\n" lines.toList
 
+/-- When a declaration cannot be syntax-highlighted, Verso supplies its signature and
+compiler source range. Include the complete Lean text for that range in the same panel. -/
+private def withSourceFallbacks (html : String) : IO String := do
+  let attr := "data-lean-source=\""
+  let marker := "\"><div class=\"bp_external_decl_rendered\">"
+  let parts := html.splitOn attr
+  let mut result := parts.head!
+  for part in parts.tail! do
+    result := result ++ attr
+    let range := (part.splitOn "\"").head!
+    if !part.startsWith (range ++ marker) then
+      result := result ++ part
+      continue
+    let [file, pos, span, _] := range.splitOn ":"
+      | throw <| IO.userError s!"Invalid declaration source range: {range}"
+    let some first := pos.toNat? | throw <| IO.userError s!"Invalid source line: {range}"
+    let some last := (span.splitOn "-").getLast!.toNat?
+      | throw <| IO.userError s!"Invalid source end: {range}"
+    let some atlas := ← fileLink file
+      | throw <| IO.userError s!"Missing source atlas module: {file}"
+    unless atlas.startsWith "../source/" do throw <| IO.userError s!"Unexpected source: {file}"
+    let lines ← IO.FS.lines (FilePath.mk "src" / file)
+    unless 0 < first && first ≤ last && last ≤ lines.size do
+      throw <| IO.userError s!"Source range outside {file}: {first}–{last}"
+    let code := String.intercalate "\n" (lines.extract (first - 1) last).toList
+    let escaped := ((code.replace "&" "&amp;").replace "<" "&lt;").replace ">" "&gt;"
+    let href := (atlas.dropPrefix "../").toString ++ "#L" ++ toString first
+    result := result ++ range ++ "\"><details class=\"grh-source-fallback\"><summary>Lean source</summary>" ++
+      "<a href=\"" ++ href ++ "\">Open in the source atlas</a><pre><code>" ++ escaped ++
+      "</code></pre></details><div class=\"bp_external_decl_rendered\">" ++
+      (part.dropPrefix (range ++ marker)).toString
+  return result
+
 /-- Old subsection URLs keep both section bookmarks and deep links to proof panels. -/
 private def writeSectionLinks (site : FilePath) : IO Unit := do
+  let mut chapters : Std.HashSet String := {}
   for line in (← IO.FS.lines "blueprint/section-links.tsv") do
     let [path, anchor] := line.splitOn "\t" | throw <| IO.userError s!"Invalid section link: {line}"
+    chapters := chapters.insert (path.splitOn "/").head!
     let dir := site / path
     let target := "../#" ++ anchor
     IO.FS.createDirAll dir
@@ -95,6 +130,13 @@ private def writeSectionLinks (site : FilePath) : IO Unit := do
       "<title>GRH blueprint section</title><script>location.replace('../'+location.search+" ++
       "(location.hash||'#" ++ anchor ++ "'))</script><meta http-equiv=\"refresh\" content=\"0;url=" ++
       target ++ "\"><p><a href=\"" ++ target ++ "\">Read this section in the chapter</a></p></html>\n"
+  -- Side-by-side Verso rendering folds the informal proof even when foldProofBlocks is false.
+  -- Open only the prose on first load. Native details keep the reader’s toggle functional.
+  for chapter in chapters do
+    let file := site / chapter / "index.html"
+    let html ← withSourceFallbacks (← IO.FS.readFile file)
+    let shell := "class=\"bp_wrapper bp_kind_proof_wrapper"
+    IO.FS.writeFile file <| html.replace ("<details " ++ shell) ("<details open " ++ shell)
 
 private def render (dest : FilePath) (doc : String) : IO Unit := do
   let source ← IO.FS.readFile (doc ++ ".md")
