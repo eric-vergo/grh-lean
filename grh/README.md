@@ -13,7 +13,7 @@ This is the readable edition, about 300,000 lines of code. A compact edition, ab
 
 ## Read the blueprint
 
-[Open the online blueprint](https://eric-vergo.github.io/grh-lean/) or read the chapter sources below.
+[Open the online blueprint](https://eric-vergo.github.io/grh-lean/) or read the chapter sources below. The [results index](https://eric-vergo.github.io/grh-lean/reading/index.html#steps-of-the-argument) links the original edition’s indexed arguments to their explanations. Each theorem entry pairs its informal deduction with the corresponding Lean declaration.
 
 1. [From zeros to a comparison of volumes](blueprint/GrhBlueprint/Parts/Orientation.lean)
 2. [Theorem A. Short lifts and their denominators](blueprint/GrhBlueprint/Parts/ShortForms.lean)

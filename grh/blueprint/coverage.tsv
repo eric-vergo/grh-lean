@@ -1,0 +1,90 @@
+The last step	`D.span_short_integralRamified_eq_top`, `D.indexLe_normalizedPoincare`	grh-guide-short
+The last step	`D.enough_forms`	grh-guide-spanning
+The last step	`TwistedLattice.covolume_add_index_nonneg`	grh-c-twisted-lattice
+The last step	`D.integral_forms_long`	grh-guide-long
+The last step	`star_inequality`	grh-guide-star
+The last step	`eventually_abs_primeRemainder_le`	grh-pnt-far
+The last step	`eventually_primeRemainder_le_rpow`	grh-guide-error
+The last step	`LFunction_ne_zero_of_primeRemainder_le`	grh-zero-free-criterion
+The last step	`grh`	grh-guide-half
+Steps of the argument	A weighted prime-counting error term and its poles at zeros of L-functions	grh-polar-transform
+Steps of the argument	The one-sided criterion for a zero-free half-plane	grh-zero-free-criterion
+Steps of the argument	The height of a family over all places: products, monotonicity and the product formula	grh-c-product-formula
+Steps of the argument	Twisted lattices	grh-c-twisted-lattice
+Steps of the argument	Divisibility of the jets of a series with the normal form along products of minors	grh-ab-5
+Steps of the argument	Scale of theta Taylor series, tight frames, jet series along lines	grh-ab-6
+Steps of the argument	Sharpness of the valuation bound	grh-ab-7
+Steps of the argument	Galois conjugates of jets of theta functions and archimedean bounds for jets	grh-ab-8
+Steps of the argument	Congruence levels inside the stabilizer of a glued lattice	grh-ab-9
+Steps of the argument	The seesaw identity and the top of the chain	grh-guide-seesaw
+Steps of the argument	Elementary divisors of one scaled Hecke operator on the integral source forms	grh-ab-11
+Steps of the argument	N-adic valuation of the lifts between the X_j at the level prime N	grh-ab-12
+Steps of the argument	The divisibility of the composite lift at each prime	grh-ab-13
+Steps of the argument	Numerical inequalities between the parameters of the data	grh-ab-14
+Steps of the argument	Gauss filtrations, Stepanov's count and the root lemma	grh-ab-15
+Steps of the argument	Averaging: removing the terms of large defect in all Levi translates at once	grh-ab-16
+Steps of the argument	The dimension of the forms of bounded defect	grh-ab-17
+Steps of the argument	The dimension of the target and one good translate of the Poincaré map	grh-ab-18
+Steps of the argument	Equality of multiplicities	grh-ab-19
+Steps of the argument	The Bessel function at a real place: decay and cut	grh-ab-20
+Steps of the argument	Filling data from admissible data, with Bessel systems at the real places	grh-ab-21
+Steps of the argument	Residue lifts, lattice charts and common flag vectors: which filling terms contribute	grh-ab-22
+Steps of the argument	The second moments of the operators `P* s P`, and good forms	grh-guide-moments
+Steps of the argument	The remaining terms: a bound for their sum	grh-ab-24
+Steps of the argument	One-sided Poisson summation, sums over frequencies, and the sieve over all places	grh-ab-25
+Steps of the argument	Main-term bound for the second moment over open reductions fixing given vectors	grh-ab-26
+Steps of the argument	The share of non-allowed polynomials and the bad share	grh-ab-27
+Steps of the argument	The lift Θ_W, its adjoint and its norm	grh-c-adjoint
+Steps of the argument	Exchange of theta integrals for matched functions and for data modulo an ideal	grh-c-exchange
+Steps of the argument	One square: up then down against down then up	grh-c-square
+Steps of the argument	Explicit real data: the exchange identity for a definite space with determinant data	grh-c-matching
+Steps of the argument	Norms along the chain of theta lifts and injectivity of ι_ϑ	grh-c-chain-injective
+Steps of the argument	Vanishing of forms on Y₀ orthogonal to the deep level on Ỹ^0_0	grh-c-deep-level
+Steps of the argument	The cost of one lift: a height bound for Z_j(1)/Z_j(ξ^j)	grh-c-one-determinant
+Steps of the argument	The first factors: P_V along W_j and W^add, integrality and size	grh-c-series-size
+Steps of the argument	Three exchanges: the carrier, the third exchange and its left side as a theta series	grh-c-three-exchanges
+Steps of the argument	Products span	grh-c-test-functions
+Steps of the argument	The first factors and the gluing maps	grh-c-period-injective
+Steps of the argument	The tower of descents and the periods of false lifts	grh-c-false-periods
+Steps of the argument	Heights of ratios of twisted to untwisted Hecke values via rank-one theta lifts	grh-c-value-heights
+Steps of the argument	All data have regular families of m-fold twists	grh-c-regular-family
+Steps of the argument	Main summand conditions on Hodge–Tate jumps and existence of main summands for Hecke eigensystems	grh-c-galois-summands
+Steps of the argument	Taylor–Wiles places in a triangle for the even classes, with prescribed Frobenii	grh-c-prime-triangle
+Steps of the argument	The family of operators at the auxiliary places	grh-c-diagonal-operator
+Steps of the argument	Constants, trace relations, lattices and local defects for Ribet's method	grh-c-tame-relations
+Steps of the argument	Ribet's element for conjugate self-dual representations	grh-c-ribet-columns
+Steps of the argument	The bound for denominators	grh-c-clearing-bound
+Steps of the argument	The descent	grh-c-selmer-descent
+Steps of the argument	Roots of unity `ζ` with polynomials hardly more divisible at `ζ - 1` than at given points	grh-c-roots-of-unity
+Steps of the argument	The twisting theorem	grh-c-simultaneous-twist
+Steps of the argument	The defect of the dual of a summand at a place above ℓ	grh-c-local-defect
+Steps of the argument	Safe moves and the walk for pairings of sides of a Kummer chart	grh-c-safe-move
+Steps of the argument	Exponent bounds by cuts for paired sides of a Kummer chart: sparse thick letters, two sizes	grh-c-cut-windows
+Steps of the argument	Few low jumps: length lost to depth and a submodule cupping to zero	grh-c-few-low-jumps
+Steps of the argument	From sides to lattices: few low jumps, b-letters and tame types	grh-c-cup-exponent
+Steps of the argument	Localizing products of discrete series coefficients near the compact subgroups	grh-ab-56
+Steps of the argument	Lower bounds for periods by Laplace's method	grh-ab-57
+Steps of the argument	Forms of a cusp kernel on adelic unitary groups are cuspidal, decay rapidly, span finite dimension	grh-ab-58
+Steps of the argument	Adelic reduction theory, Mahler-Godement criterion, finite covolume, Weil's convergence criterion	grh-ab-59
+Steps of the argument	Hecke relation T⁺T⁻ = q^(n-2)(1+(q^n-1)e_sph) for the stabiliser of a line in GL_n(𝒪)	grh-ab-60
+Steps of the argument	Simple trace formulas for unitary groups differing only at real places agree	grh-ab-61
+Steps of the argument	Selberg principle: orbital integrals of a cusp idempotent vanish off the elliptic set	grh-ab-62
+Steps of the argument	X ∈ 𝔬[[y]] for the CM curve with integral a₁, by Hensel's lemma for the cubic	grh-integral-parameter
+Steps of the argument	Upper bound on trivialised Galois cocycles, replacing Greenberg–Wiles, without local duality	grh-c-cocycle-count
+Steps of the argument	One explicit integer bounding the length of the odd cocycle module of a CM field at every prime ℓ	grh-c-odd-cocycles
+Steps of the argument	Haar measures on the Bessel unipotent groups via coordinates, and σ-finiteness on the unitary group	grh-ab-66
+Steps of the argument	Measure of a quadric solved in a block of coordinates (Tonelli, Haar invariance)	grh-ab-67
+Steps of the argument	Bounds for the Fourier kernel ψ(ξ⟨v,y⟩) between solved measures (Fubini, Cauchy–Schwarz, Plancherel)	grh-ab-68
+Steps of the argument	Volume of ℂ^κ disintegrates along y ↦ y*y into measures on spheres (polar coordinates)	grh-ab-69
+Steps of the argument	First properties of c_λ on U(p,q) and its K-types via Flensted-Jensen's integral	grh-ab-70
+Steps of the argument	Integral GL(n+1)→GL(n) branching map with norm bound, unique up to scalar among unitarily equivariant maps	grh-ab-71
+Steps of the argument	Sums of residues of rational functions at simple real poles, via Lagrange interpolation	grh-interpolation
+Steps of the argument	Twisted conjugacy in I₁ t I₁ for GL_n over a local field	grh-ab-73
+Steps of the argument	Frobenius' dimension formula (basis-free) and irreducibility of the theta group	grh-theta-dimension
+Steps of the argument	Rallis inner product formula by doubling in Weil's range, for rapidly decreasing forms	grh-c-doubling
+Steps of the argument	Rallis inner product formula by doubling for sharp data, unramified integrals as a sum over cosets	grh-c-sharp-norm
+Steps of the argument	Non-vanishing of unitary theta lifts when the target rank exceeds twice the source rank, sharp data	grh-c-nonvanishing
+Steps of the argument	Constancy of automorphic functions on unitary groups with a hyperbolic plane (weak strong approx.)	grh-c-strong-approximation
+Steps of the argument	Product rule of the Weil representation without a Schrödinger model; cocycle trivial by local facts	grh-weil-product
+Steps of the argument	Rapid decay of unitary dual pair theta kernels for data supported on full-rank maps at split places	grh-kernel-decay
+Steps of the argument	One unfolding step of Bessel/Fourier–Jacobi periods under unitary theta lift, hook orbits	grh-unfold-step

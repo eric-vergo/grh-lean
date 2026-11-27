@@ -4,18 +4,23 @@ Authors: Eric Vergo, OpenAI Codex
 -/
 import VersoManual
 import VersoBlueprint
+import New.Reduction.PrimeSums
+import New.Reduction.ShortAndEnough
 
 open Verso.Genre Verso.Genre.Manual Informal
 
 #doc (Manual) "Finding the constructions in either edition" =>
 
 %%%
+htmlSplit := .never
 tag := "guide-atlas"
 %%%
 
+A reader following a formula from one edition to the other has two questions. Which file proves the corresponding result, and which quantities has the other edition actually bounded? Start with the map of the readable proof below, then use the compact map to locate its counterpart. The comparison follows a weight, an integral normalization and a determinant far enough to see why copying a formula between the editions can give the wrong bound.
+
 # Readable edition
 
-Start at `Statements` for the Mathlib propositions. Follow `New.Reduction` for parameters, admissible data, heights, the prime sums and the final comparison. The admissible-data record collects hypotheses for an individual comparison. Its existence theorem constructs such records as the cutoff varies. This separation lets the geometric estimates use explicit inequalities and leaves the asymptotic quantifiers to the analytic reduction.
+Start at `Statements` for the four predicates used in the public statements. Its explicit zeta predicate agrees definitionally with Mathlib’s Riemann hypothesis. Follow `New.Reduction` for parameters, admissible data, heights, the prime sums and the final comparison. The admissible-data record collects hypotheses for an individual comparison. Its existence theorem constructs such records as the cutoff varies. This separation lets the geometric estimates use explicit inequalities and leaves the asymptotic quantifiers to the analytic reduction.
 
 For Theorem A, `New.Derivatives` treats the formal group expansion, the integral vacuum, the divisibility of derivatives and sharpness. `New.UpperBound` constructs the kernels, source and target, the two lift routes, their seesaw identity and local and complex estimates. For Theorem B, `New.Spanning` organizes the second moment, multiplicities, Bessel functions, unfolding and the estimates for the main and remaining terms. For Theorem C, `New.Determinant` constructs the exchange squares, chain volume and auxiliary forms. `New.OneLift` bounds each single-lift determinant. `New.Congruences` supplies the regular twists through Galois representations, first-order congruences, Selmer bounds and local crystalline lifting. `New.Appendix` supplies discrete series with a large gap. [Readable guide and glossary](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh/GUIDE.md).
 
@@ -32,6 +37,30 @@ The dictionary changes with the definitions. The progression modulus is called `
 Compact Theorem A packages the normalization as an existence statement. It chooses a positive rational scalar and a map equal to that scalar times the projected Poincaré map, then gives both the short generating family and its index bound. Compact Theorem B states that both the column dimension and the row dimension are positive. Its translate budget is `5 rowDim log(1 + b²)` measured against the full column dimension. The readable theorem uses `5 targetDim log(1 + 2 b²)` against the dimension of the ramified source. Both conclusions fill at least the fraction `1 − 4/b²`. [Compact A and B](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Endgame/ShortAndEnough.lean).
 
 In compact C the proof multiplies two height estimates, one for the volume of the rows and one for a squared volume ratio. Their determinant factors multiply to one, whose height is nonnegative. The compact assembly writes the resulting bound as `m remainder ≤ (log b)² budget`. Match `budget` with the scale `f a (log b)³` before comparing it with the readable inequality. [Compact C](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Endgame/LongForms.lean) and [compact comparison](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Main.lean).
+
+# Following one quantity through the two implementations
+
+Begin with the weight $`a`. In the readable definition it is the product of the two natural-number scales. In the compact definition the product is the *input* to a rounding operation. The same operation is applied again in the base weights obtained from the two cutoffs. Thus substituting the compact definition into the readable cutoff identity would introduce rounding terms. To compare the final estimates, use the compact file’s own identity for the remainder. [Readable weight](/source/New.Reduction.Data.AdmissibleData.html#d-New.Data.a), [compact weights](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Data/AdmissibleData.lean#L100-L110), and [compact remainder identity](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Endgame/ShortAndEnough.lean).
+
+:::lemma_ "grh-editions-cutoff" (lean := "New.Data.totalRemainder_eq")
+In the readable edition the total remainder divided by the positive scale $`a` has two contributions. Each b-place contributes the difference of the progression remainders at $`x` and $`x_1`. Each a-place contributes the modulus-one remainder at $`x_1`.
+:::
+
+:::proof "grh-editions-cutoff"
+Expand the definition as a sum over a-places of a derivative prime sum minus its expected value. Sort the actual prime sums by residue class and cutoff. The sum of the expected values is exactly the main term in that calculation, so subtraction leaves only the three remainder terms, all multiplied by the common scale. This equality holds for each admissible datum, before the proof chooses the scales to make the far-cutoff errors small. The compact equality has the same pattern with the counts of thick places and tops. There the counting proof shows that multiplication by the class of the negative summation index hits the thick places from the tops precisely for the selected progression. Its weights and cutoffs are those of the compact data. [Readable expansion](/source/New.Reduction.PrimeSums.html#d-New.Data.totalRemainder_eq) and [compact count over tops](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Endgame/ShortAndEnough.lean#L86-L108).
+:::
+
+Next follow the scalar used to control denominators. In compact A the proof chooses a rational number with the prescribed finite-place valuations and packages it together with its map. Its index inequality charges one budget for each translate and each dimension of the full column space. In readable A a named normalized map is already available. Its index theorem charges twice the error unit per translate and per dimension of the ramified source. On each side the corresponding form of B bounds precisely the product that occurs in its own index inequality. [Readable normalized map and index](/source/New.Reduction.ShortAndEnough.html), [compact scalar and index](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Endgame/ShortAndEnough.lean#L138-L157).
+
+:::lemma_ "grh-editions-normalized-translates" (lean := "New.Data.coe_normalizedPoincare")
+View the normalized image of a ramified source form as a principal-level form. Its value for a chosen group element is the group translate of its value at the identity. Thus all the image spaces used in readable B can be obtained by translating the same normalized map from A.
+:::
+
+:::proof "grh-editions-normalized-translates"
+The good projection comes from a central element of the finite group algebra. Applying the group action to a projected form therefore gives exactly the projection of the translated form. The scalar that normalizes the Poincaré map is independent of the translate, so it also commutes with the action. Apply these two observations to the value at the identity. Compact A instead supplies a positive rational scalar and the equality of its bounded map with that scalar times the projected map. Compact B can state its spanning conclusion for the projected map itself, since multiplication by a nonzero scalar preserves its range. [Readable translation identity](/source/New.Reduction.ShortAndEnough.html#d-New.Data.coe_normalizedPoincare) and [compact A and B](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Endgame/ShortAndEnough.lean#L138).
+:::
+
+Finally follow the determinant. Compact C writes two explicit height assertions, one about the squared volume ratio and one about the row volume. Multiplying the underlying factors cancels the determinant and leaves one. Readable C uses a twisted lattice to express the lower bound for any independent family meeting its size, index and covolume hypotheses. The common mathematical demand is that a single nearly full family satisfy the archimedean and finite-place estimates together. [Compact height assertions](https://github.com/lsernau/grh-lean/blob/72fead102f663d5c7a407964a13dc0cf9d977207/grh-compact/src/New/Endgame/LongForms.lean#L19-L76), [readable lower bound](/source/New.Determinant.Twist.LongForms.html), and [readable product formula](/source/New.Reduction.Lattices.TwistedLattice.html).
 
 # Checking a claim
 

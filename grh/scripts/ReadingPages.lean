@@ -3,6 +3,8 @@ Released under the Apache 2.0 license as described in LICENSE.
 Authors: Eric Vergo, GPT-6.2 (OpenAI)
 -/
 import MD4Lean
+import Lean.Data.Json
+import Std.Data.HashMap
 
 open System
 
@@ -40,9 +42,64 @@ private def withFileLinks (html : String) : IO String := do
     | _ => throw <| IO.userError "Unexpected code span in rendered Markdown"
   return out
 
+/-- Add a chapter link beside each argument in the upstream index. Key rows by their
+original first cell so an upstream insertion cannot silently shift the concordance. -/
+private def withProofLinks (source : String) (site : FilePath) : IO String := do
+  let manifest ← IO.ofExcept <| Lean.Json.parse <| ← IO.FS.readFile
+    (site / "-verso-data" / "blueprint-manifest.json")
+  let previews : Array Lean.Json ← IO.ofExcept (manifest.getObjValAs? _ "previews")
+  let mut urls : Std.HashMap String String := {}
+  for preview in previews do
+    if (← IO.ofExcept (preview.getObjValAs? String "facet")) == "statement" then
+      urls := urls.insert (← IO.ofExcept (preview.getObjValAs? String "authoredLabel"))
+        (← IO.ofExcept (preview.getObjValAs? String "href"))
+  let mut entries : Std.HashMap (String × String) String := {}
+  for line in (← IO.FS.lines "blueprint/coverage.tsv") do
+    let [sectionName, row, label] := line.splitOn "\t"
+      | throw <| IO.userError s!"Invalid coverage row: {line}"
+    let some url := urls[label]? | throw <| IO.userError s!"Unknown blueprint entry: {label}"
+    if entries.contains (sectionName, row) then throw <| IO.userError s!"Duplicate index row: {row}"
+    entries := entries.insert (sectionName, row) url
+  let mut sectionName := ""
+  let mut tableRow := 0
+  let mut lines := #[]
+  for line in source.splitOn "\n" do
+    if line.startsWith "## " then
+      sectionName := (line.drop 3).toString
+      tableRow := 0
+    if ["The last step", "Steps of the argument"].contains sectionName && line.startsWith "|" then
+      let cell := ((line.splitOn "|")[1]!).trimAscii.toString
+      let link ← match tableRow with
+        | 0 => pure "Blueprint"
+        | 1 => pure "---"
+        | _ => do
+          let some href := entries[(sectionName, cell)]?
+            | throw <| IO.userError s!"Missing blueprint entry for {cell}"
+          entries := entries.erase (sectionName, cell)
+          pure s!"[Read the argument](../{href})"
+      tableRow := tableRow + 1
+      lines := lines.push (line ++ " " ++ link ++ " |")
+    else
+      lines := lines.push line
+  unless entries.isEmpty do throw <| IO.userError "Concordance includes rows absent from INDEX.md"
+  return String.intercalate "\n" lines.toList
+
+/-- Old subsection URLs keep both section bookmarks and deep links to proof panels. -/
+private def writeSectionLinks (site : FilePath) : IO Unit := do
+  for line in (← IO.FS.lines "blueprint/section-links.tsv") do
+    let [path, anchor] := line.splitOn "\t" | throw <| IO.userError s!"Invalid section link: {line}"
+    let dir := site / path
+    let target := "../#" ++ anchor
+    IO.FS.createDirAll dir
+    IO.FS.writeFile (dir / "index.html") <| "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\">" ++
+      "<title>GRH blueprint section</title><script>location.replace('../'+location.search+" ++
+      "(location.hash||'#" ++ anchor ++ "'))</script><meta http-equiv=\"refresh\" content=\"0;url=" ++
+      target ++ "\"><p><a href=\"" ++ target ++ "\">Read this section in the chapter</a></p></html>\n"
+
 private def render (dest : FilePath) (doc : String) : IO Unit := do
   let source ← IO.FS.readFile (doc ++ ".md")
-  let some raw := MD4Lean.renderHtml source (MD4Lean.MD_DIALECT_GITHUB ||| MD4Lean.MD_FLAG_NOHTML)
+  let markdown ← if doc == "INDEX" then withProofLinks source (dest / "..") else pure source
+  let some raw := MD4Lean.renderHtml markdown (MD4Lean.MD_DIALECT_GITHUB ||| MD4Lean.MD_FLAG_NOHTML)
     | throw <| IO.userError s!"Failed to render {doc}.md"
   let mut body ← withFileLinks raw
   let mut sections := ""
@@ -68,3 +125,4 @@ def main (args : List String) : IO Unit := do
   let [dest] := args | throw <| IO.userError "Usage: ReadingPages.lean OUTPUT_DIRECTORY"
   IO.FS.createDirAll dest
   documents.forM (render dest)
+  writeSectionLinks (FilePath.mk dest / "..")

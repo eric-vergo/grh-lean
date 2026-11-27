@@ -26,8 +26,9 @@ Start with the five formal statements, then follow the construction of modular f
 the lattice estimates, and the passage from a prime sum to zeros of Dirichlet L-functions.
 The [source atlas](source/index.html) displays every file under `grh/src`. Its declaration
 names and locations come from the Lean compiler's source index. A line number links to that
-line, and a declaration search result takes you to its definition. The chapter panels explain
-selected steps. The dependency graph below describes the relationships recorded in those panels.
+line, and a declaration search result takes you to its definition. Each chapter places the informal proofs beside their Lean declarations. Follow a theorem in
+the dependency graph to see which earlier results it uses. For a particular step from the readable
+edition, the [results index](reading/index.html#steps-of-the-argument) links directly to the argument.
 
 The readable edition’s [guide](reading/guide.html) includes its [glossary](reading/guide.html#2-glossary)
 and [table of scales](reading/guide.html#3-sizes). The [results and sources](reading/index.html)

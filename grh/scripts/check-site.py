@@ -118,6 +118,111 @@ def check_navigation(site):
           f'{dynamic} client-managed graph or preview links')
 
 
+class Chapter(HTMLParser):
+    """Read chapter narrative and informal proof bodies, excluding the Lean panels."""
+
+    def __init__(self, filepath):
+        super().__init__()
+        self.facets = {}
+        self.opening = []
+        self.section_depth = 0
+        self.past_opening = False
+        self.in_opening_paragraph = False
+        self.divs = []
+        self.proof = None
+        self.proof_body = False
+        self.feed(filepath.read_text())
+        self.close()
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'section':
+            self.section_depth += 1
+            if self.section_depth > 1:
+                self.past_opening = True
+        if tag == 'p' and self.section_depth == 1 and not self.past_opening and 'panel' not in self.divs:
+            self.in_opening_paragraph = True
+        if tag == 'div':
+            facet = attrs.get('data-bp-facet')
+            node = attrs.get('data-bp-node')
+            role = ''
+            if facet and node:
+                role = 'panel'
+                if facet == 'proof':
+                    self.proof = node
+                    self.facets.setdefault(node, [])
+            if 'bp_kind_proof_content' in attrs.get('class', '').split():
+                role = 'proof-body'
+                self.proof_body = True
+            self.divs.append(role)
+
+    def handle_data(self, data):
+        if self.in_opening_paragraph:
+            self.opening.append(data)
+        if self.proof_body and self.proof:
+            self.facets[self.proof].append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'section':
+            self.section_depth -= 1
+        elif tag == 'p':
+            self.in_opening_paragraph = False
+        elif tag == 'div' and self.divs:
+            role = self.divs.pop()
+            if role == 'proof-body':
+                self.proof_body = False
+            elif role == 'panel':
+                self.proof = None
+
+
+def check_chapters(site):
+    links = [line.split('\t') for line in Path('blueprint/section-links.tsv').read_text().splitlines()]
+    chapters = {Path(path).parts[0] for path, _ in links}
+    check(len(chapters) == 7 and len(links) == 22, 'Incomplete chapter or published subsection inventory')
+    pages = {name: Page(site / name / 'index.html') for name in chapters}
+    narrative = {name: Chapter(site / name / 'index.html') for name in chapters}
+    for name, page in narrative.items():
+        check(''.join(page.opening).strip(), f'{name}: chapter opens without explanatory prose')
+    for path, anchor in links:
+        name = Path(path).parts[0]
+        check(anchor in pages[name].ids, f'{name}: missing in-chapter section {anchor}')
+        alias = Page(site / path / 'index.html')
+        check('../#' + anchor in alias.hrefs, f'Missing public subsection redirect: {path}')
+
+    manifest = json.loads((site / '-verso-data/blueprint-manifest.json').read_bytes())
+    nodes = {node['label']: node for graph in manifest['graphs'] for node in graph['nodes']}
+    previews = {(p['authoredLabel'], p['facet']): p for p in manifest['previews']}
+    important = ('error', 'half', 'strip', 'zeta', 'cutoffs', 'star', 'twists', 'long',
+                 'moments', 'spanning', 'vacuum', 'seesaw', 'short')
+    for label in important:
+        check(('grh-guide-' + label, 'proof') in previews, f'Missing original proof: {label}')
+    proofs = 0
+    for label, node in nodes.items():
+        if node['kind'] not in ('theorem', 'lemma', 'proposition', 'corollary'):
+            continue
+        check(node['leanNames'] and all(d['present'] for d in node['leanNames']),
+              f'{label}: no resolved Lean declaration')
+        proof = previews.get((label.strip('«»'), 'proof'))
+        check(proof and not proof['codeOnlyPreview'], f'{label}: missing authored informal proof')
+        dest = urlsplit(proof['href'])
+        chapter = dest.path.strip('/')
+        check(chapter in pages and unquote(dest.fragment) in pages[chapter].ids,
+              f'{label}: proof does not appear in a continuous chapter')
+        check(''.join(narrative[chapter].facets.get(label, [])).strip(),
+              f'{label}: rendered proof contains no mathematical prose')
+        proofs += 1
+
+    results = Page(site / 'reading/index.html')
+    coverage = Path('blueprint/coverage.tsv').read_text().splitlines()
+    indexed = {line.split('\t')[2] for line in coverage}
+    for label in indexed:
+        statement = previews.get((label, 'statement'))
+        check(statement and '../' + statement['href'] in results.hrefs, f'Missing result link: {label}')
+    check(len(coverage) == 90, 'Expected the 81 indexed argument steps and nine final results')
+    print(f'Verified {len(chapters)} continuous chapters, {len(links)} subsection redirects, '
+          f'{len(nodes)} entries, {proofs} informal proofs and {len(coverage)} indexed results')
+
+
 def check_reading_pages(site):
     for document in ('GUIDE', 'INDEX', 'REFERENCES'):
         markdown = Path(document + '.md').read_text()
@@ -177,6 +282,7 @@ if sys.argv[2:] == ['--links-only']:
 check_reading_pages(site)
 if sys.argv[2:] == ['--reading-only']:
     sys.exit(0)
+check_chapters(site)
 modules, declarations, _, _ = check_atlas(site)
 landing = Page(site / 'index.html')
 check('source/index.html' in landing.hrefs, 'Landing page has no source atlas link')
